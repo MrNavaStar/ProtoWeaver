@@ -1,0 +1,11 @@
+version = project.mod_version
+group = project.maven_group
+
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'io.netty:netty-all:4.1.86.Final'
+    implementation 'com.google.code.gson:gson:2.8.9'
+}

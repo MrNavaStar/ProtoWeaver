@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "singularity",
+  "version": "${version}",
+  "name": "Singularity",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "repo": "https://github.com/ethan/fabric"
+  },
+  "license": "All-Rights-Reserved",
+  "icon": "assets/singularity/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "server": [
+      "me.mrnavastar.protoweaver.mod.Fabric"
+    ]
+  },
+  "mixins": [
+    "singularity.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}

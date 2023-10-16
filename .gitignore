@@ -1,0 +1,11 @@
+# Project exclude paths
+/.gradle/
+/fabric/.gradle/
+/fabric/build/
+# Project exclude paths
+/client/build/
+/core/build/
+/mod/.gradle/
+/mod/build/
+/mod/run/
+/velocity/run/
