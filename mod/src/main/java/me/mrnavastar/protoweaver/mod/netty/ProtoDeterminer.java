@@ -50,12 +50,10 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
             return;
         }
 
-        final int magic1 = buf.getUnsignedByte(buf.readerIndex());
-        System.out.println(magic1);
-        final int magic2 = buf.getUnsignedByte(buf.readerIndex() + 1);
-        System.out.println(magic2);
-
         ChannelPipeline pipeline = ctx.pipeline();
+        int magic1 = buf.getUnsignedByte(buf.readerIndex());
+        int magic2 = buf.getUnsignedByte(buf.readerIndex() + 1);
+
         if (isMinecraft(magic1, magic2)) {
             pipeline.remove(this);
             return;
@@ -82,7 +80,7 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
         }
 
         // Downstream protocol
-        if (isProtoWeaver(magic1)) {
+        if (isProtoWeaver(magic2)) {
             System.out.println("Its custom yo!");
             Protocol defaultProtocol = ProtoWeaver.getLoadedProtocol("protoweaver:internal");
             ProtoConnection connection = new ProtoConnection(defaultProtocol, defaultProtocol.getNewServerHandler(), pipeline);
@@ -115,8 +113,8 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
         return magic1 == 31 && magic2 == 139;
     }
 
-    private boolean isProtoWeaver(int magic1) {
-        return magic1 == ProtoConstants.PROTOWEAVER_MAGIC_BYTE;
+    private boolean isProtoWeaver(int magic2) {
+        return magic2 == ProtoConstants.PROTOWEAVER_MAGIC_BYTE;
     }
 
     private boolean isHttp(int magic1, int magic2) {
