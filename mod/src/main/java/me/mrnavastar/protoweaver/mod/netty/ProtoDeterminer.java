@@ -13,8 +13,8 @@ import io.netty.handler.ssl.SslHandler;
 import me.mrnavastar.protoweaver.ProtoConstants;
 import me.mrnavastar.protoweaver.ProtoWeaver;
 import me.mrnavastar.protoweaver.netty.ProtoConnection;
-import me.mrnavastar.protoweaver.netty.ProtoPacketDecoder;
 import me.mrnavastar.protoweaver.protocol.Protocol;
+import me.mrnavastar.protoweaver.protocol.internal.Internal;
 
 import java.util.List;
 
@@ -80,10 +80,10 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
         }
 
         // Downstream protocol
-        if (isProtoWeaver(magic2)) {
-            System.out.println("Its custom yo!");
-            Protocol defaultProtocol = ProtoWeaver.getLoadedProtocol("protoweaver:internal");
-            ProtoConnection connection = new ProtoConnection(defaultProtocol, defaultProtocol.getNewServerHandler(), pipeline);
+        if (isProtoWeaver(magic1, magic2)) {
+            Protocol internal = Internal.getProtocol();
+            ProtoConnection connection = new ProtoConnection(internal, internal.getNewServerHandler(), pipeline);
+            buf.readerIndex(2);
             pipeline.remove(this);
             return;
         }
@@ -113,8 +113,8 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
         return magic1 == 31 && magic2 == 139;
     }
 
-    private boolean isProtoWeaver(int magic2) {
-        return magic2 == ProtoConstants.PROTOWEAVER_MAGIC_BYTE;
+    private boolean isProtoWeaver(int magic1, int magic2) {
+        return magic1 == 0 && magic2 == ProtoConstants.PROTOWEAVER_MAGIC_BYTE;
     }
 
     private boolean isHttp(int magic1, int magic2) {

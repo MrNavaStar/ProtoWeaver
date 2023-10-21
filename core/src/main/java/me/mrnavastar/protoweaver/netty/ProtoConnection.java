@@ -6,24 +6,22 @@ import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
 import me.mrnavastar.protoweaver.protocol.Protocol;
 
-@Getter
 public class ProtoConnection {
 
-    private final ProtoPacketSender packetSender = new ProtoPacketSender();
+    private final ProtoPacketSender packetSender = new ProtoPacketSender(this);
     private final ProtoPacketDecoder packetDecoder = new ProtoPacketDecoder(this);
+    @Getter
     private Protocol protocol;
-    private ProtoPacketHandler handler;
 
     public ProtoConnection(Protocol protocol, ProtoPacketHandler handler, ChannelPipeline pipeline) {
         this.protocol = protocol;
-        this.handler = handler;
+        packetDecoder.setHandler(handler);
         pipeline.addLast("protoDecoder", packetDecoder);
         pipeline.addLast("protoSender", packetSender);
     }
 
     public void upgradeProtocol(Protocol newProtocol, ProtoPacketHandler handler) {
         this.protocol = newProtocol;
-        this.handler = handler;
         packetDecoder.setHandler(handler);
     }
 

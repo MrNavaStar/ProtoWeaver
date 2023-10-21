@@ -6,6 +6,8 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import me.mrnavastar.protoweaver.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
+import me.mrnavastar.protoweaver.protocol.internal.Handshake;
+import me.mrnavastar.protoweaver.protocol.protomessage.Message;
 
 import java.util.List;
 
@@ -16,7 +18,6 @@ public class ProtoPacketDecoder extends ByteToMessageDecoder {
 
     public ProtoPacketDecoder(ProtoConnection connection) {
         this.connection = connection;
-        this.handler = connection.getHandler();
     }
 
     public void setHandler(ProtoPacketHandler handler) {
@@ -27,7 +28,7 @@ public class ProtoPacketDecoder extends ByteToMessageDecoder {
     protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) {
         if (byteBuf.readableBytes() == 0) return;
 
-        // Get packet
+        int packetLen = byteBuf.readInt();
         int packetID = byteBuf.readInt();
         ProtoPacket packet = connection.getProtocol().getPacket(packetID);
         if (packet == null) {
@@ -36,7 +37,7 @@ public class ProtoPacketDecoder extends ByteToMessageDecoder {
         }
 
         try {
-            packet.decode(byteBuf);
+            packet.decode(byteBuf.readBytes(packetLen));
         } catch (IndexOutOfBoundsException e) {
             ProtoWeaver.failedToDecodePacket(connection.getProtocol(), packetID);
         }

@@ -14,6 +14,8 @@ public class Message extends ProtoPacket {
     private String message;
     private Date time;
 
+    public Message() {}
+
     public Message(String channel, String message) {
         this.channel = channel;
         this.message = message;
@@ -32,9 +34,9 @@ public class Message extends ProtoPacket {
     @Override
     public void decode(ByteBuf buf) throws IndexOutOfBoundsException {
         int channelLen = buf.readInt();
-        channel = new String(buf.readBytes(channelLen).array(), StandardCharsets.UTF_8);
+        channel = buf.readCharSequence(channelLen, StandardCharsets.UTF_8).toString();
         int messageLen = buf.readInt();
-        message = new String(buf.readBytes(messageLen).array(), StandardCharsets.UTF_8);
+        message = buf.readCharSequence(messageLen, StandardCharsets.UTF_8).toString();
         time = new Date(buf.readLong());
     }
 }

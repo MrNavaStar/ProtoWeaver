@@ -11,6 +11,8 @@ public class Handshake extends ProtoPacket {
 
     private String protocolName;
 
+    public Handshake() {}
+
     public Handshake(String protocolName) {
         this.protocolName = protocolName;
     }
@@ -23,6 +25,6 @@ public class Handshake extends ProtoPacket {
     @Override
     public void decode(ByteBuf buf) throws IndexOutOfBoundsException {
         int len = buf.readableBytes();
-        protocolName = new String(buf.readBytes(len).array(), StandardCharsets.UTF_8);
+        protocolName = buf.readCharSequence(len, StandardCharsets.UTF_8).toString();
     }
 }

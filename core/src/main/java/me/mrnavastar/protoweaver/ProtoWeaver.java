@@ -2,8 +2,9 @@ package me.mrnavastar.protoweaver;
 
 import me.mrnavastar.protoweaver.api.*;
 import me.mrnavastar.protoweaver.protocol.Protocol;
-import me.mrnavastar.protoweaver.protocol.internal.Handshake;
-import me.mrnavastar.protoweaver.protocol.internal.InternalHandler;
+import me.mrnavastar.protoweaver.protocol.internal.Internal;
+import me.mrnavastar.protoweaver.protocol.protomessage.ProtoMessage;
+import me.mrnavastar.protoweaver.protocol.protomessage.ProtoMessageEvents;
 
 
 import java.util.HashMap;
@@ -13,7 +14,7 @@ public class ProtoWeaver extends ProtoWeaverAPI {
     private static final HashMap<String, Protocol> loadedProtocols = new HashMap<>();
 
     public static void init() {
-        registerBuiltInProtocols();
+        loadProtocol(ProtoMessage.getProtocol());
     }
 
     public static void loadProtocol(Protocol protocol) {
@@ -36,14 +37,5 @@ public class ProtoWeaver extends ProtoWeaverAPI {
 
     public static void failedToDecodePacket(Protocol protocol, int packetId) {
         // Be more mad
-    }
-
-    public static void registerBuiltInProtocols() {
-        Protocol protocol = ProtoWeaverAPI.buildProtocol("protoweaver", "internal")
-                .setServerHandler(InternalHandler.class)
-                .addPacket(Handshake.class)
-                .build();
-
-        loadProtocol(protocol);
     }
 }
