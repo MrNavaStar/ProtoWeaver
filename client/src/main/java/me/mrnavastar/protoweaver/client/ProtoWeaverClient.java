@@ -9,11 +9,10 @@ import lombok.NonNull;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.protocol.Protocol;
-import me.mrnavastar.protoweaver.protocol.internal.Internal;
-import me.mrnavastar.protoweaver.protocol.internal.Handshake;
-import me.mrnavastar.protoweaver.protocol.protomessage.Message;
+import me.mrnavastar.protoweaver.protocol.protoweaver.ProtoWeaver;
+import me.mrnavastar.protoweaver.protocol.protoweaver.Handshake;
 
-public class ProtoClient {
+public class ProtoWeaverClient {
 
     private final Protocol protocol;
     private final String host;
@@ -21,7 +20,7 @@ public class ProtoClient {
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
     private ProtoConnection connection;
 
-    public ProtoClient(Protocol protocol, String host, int port) {
+    public ProtoWeaverClient(Protocol protocol, String host, int port) {
         this.protocol = protocol;
         this.host = host;
         this.port = port;
@@ -37,15 +36,15 @@ public class ProtoClient {
 
                 @Override
                 public void initChannel(@NonNull SocketChannel ch) {
-                    Protocol internal = Internal.getProtocol();
-                    connection = new ProtoConnection(internal, internal.getNewServerHandler(), ch.pipeline());
+                    Protocol internal = ProtoWeaver.getProtocol();
+                    connection = new ProtoConnection(internal, internal.newClientHandler(), ch.pipeline());
                 }
             });
 
             ChannelFuture f = b.connect(host, port).sync();
 
             connection.send(new Handshake(protocol.getName()));
-            connection.upgradeProtocol(protocol, protocol.getNewClientHandler());
+            connection.upgradeProtocol(protocol, protocol.newClientHandler());
 
             //f.channel().closeFuture().sync();
 

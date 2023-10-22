@@ -1,11 +1,9 @@
 package me.mrnavastar.protoweaver.api;
 
-import lombok.Getter;
 import me.mrnavastar.protoweaver.protocol.Protocol;
 
 import java.util.ArrayList;
 
-@Getter
 public class ProtoBuilder {
 
     private final String name;
@@ -15,6 +13,10 @@ public class ProtoBuilder {
 
     public ProtoBuilder(String name) {
         this.name = name;
+    }
+
+    public static ProtoBuilder protocol(String namespace, String name) {
+        return new ProtoBuilder(namespace + ":" + name);
     }
 
     public ProtoBuilder setServerHandler(Class<? extends ProtoPacketHandler> packetHandler) {

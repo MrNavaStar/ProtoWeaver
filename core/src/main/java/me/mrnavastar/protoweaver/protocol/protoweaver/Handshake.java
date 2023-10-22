@@ -1,4 +1,4 @@
-package me.mrnavastar.protoweaver.protocol.internal;
+package me.mrnavastar.protoweaver.protocol.protoweaver;
 
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;

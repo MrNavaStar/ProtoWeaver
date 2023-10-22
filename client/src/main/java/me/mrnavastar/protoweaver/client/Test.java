@@ -9,7 +9,7 @@ public class Test {
 
         System.out.println("Starting");
 
-        ProtoClient client = new ProtoClient(ProtoMessage.getProtocol(), "localhost", 25565);
+        ProtoWeaverClient client = new ProtoWeaverClient(ProtoMessage.getProtocol(), "localhost", 25565);
         client.connect();
 
         client.send(new Message("pain", "this be poggers"));

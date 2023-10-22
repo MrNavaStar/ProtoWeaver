@@ -1,6 +1,7 @@
 package me.mrnavastar.protoweaver.protocol;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
@@ -12,8 +13,10 @@ public class Protocol {
     @Getter
     private final String name;
     private final ArrayList<Class<? extends ProtoPacket>> packets;
-    private final Class<? extends ProtoPacketHandler> serverHandler;
-    private final Class<? extends ProtoPacketHandler> clientHandler;
+    @Setter
+    private Class<? extends ProtoPacketHandler> serverHandler;
+    @Setter
+    private Class<? extends ProtoPacketHandler> clientHandler;
 
     public Protocol(String name, ArrayList<Class<? extends ProtoPacket>> packets, Class<? extends ProtoPacketHandler> serverHandler, Class<? extends ProtoPacketHandler> clientHandler) {
         this.name = name;
@@ -23,12 +26,12 @@ public class Protocol {
     }
 
     @SneakyThrows
-    public ProtoPacketHandler getNewClientHandler() {
+    public ProtoPacketHandler newClientHandler() {
         return clientHandler.getConstructor().newInstance();
     }
 
     @SneakyThrows
-    public ProtoPacketHandler getNewServerHandler() {
+    public ProtoPacketHandler newServerHandler() {
         return serverHandler.getDeclaredConstructor().newInstance();
     }
 

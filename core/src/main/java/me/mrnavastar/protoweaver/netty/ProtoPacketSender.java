@@ -5,9 +5,9 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.NonNull;
-import me.mrnavastar.protoweaver.ProtoConstants;
+import me.mrnavastar.protoweaver.util.ProtoConstants;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
-import me.mrnavastar.protoweaver.protocol.internal.Handshake;
+import me.mrnavastar.protoweaver.protocol.protoweaver.Handshake;
 
 public class ProtoPacketSender extends SimpleChannelInboundHandler<ProtoPacket> {
 

@@ -10,11 +10,10 @@ import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.ssl.SslHandler;
-import me.mrnavastar.protoweaver.ProtoConstants;
-import me.mrnavastar.protoweaver.ProtoWeaver;
+import me.mrnavastar.protoweaver.util.ProtoConstants;
 import me.mrnavastar.protoweaver.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.protocol.Protocol;
-import me.mrnavastar.protoweaver.protocol.internal.Internal;
+import me.mrnavastar.protoweaver.protocol.protoweaver.ProtoWeaver;
 
 import java.util.List;
 
@@ -81,8 +80,8 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
 
         // Downstream protocol
         if (isProtoWeaver(magic1, magic2)) {
-            Protocol internal = Internal.getProtocol();
-            ProtoConnection connection = new ProtoConnection(internal, internal.getNewServerHandler(), pipeline);
+            Protocol internal = ProtoWeaver.getProtocol();
+            ProtoConnection connection = new ProtoConnection(internal, internal.newServerHandler(), pipeline);
             buf.readerIndex(2);
             pipeline.remove(this);
             return;
