@@ -37,10 +37,9 @@ public class Protocol {
 
     @SneakyThrows
     public ProtoPacket getPacket(int packetID) {
-        Class<? extends ProtoPacket> packetClass = packets.get(packetID);
-        if (packetClass == null) return null;
+        if (packetID < 0 || packetID >= packets.size()) return null;
 
-        return packetClass.getDeclaredConstructor().newInstance();
+        return packets.get(packetID).getDeclaredConstructor().newInstance();
     }
 
     public int getPacketId(ProtoPacket packet) {
