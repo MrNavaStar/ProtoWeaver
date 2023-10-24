@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "protoweaver",
-  "version": "${version}",
+  "version": "debug-build",
   "name": "ProtoWeaver",
   "description": "",
   "authors": ["MrNavaStar"],
