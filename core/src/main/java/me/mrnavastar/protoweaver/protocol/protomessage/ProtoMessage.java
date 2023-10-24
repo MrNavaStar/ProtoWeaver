@@ -14,7 +14,6 @@ public class ProtoMessage extends ProtoPacketHandler {
 
     @Override
     public void handlePacket(ProtoConnection connection, ProtoPacket packet) {
-        System.out.println("Got message!");
         if (packet instanceof Message message) ProtoMessageEvents.MESSAGE_RECEIVED.getInvoker().trigger(connection, message);
     }
 }

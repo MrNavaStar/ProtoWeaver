@@ -19,6 +19,6 @@
     "protoweaver.mixins.json"
   ],
   "depends": {
-    "minecraft": ">= 1.14"
+
   }
 }
