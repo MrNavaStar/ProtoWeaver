@@ -6,14 +6,14 @@ import me.mrnavastar.protoweaver.api.ProtoPacket;
 
 import java.nio.charset.StandardCharsets;
 
-@Getter
-public class Handshake extends ProtoPacket {
+public class Handshake implements ProtoPacket {
 
     public enum Side {
         CLIENT,
         SERVER
     }
 
+    @Getter
     private String protocolName;
     private Side side;
 
@@ -36,5 +36,9 @@ public class Handshake extends ProtoPacket {
         int len = buf.readInt();
         protocolName = buf.readCharSequence(len, StandardCharsets.UTF_8).toString();
         side = Side.values()[buf.readInt()];
+    }
+
+    public boolean from(Side side) {
+        return this.side.equals(side);
     }
 }

@@ -9,7 +9,7 @@ import me.mrnavastar.protoweaver.protocol.Protocol;
 
 import java.util.HashMap;
 
-public class ProtoWeaver extends ProtoPacketHandler {
+public class ProtoWeaver implements ProtoPacketHandler {
 
     @Getter
     private static final Protocol protocol = ProtoBuilder.protocol("protoweaver", "internal").setServerHandler(ProtoWeaver.class).setClientHandler(ProtoWeaver.class).addPacket(Handshake.class).build();
@@ -31,7 +31,7 @@ public class ProtoWeaver extends ProtoPacketHandler {
         }
 
         // Only respond if handshake from client
-        if (handshake.getSide().equals(Handshake.Side.CLIENT)) {
+        if (handshake.from(Handshake.Side.CLIENT)) {
             connection.send(new Handshake(handshake.getProtocolName(), Handshake.Side.SERVER));
         }
 

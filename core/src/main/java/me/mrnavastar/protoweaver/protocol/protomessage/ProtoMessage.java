@@ -7,7 +7,7 @@ import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
 import me.mrnavastar.protoweaver.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.protocol.Protocol;
 
-public class ProtoMessage extends ProtoPacketHandler {
+public class ProtoMessage implements ProtoPacketHandler {
 
     @Getter
     private static final Protocol protocol = ProtoBuilder.protocol("protoweaver", "proto-message").setServerHandler(ProtoMessage.class).setClientHandler(ProtoMessage.class).addPacket(Message.class).build();

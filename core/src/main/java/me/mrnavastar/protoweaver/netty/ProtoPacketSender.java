@@ -34,7 +34,7 @@ public class ProtoPacketSender extends SimpleChannelInboundHandler<ProtoPacket> 
         packet.encode(packetBuf);
 
         // Add ProtoWeaver identifiers if client sends to server
-        if (packet instanceof Handshake handshake && handshake.getSide().equals(Handshake.Side.CLIENT)) {
+        if (packet instanceof Handshake handshake && handshake.from(Handshake.Side.CLIENT)) {
             buf.writeByte(0);
             buf.writeByte(ProtoConstants.PROTOWEAVER_MAGIC_BYTE);
         }

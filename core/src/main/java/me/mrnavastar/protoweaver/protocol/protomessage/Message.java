@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Getter
-public class Message extends ProtoPacket {
+public class Message implements ProtoPacket {
 
     private String channel;
     private String message;
