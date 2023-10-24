@@ -14,12 +14,14 @@ public class Protocol {
     private final List<Class<? extends ProtoPacket>> packets;
     private final Class<? extends ProtoPacketHandler> serverHandler;
     private final Class<? extends ProtoPacketHandler> clientHandler;
+    private final CompressionType compression;
 
-    public Protocol(String name, List<Class<? extends ProtoPacket>> packets, Class<? extends ProtoPacketHandler> serverHandler, Class<? extends ProtoPacketHandler> clientHandler) {
+    public Protocol(String name, List<Class<? extends ProtoPacket>> packets, Class<? extends ProtoPacketHandler> serverHandler, Class<? extends ProtoPacketHandler> clientHandler, CompressionType compression) {
         this.name = name;
         this.packets = packets;
         this.serverHandler = serverHandler;
         this.clientHandler = clientHandler;
+        this.compression = compression;
     }
 
     @SneakyThrows

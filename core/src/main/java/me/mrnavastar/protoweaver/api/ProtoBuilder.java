@@ -1,5 +1,6 @@
 package me.mrnavastar.protoweaver.api;
 
+import me.mrnavastar.protoweaver.protocol.CompressionType;
 import me.mrnavastar.protoweaver.protocol.Protocol;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ public class ProtoBuilder {
     private List<Class<? extends ProtoPacket>> packets = new ArrayList<>();
     private Class<? extends ProtoPacketHandler> serverHandler;
     private Class<? extends ProtoPacketHandler> clientHandler;
+    private CompressionType compression = CompressionType.NONE;
 
     public ProtoBuilder(String name) {
         this.name = name;
@@ -44,7 +46,12 @@ public class ProtoBuilder {
         return this;
     }
 
+    public ProtoBuilder setCompression(CompressionType type) {
+        compression = type;
+        return this;
+    }
+
     public Protocol build() {
-        return new Protocol(name, Collections.unmodifiableList(packets), serverHandler, clientHandler);
+        return new Protocol(name, Collections.unmodifiableList(packets), serverHandler, clientHandler, compression);
     }
 }

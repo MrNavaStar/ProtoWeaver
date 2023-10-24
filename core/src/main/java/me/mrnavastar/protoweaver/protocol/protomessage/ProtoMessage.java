@@ -5,13 +5,19 @@ import me.mrnavastar.protoweaver.api.ProtoBuilder;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
 import me.mrnavastar.protoweaver.netty.ProtoConnection;
+import me.mrnavastar.protoweaver.protocol.CompressionType;
 import me.mrnavastar.protoweaver.protocol.Protocol;
 import me.mrnavastar.protoweaver.util.Event;
 
 public class ProtoMessage implements ProtoPacketHandler {
 
     @Getter
-    private static final Protocol protocol = ProtoBuilder.protocol("protoweaver", "proto-message").setServerHandler(ProtoMessage.class).setClientHandler(ProtoMessage.class).addPacket(Message.class).build();
+    private static final Protocol protocol = ProtoBuilder.protocol("protoweaver", "proto-message")
+            .setCompression(CompressionType.GZIP)
+            .setServerHandler(ProtoMessage.class)
+            .setClientHandler(ProtoMessage.class)
+            .addPacket(Message.class)
+            .build();
 
     @Override
     public void handlePacket(ProtoConnection connection, ProtoPacket packet) {

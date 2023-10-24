@@ -8,8 +8,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.compression.ZlibCodecFactory;
-import io.netty.handler.codec.compression.ZlibWrapper;
 import lombok.Getter;
 import lombok.NonNull;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
@@ -31,21 +29,12 @@ public class ProtoWeaverClient {
     private Thread thread;
 
     private boolean ssl = false;
-    private boolean gzip = false;
 
     public ProtoWeaverClient(Protocol protocol, String host, int port) {
         this.protocol = protocol;
         this.host = host;
         this.port = port;
         ProtoWeaver.load(protocol);
-    }
-
-    public void enableSSL() {
-        ssl = true;
-    }
-
-    public void enableGzip() {
-        gzip = true;
     }
 
     public void connect() {
@@ -61,11 +50,6 @@ public class ProtoWeaverClient {
                     public void initChannel(@NonNull SocketChannel ch) {
                         if (ssl) {
 
-                        }
-
-                        if (gzip) {
-                            ch.pipeline().addLast("gzipdeflater", ZlibCodecFactory.newZlibEncoder(ZlibWrapper.GZIP));
-                            ch.pipeline().addLast("gzipinflater", ZlibCodecFactory.newZlibDecoder(ZlibWrapper.GZIP));
                         }
 
                         Protocol internal = ProtoWeaver.getProtocol();

@@ -71,13 +71,12 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
 
         // Upstream protocol
         if (enableGzip(magic1, magic2)) {
-            pipeline.addLast("gzipdeflater", ZlibCodecFactory.newZlibEncoder(ZlibWrapper.GZIP));
-            pipeline.addLast("gzipinflater", ZlibCodecFactory.newZlibDecoder(ZlibWrapper.GZIP));
+            pipeline.addLast("compressionEncoder", ZlibCodecFactory.newZlibEncoder(ZlibWrapper.GZIP));
+            pipeline.addLast("compressionDecoder", ZlibCodecFactory.newZlibDecoder(ZlibWrapper.GZIP));
             pipeline.addLast("gzipProtoDeterminer", new ProtoDeterminer(sslEnabled, true));
             pipeline.remove(this);
             return;
         }
-
         // Downstream protocol
         if (isProtoWeaver(magic1, magic2)) {
             Protocol internal = ProtoWeaver.getProtocol();

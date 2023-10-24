@@ -12,7 +12,12 @@ import java.util.HashMap;
 public class ProtoWeaver implements ProtoPacketHandler {
 
     @Getter
-    private static final Protocol protocol = ProtoBuilder.protocol("protoweaver", "internal").setServerHandler(ProtoWeaver.class).setClientHandler(ProtoWeaver.class).addPacket(Handshake.class).build();
+    private static final Protocol protocol = ProtoBuilder.protocol("protoweaver", "internal")
+            .setServerHandler(ProtoWeaver.class)
+            .setClientHandler(ProtoWeaver.class)
+            .addPacket(Handshake.class)
+            .build();
+
     private static final HashMap<String, Protocol> loadedProtocols = new HashMap<>();
 
     static {
