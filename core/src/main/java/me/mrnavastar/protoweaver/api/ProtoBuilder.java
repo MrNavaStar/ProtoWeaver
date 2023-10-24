@@ -3,11 +3,13 @@ package me.mrnavastar.protoweaver.api;
 import me.mrnavastar.protoweaver.protocol.Protocol;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ProtoBuilder {
 
     private final String name;
-    private final ArrayList<Class<? extends ProtoPacket>> packets = new ArrayList<>();
+    private List<Class<? extends ProtoPacket>> packets = Collections.unmodifiableList(new ArrayList<>());
     private Class<? extends ProtoPacketHandler> serverHandler;
     private Class<? extends ProtoPacketHandler> clientHandler;
 
@@ -17,6 +19,14 @@ public class ProtoBuilder {
 
     public static ProtoBuilder protocol(String namespace, String name) {
         return new ProtoBuilder(namespace + ":" + name);
+    }
+    
+    public static ProtoBuilder protocol(Protocol protocol) {
+        ProtoBuilder builder = new ProtoBuilder(protocol.getName());
+        builder.packets = protocol.getPackets();
+        builder.serverHandler = protocol.getServerHandler();
+        builder.clientHandler = protocol.getClientHandler();
+        return builder;
     }
 
     public ProtoBuilder setServerHandler(Class<? extends ProtoPacketHandler> packetHandler) {
