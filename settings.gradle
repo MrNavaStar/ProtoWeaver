@@ -9,4 +9,4 @@ pluginManagement {
 }
 
 rootProject.name = 'protoweaver'
-include ':core', ':client', ':mod', ':velocity'
+include ':core', ':client', ':loader', ':velocity'

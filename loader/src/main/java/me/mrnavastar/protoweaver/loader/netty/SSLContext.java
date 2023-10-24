@@ -1,4 +1,4 @@
-package me.mrnavastar.protoweaver.mod.netty;
+package me.mrnavastar.protoweaver.loader.netty;
 
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;

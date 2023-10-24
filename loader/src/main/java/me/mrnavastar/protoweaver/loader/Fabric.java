@@ -1,6 +1,6 @@
-package me.mrnavastar.protoweaver.mod;
+package me.mrnavastar.protoweaver.loader;
 
-import me.mrnavastar.protoweaver.mod.netty.SSLContext;
+import me.mrnavastar.protoweaver.loader.netty.SSLContext;
 import net.fabricmc.api.DedicatedServerModInitializer;
 
 public class Fabric implements DedicatedServerModInitializer {

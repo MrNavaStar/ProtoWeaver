@@ -1,7 +1,7 @@
-package me.mrnavastar.protoweaver.mod.mixin;
+package me.mrnavastar.protoweaver.loader.mixin;
 
 import io.netty.channel.ChannelPipeline;
-import me.mrnavastar.protoweaver.mod.netty.ProtoDeterminer;
+import me.mrnavastar.protoweaver.loader.netty.ProtoDeterminer;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.handler.PacketSizeLogger;

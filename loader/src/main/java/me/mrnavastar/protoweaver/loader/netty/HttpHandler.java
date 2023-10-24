@@ -1,4 +1,4 @@
-package me.mrnavastar.protoweaver.mod.netty;
+package me.mrnavastar.protoweaver.loader.netty;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
