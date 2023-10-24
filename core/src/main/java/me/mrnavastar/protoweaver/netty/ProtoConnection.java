@@ -1,5 +1,7 @@
 package me.mrnavastar.protoweaver.netty;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelPipeline;
 import lombok.Getter;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
@@ -12,9 +14,11 @@ public class ProtoConnection {
     private final ProtoPacketDecoder packetDecoder = new ProtoPacketDecoder(this);
     @Getter
     private Protocol protocol;
+    private final Channel channel;
 
     public ProtoConnection(Protocol protocol, ProtoPacketHandler handler, ChannelPipeline pipeline) {
         this.protocol = protocol;
+        this.channel = pipeline.channel();
         packetDecoder.setHandler(handler);
         pipeline.addLast("protoDecoder", packetDecoder);
         pipeline.addLast("protoSender", packetSender);
@@ -30,6 +34,6 @@ public class ProtoConnection {
     }
 
     public void disconnect() {
-
+        channel.close();
     }
 }

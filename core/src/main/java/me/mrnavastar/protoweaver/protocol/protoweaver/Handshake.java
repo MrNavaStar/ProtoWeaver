@@ -9,22 +9,32 @@ import java.nio.charset.StandardCharsets;
 @Getter
 public class Handshake extends ProtoPacket {
 
+    public enum Side {
+        CLIENT,
+        SERVER
+    }
+
     private String protocolName;
+    private Side side;
 
     public Handshake() {}
 
-    public Handshake(String protocolName) {
+    public Handshake(String protocolName, Side side) {
         this.protocolName = protocolName;
+        this.side = side;
     }
 
     @Override
     public void encode(ByteBuf buf) {
+        buf.writeInt(protocolName.length());
         buf.writeBytes(protocolName.getBytes(StandardCharsets.UTF_8));
+        buf.writeInt(side.ordinal());
     }
 
     @Override
     public void decode(ByteBuf buf) throws IndexOutOfBoundsException {
-        int len = buf.readableBytes();
+        int len = buf.readInt();
         protocolName = buf.readCharSequence(len, StandardCharsets.UTF_8).toString();
+        side = Side.values()[buf.readInt()];
     }
 }

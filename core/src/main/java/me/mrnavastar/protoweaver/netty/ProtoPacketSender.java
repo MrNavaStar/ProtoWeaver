@@ -4,10 +4,9 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import lombok.NonNull;
-import me.mrnavastar.protoweaver.util.ProtoConstants;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.protocol.protoweaver.Handshake;
+import me.mrnavastar.protoweaver.util.ProtoConstants;
 
 public class ProtoPacketSender extends SimpleChannelInboundHandler<ProtoPacket> {
 
@@ -19,7 +18,7 @@ public class ProtoPacketSender extends SimpleChannelInboundHandler<ProtoPacket> 
     }
 
     @Override
-    public void channelActive(@NonNull ChannelHandlerContext ctx) {
+    public void handlerAdded(ChannelHandlerContext ctx) {
         this.ctx = ctx;
     }
 
@@ -34,7 +33,8 @@ public class ProtoPacketSender extends SimpleChannelInboundHandler<ProtoPacket> 
         ByteBuf packetBuf = Unpooled.buffer();
         packet.encode(packetBuf);
 
-        if (packet instanceof Handshake) {
+        // Add ProtoWeaver identifiers if client sends to server
+        if (packet instanceof Handshake handshake && handshake.getSide().equals(Handshake.Side.CLIENT)) {
             buf.writeByte(0);
             buf.writeByte(ProtoConstants.PROTOWEAVER_MAGIC_BYTE);
         }

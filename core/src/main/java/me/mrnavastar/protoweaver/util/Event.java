@@ -11,7 +11,7 @@ public class Event<T> {
         this.invokerFactory = invokerFactory;
     }
 
-    public void register(String channel, T handler) {
+    public void register(T handler) {
         handlers.add(handler);
     }
 

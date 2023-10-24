@@ -15,25 +15,31 @@ public class ProtoWeaver extends ProtoPacketHandler {
     private static final Protocol protocol = ProtoBuilder.protocol("protoweaver", "internal").setServerHandler(ProtoWeaver.class).setClientHandler(ProtoWeaver.class).addPacket(Handshake.class).build();
     private static final HashMap<String, Protocol> loadedProtocols = new HashMap<>();
 
-    public static void initServer() {
+    static {
         load(protocol);
     }
 
     @Override
     public void handlePacket(ProtoConnection connection, ProtoPacket packet) {
-        if (packet instanceof Handshake handshake) {
-            Protocol newProtocol = loadedProtocols.get(handshake.getProtocolName());
-            if (protocol == null) {
-                protocolNotLoaded(handshake.getProtocolName());
-                return;
-            }
+        if (!(packet instanceof Handshake handshake)) return;
 
-            connection.upgradeProtocol(newProtocol, newProtocol.newServerHandler());
+        Protocol newProtocol = loadedProtocols.get(handshake.getProtocolName());
+        if (newProtocol == null) {
+            protocolNotLoaded(handshake.getProtocolName());
+            connection.disconnect();
+            return;
         }
+
+        // Only respond if handshake from client
+        if (handshake.getSide().equals(Handshake.Side.CLIENT)) {
+            connection.send(new Handshake(handshake.getProtocolName(), Handshake.Side.SERVER));
+        }
+
+        connection.upgradeProtocol(newProtocol, newProtocol.newServerHandler());
     }
 
     private void protocolNotLoaded(String name) {
-
+        System.out.println("Protocol: " + name + " is not loaded! Closing connection!");
     }
 
     public static void load(Protocol protocol) {

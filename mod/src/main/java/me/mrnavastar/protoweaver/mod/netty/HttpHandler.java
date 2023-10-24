@@ -62,15 +62,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<Object> {
             response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
         }
 
-        // Write the response.
         ctx.write(response);
-
         return keepAlive;
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
-        ctx.close();
     }
 }
