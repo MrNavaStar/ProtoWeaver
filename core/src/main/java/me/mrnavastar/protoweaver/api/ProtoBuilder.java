@@ -9,7 +9,7 @@ import java.util.List;
 public class ProtoBuilder {
 
     private final String name;
-    private List<Class<? extends ProtoPacket>> packets = Collections.unmodifiableList(new ArrayList<>());
+    private List<Class<? extends ProtoPacket>> packets = new ArrayList<>();
     private Class<? extends ProtoPacketHandler> serverHandler;
     private Class<? extends ProtoPacketHandler> clientHandler;
 
@@ -45,6 +45,6 @@ public class ProtoBuilder {
     }
 
     public Protocol build() {
-        return new Protocol(name, packets, serverHandler, clientHandler);
+        return new Protocol(name, Collections.unmodifiableList(packets), serverHandler, clientHandler);
     }
 }

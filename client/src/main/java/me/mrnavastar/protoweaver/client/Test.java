@@ -6,7 +6,7 @@ public class Test {
 
     public static void main(String[] args) {
         ProtoWeaverClient client = new ProtoWeaverClient(ProtoMessage.getProtocol(), "localhost", 25565);
+        client.enableGzip();
         client.connect();
-        client.disconnect();
     }
 }

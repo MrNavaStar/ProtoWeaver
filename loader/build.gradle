@@ -9,6 +9,7 @@ group = project.maven_group
 
 repositories {
     maven { url 'https://jitpack.io' }
+    maven { url "https://api.modrinth.com/maven" }
     maven { url = 'https://maven.minecraftforge.net' }
 }
 
@@ -22,6 +23,7 @@ dependencies {
 
     // Dev Env
     //modImplementation "maven.modrinth:fabricproxy-lite:v2.6.0"
+    modImplementation("maven.modrinth:easy-eula:1.0.0")
     modImplementation "com.moandjiezana.toml:toml4j:0.7.2"
     implementation 'io.netty:netty-all:4.1.86.Final'
     implementation "org.bouncycastle:bcpkix-jdk15on:1.70"
