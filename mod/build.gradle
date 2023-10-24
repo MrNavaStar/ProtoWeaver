@@ -8,6 +8,7 @@ group = project.maven_group
 
 repositories {
     maven { url 'https://jitpack.io' }
+    maven { url = 'https://maven.minecraftforge.net' }
 }
 
 dependencies {
@@ -26,6 +27,9 @@ dependencies {
     modImplementation "com.moandjiezana.toml:toml4j:0.7.2"
     implementation 'io.netty:netty-all:4.1.86.Final'
     implementation "org.bouncycastle:bcpkix-jdk15on:1.70"
+    compileOnly "net.minecraftforge:javafmllanguage:${project.forge_version}"
+    compileOnly "net.minecraftforge:fmlloader:${project.forge_version}"
+
 }
 
 processResources {

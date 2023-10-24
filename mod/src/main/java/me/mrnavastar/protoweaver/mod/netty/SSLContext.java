@@ -6,7 +6,7 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 import javax.net.ssl.SSLException;
 import java.security.cert.CertificateException;
 
-public class SslContext {
+public class SSLContext {
 
     public static io.netty.handler.ssl.SslContext context;
 
