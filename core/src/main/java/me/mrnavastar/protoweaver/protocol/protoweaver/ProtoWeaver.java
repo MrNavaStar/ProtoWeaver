@@ -11,14 +11,13 @@ import java.util.HashMap;
 
 public class ProtoWeaver implements ProtoPacketHandler {
 
+    private static final HashMap<String, Protocol> loadedProtocols = new HashMap<>();
     @Getter
     private static final Protocol protocol = ProtoBuilder.protocol("protoweaver", "internal")
             .setServerHandler(ProtoWeaver.class)
             .setClientHandler(ProtoWeaver.class)
             .addPacket(Handshake.class)
             .build();
-
-    private static final HashMap<String, Protocol> loadedProtocols = new HashMap<>();
 
     static {
         load(protocol);
@@ -36,10 +35,7 @@ public class ProtoWeaver implements ProtoPacketHandler {
         }
 
         // Only respond if handshake from client
-        if (handshake.from(Handshake.Side.CLIENT)) {
-            connection.send(new Handshake(handshake.getProtocolName(), Handshake.Side.SERVER));
-        }
-
+        if (handshake.from(Handshake.Side.CLIENT)) connection.send(new Handshake(handshake.getProtocolName(), Handshake.Side.SERVER));
         connection.upgradeProtocol(newProtocol, newProtocol.newServerHandler());
     }
 
