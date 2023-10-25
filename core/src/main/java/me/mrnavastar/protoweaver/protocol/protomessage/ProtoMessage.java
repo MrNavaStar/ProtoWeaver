@@ -13,7 +13,7 @@ public class ProtoMessage implements ProtoPacketHandler {
 
     @Getter
     private static final Protocol protocol = ProtoBuilder.protocol("protoweaver", "proto-message")
-            .setCompression(CompressionType.GZIP)
+            .setCompression(CompressionType.BROTLI)
             .setServerHandler(ProtoMessage.class)
             .setClientHandler(ProtoMessage.class)
             .addPacket(Message.class)

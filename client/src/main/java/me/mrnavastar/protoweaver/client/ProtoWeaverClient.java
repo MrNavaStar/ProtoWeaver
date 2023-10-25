@@ -19,7 +19,7 @@ import me.mrnavastar.protoweaver.protocol.protoweaver.ProtoWeaver;
 public class ProtoWeaverClient {
 
     @Getter
-    private Protocol protocol;
+    private final Protocol protocol;
     @Getter
     private final String host;
     @Getter
@@ -81,11 +81,5 @@ public class ProtoWeaverClient {
 
     public void send(ProtoPacket packet) {
         if (connection != null) connection.send(packet);
-    }
-
-    public void upgradeProtocol(Protocol protocol) {
-        this.protocol = protocol;
-        ProtoWeaver.load(protocol);
-        if (connection != null) connection.upgradeProtocol(protocol, protocol.newClientHandler());
     }
 }
