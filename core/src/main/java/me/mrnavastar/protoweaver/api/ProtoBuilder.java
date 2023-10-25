@@ -1,5 +1,6 @@
 package me.mrnavastar.protoweaver.api;
 
+import io.netty.handler.codec.compression.Brotli;
 import me.mrnavastar.protoweaver.protocol.CompressionType;
 import me.mrnavastar.protoweaver.protocol.Protocol;
 
@@ -48,6 +49,24 @@ public class ProtoBuilder {
     }
 
     public ProtoBuilder setCompression(CompressionType type) {
+        switch (compression) {
+            case BROTLI -> {
+                if (Brotli.isAvailable()) break;
+                // Explain that brotli is missing
+                System.out.println("Brotli not found!");
+                System.exit(1);
+            }
+            case LZ4 -> {
+                try {
+                    Class.forName("net.jpountz.lz4.LZ4Compressor");
+                } catch (ClassNotFoundException e) {
+                    // Explain that LZ4 is missing
+                    System.out.println("LZ4 not found!");
+                    System.exit(1);
+                }
+            }
+        }
+
         compression = type;
         return this;
     }
@@ -58,7 +77,7 @@ public class ProtoBuilder {
     }
 
     public Protocol build() {
-        if (compression != CompressionType.NONE && compressionLevel == -37) compressionLevel = compression.getDefaultLevel();
+        if (compression != CompressionType.NONE) compressionLevel = compression.getDefaultLevel();
         return new Protocol(name, Collections.unmodifiableList(packets), serverHandler, clientHandler, compression, compressionLevel);
     }
 }
