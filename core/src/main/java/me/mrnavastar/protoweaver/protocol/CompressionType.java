@@ -4,10 +4,11 @@ import lombok.Getter;
 
 @Getter
 public enum CompressionType {
-    NONE(0),
+    NONE(-1),
     GZIP(6),
-    ZSTD(-1),
-    BROTLI(-1);
+    SNAPPY(-1),
+    BROTLI(-1),
+    LZ4(-1);
 
     private final int defaultLevel;
 

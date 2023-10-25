@@ -5,6 +5,7 @@ import me.mrnavastar.protoweaver.api.ProtoBuilder;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
 import me.mrnavastar.protoweaver.netty.ProtoConnection;
+import me.mrnavastar.protoweaver.protocol.CompressionType;
 import me.mrnavastar.protoweaver.protocol.Protocol;
 
 import java.util.HashMap;

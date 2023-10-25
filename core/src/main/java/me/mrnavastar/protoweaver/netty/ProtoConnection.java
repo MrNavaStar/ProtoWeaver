@@ -10,13 +10,10 @@ import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
 import me.mrnavastar.protoweaver.protocol.CompressionType;
 import me.mrnavastar.protoweaver.protocol.Protocol;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 public class ProtoConnection {
 
     private final ProtoPacketSender packetSender = new ProtoPacketSender(this);
     private final ProtoPacketDecoder packetDecoder = new ProtoPacketDecoder(this);
-    private final ConcurrentLinkedQueue<ProtoPacket> sendQue = new ConcurrentLinkedQueue<>();
     @Getter
     private Protocol protocol;
     @Getter
@@ -36,14 +33,13 @@ public class ProtoConnection {
         CompressionType compression = this.protocol.getCompression();
         if (protocol.getCompression().equals(compression)) return;
 
-        if (!compression.equals(CompressionType.NONE)) {
+        if (channel.pipeline().names().contains("compressionEncoder")) {
             channel.pipeline().remove("compressionEncoder");
             channel.pipeline().remove("compressionDecoder");
         }
 
         int level = protocol.getCompressionLevel();
-        if (level == -2) level = compression.getDefaultLevel();
-        switch (compression) {
+        switch (protocol.getCompression()) {
             case BROTLI -> {
                 channel.pipeline().addBefore("protoDecoder", "compressionEncoder", new BrotliEncoder(new Encoder.Parameters().setQuality(level)));
                 channel.pipeline().addAfter("compressionEncoder", "compressionDecoder", new BrotliDecoder());
@@ -52,8 +48,13 @@ public class ProtoConnection {
                 channel.pipeline().addBefore("protoDecoder", "compressionEncoder", ZlibCodecFactory.newZlibEncoder(ZlibWrapper.GZIP, level));
                 channel.pipeline().addAfter("compressionEncoder", "compressionDecoder", ZlibCodecFactory.newZlibDecoder(ZlibWrapper.GZIP));
             }
-            case ZSTD -> {
-
+            case SNAPPY -> {
+                channel.pipeline().addBefore("protoDecoder", "compressionEncoder", new SnappyFrameEncoder());
+                channel.pipeline().addAfter("compressionEncoder", "compressionDecoder", new SnappyFrameDecoder());
+            }
+            case LZ4 -> {
+                channel.pipeline().addBefore("protoDecoder", "compressionEncoder", new Lz4FrameEncoder(level > 0));
+                channel.pipeline().addAfter("compressionEncoder", "compressionDecoder", new Lz4FrameDecoder());
             }
         }
     }

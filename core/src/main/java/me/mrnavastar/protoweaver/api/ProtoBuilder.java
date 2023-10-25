@@ -14,7 +14,7 @@ public class ProtoBuilder {
     private Class<? extends ProtoPacketHandler> serverHandler;
     private Class<? extends ProtoPacketHandler> clientHandler;
     private CompressionType compression = CompressionType.NONE;
-    private int compressionLevel = -2;
+    private int compressionLevel = -37;
 
     public ProtoBuilder(String name) {
         this.name = name;
@@ -58,6 +58,7 @@ public class ProtoBuilder {
     }
 
     public Protocol build() {
+        if (compression != CompressionType.NONE && compressionLevel == -37) compressionLevel = compression.getDefaultLevel();
         return new Protocol(name, Collections.unmodifiableList(packets), serverHandler, clientHandler, compression, compressionLevel);
     }
 }
