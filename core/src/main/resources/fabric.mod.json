@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "protoweaver-core",
+  "version": "debug-build",
+  "name": "ProtoWeaver Core",
+  "description": "",
+  "authors": ["MrNavaStar"],
+  "contact": {
+  },
+  "license": "All-Rights-Reserved",
+  "environment": "*"
+}

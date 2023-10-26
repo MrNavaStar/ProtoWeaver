@@ -14,19 +14,18 @@ repositories {
 }
 
 dependencies {
-    implementation project(path: ':core', configuration: 'default')
+    include(implementation project(path: ':core', configuration: 'default'))
 
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
+    implementation "org.bouncycastle:bcpkix-jdk18on:1.76"
+    implementation 'io.netty:netty-all:4.1.97.Final'
+
     // Dev Env
-    //modImplementation "maven.modrinth:fabricproxy-lite:v2.6.0"
     modImplementation("maven.modrinth:easy-eula:1.0.0")
-    modImplementation "com.moandjiezana.toml:toml4j:0.7.2"
-    implementation 'io.netty:netty-all:4.1.86.Final'
-    implementation "org.bouncycastle:bcpkix-jdk15on:1.70"
     compileOnly "net.minecraftforge:javafmllanguage:${project.forge_version}"
     compileOnly "net.minecraftforge:fmlloader:${project.forge_version}"
 

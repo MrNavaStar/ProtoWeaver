@@ -28,8 +28,6 @@ public class ProtoWeaverClient {
     private ProtoConnection connection;
     private Thread thread;
 
-    private boolean ssl = false;
-
     public ProtoWeaverClient(Protocol protocol, String host, int port) {
         this.protocol = protocol;
         this.host = host;
@@ -48,10 +46,6 @@ public class ProtoWeaverClient {
 
                     @Override
                     public void initChannel(@NonNull SocketChannel ch) {
-                        if (ssl) {
-
-                        }
-
                         Protocol internal = ProtoWeaver.getProtocol();
                         connection = new ProtoConnection(internal, internal.newClientHandler(), ch.pipeline());
                     }

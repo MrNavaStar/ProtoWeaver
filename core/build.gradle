@@ -6,7 +6,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'io.netty:netty-all:4.1.86.Final'
+    implementation 'io.netty:netty-all:4.1.97.Final'
     implementation 'com.google.code.gson:gson:2.8.9'
     // Compression
     implementation 'com.aayushatharva.brotli4j:brotli4j:1.12.0'

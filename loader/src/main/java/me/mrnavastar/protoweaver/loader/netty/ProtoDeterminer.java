@@ -10,10 +10,10 @@ import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.ssl.SslHandler;
-import me.mrnavastar.protoweaver.util.ProtoConstants;
 import me.mrnavastar.protoweaver.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.protocol.Protocol;
 import me.mrnavastar.protoweaver.protocol.protoweaver.ProtoWeaver;
+import me.mrnavastar.protoweaver.util.ProtoConstants;
 
 import java.util.List;
 

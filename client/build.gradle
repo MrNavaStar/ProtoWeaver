@@ -8,6 +8,6 @@ repositories {
 dependencies {
     implementation project(path: ':core', configuration: 'default')
 
-    implementation 'io.netty:netty-all:4.1.86.Final'
+    implementation 'io.netty:netty-all:4.1.97.Final'
     implementation 'com.google.code.gson:gson:2.8.9'
 }

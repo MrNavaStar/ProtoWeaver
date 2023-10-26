@@ -29,6 +29,10 @@ public class ProtoConnection {
         setCompression(protocol);
     }
 
+    private void enabledSSL(Protocol protocol) {
+
+    }
+
     private void setCompression(Protocol protocol) {
         CompressionType compression = this.protocol.getCompression();
         if (protocol.getCompression().equals(compression)) return;
