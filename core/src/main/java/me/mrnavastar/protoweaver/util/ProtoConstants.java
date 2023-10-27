@@ -1,5 +1,8 @@
 package me.mrnavastar.protoweaver.util;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class ProtoConstants {
 
     public static final String PROTOWEAVER_NAME = "ProtoWeaver";

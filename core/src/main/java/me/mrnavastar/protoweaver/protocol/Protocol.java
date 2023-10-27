@@ -1,39 +1,45 @@
 package me.mrnavastar.protoweaver.protocol;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.SneakyThrows;
+import me.mrnavastar.protoweaver.api.ClientAuthHandler;
+import me.mrnavastar.protoweaver.api.ServerAuthHandler;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
 
 import java.util.List;
 
 @Getter
+@AllArgsConstructor
 public class Protocol {
     
     private final String name;
     private final List<Class<? extends ProtoPacket>> packets;
     private final Class<? extends ProtoPacketHandler> serverHandler;
     private final Class<? extends ProtoPacketHandler> clientHandler;
+    private final Class<? extends ServerAuthHandler> serverAuthHandler;
+    private final Class<? extends ClientAuthHandler> clientAuthHandler;
     private final CompressionType compression;
     private final int compressionLevel;
 
-    public Protocol(String name, List<Class<? extends ProtoPacket>> packets, Class<? extends ProtoPacketHandler> serverHandler, Class<? extends ProtoPacketHandler> clientHandler, CompressionType compression, int compressionLevel) {
-        this.name = name;
-        this.packets = packets;
-        this.serverHandler = serverHandler;
-        this.clientHandler = clientHandler;
-        this.compression = compression;
-        this.compressionLevel = compressionLevel;
+    @SneakyThrows
+    public ProtoPacketHandler newHandler(@NonNull Side side) {
+        return switch (side) {
+            case CLIENT -> clientHandler.getDeclaredConstructor().newInstance();
+            case SERVER -> serverHandler.getDeclaredConstructor().newInstance();
+        };
     }
 
     @SneakyThrows
-    public ProtoPacketHandler newClientHandler() {
-        return clientHandler.getConstructor().newInstance();
+    public ServerAuthHandler newServerAuthHandler() {
+        return serverAuthHandler.getDeclaredConstructor().newInstance();
     }
 
     @SneakyThrows
-    public ProtoPacketHandler newServerHandler() {
-        return serverHandler.getDeclaredConstructor().newInstance();
+    public ClientAuthHandler newClientAuthHandler() {
+        return clientAuthHandler.getDeclaredConstructor().newInstance();
     }
 
     @SneakyThrows
@@ -42,7 +48,7 @@ public class Protocol {
         return packets.get(packetID).getDeclaredConstructor().newInstance();
     }
 
-    public int getPacketId(ProtoPacket packet) {
+    public int getPacketId(@NonNull ProtoPacket packet) {
         return packets.indexOf(packet.getClass());
     }
 }

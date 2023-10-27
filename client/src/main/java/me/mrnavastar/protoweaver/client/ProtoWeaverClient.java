@@ -11,9 +11,10 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.Getter;
 import lombok.NonNull;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
+import me.mrnavastar.protoweaver.client.protocol.protoweaver.ClientHandler;
 import me.mrnavastar.protoweaver.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.protocol.Protocol;
-import me.mrnavastar.protoweaver.protocol.protoweaver.Handshake;
+import me.mrnavastar.protoweaver.protocol.Side;
 import me.mrnavastar.protoweaver.protocol.protoweaver.ProtoWeaver;
 
 public class ProtoWeaverClient {
@@ -46,15 +47,13 @@ public class ProtoWeaverClient {
 
                     @Override
                     public void initChannel(@NonNull SocketChannel ch) {
-                        Protocol internal = ProtoWeaver.getProtocol();
-                        connection = new ProtoConnection(internal, internal.newClientHandler(), ch.pipeline());
+                        connection = new ProtoConnection(ClientHandler.getClientProtocol(), protocol, Side.CLIENT, ch);
                     }
                 });
 
                 ChannelFuture f = b.connect(host, port).sync();
-                connection.send(new Handshake(protocol.getName(), Handshake.Side.CLIENT));
+                connection.getHandler().ready(connection);
                 f.channel().closeFuture().sync();
-
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             } finally {
@@ -64,7 +63,7 @@ public class ProtoWeaverClient {
 
         thread.start();
         // Block until connection is set up with the specified protocol
-        while (connection == null || !connection.getProtocol().getName().equals(protocol.getName())) Thread.onSpinWait();
+        while (connection == null || connection.isOpen() && !connection.getProtocol().getName().equals(protocol.getName())) Thread.onSpinWait();
     }
 
     public void disconnect() {

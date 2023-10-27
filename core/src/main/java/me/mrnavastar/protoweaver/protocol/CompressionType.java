@@ -1,18 +1,20 @@
 package me.mrnavastar.protoweaver.protocol;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public enum CompressionType {
-    NONE(-1),
+    NONE(),
     GZIP(6),
-    SNAPPY(-1),
-    BROTLI(-1),
-    LZ4(-1);
+    SNAPPY(),
+    BROTLI(),
+    LZ4();
 
     private final int defaultLevel;
 
-    CompressionType(int defaultLevel) {
-        this.defaultLevel = defaultLevel;
+    CompressionType() {
+        this.defaultLevel = -1;
     }
 }
