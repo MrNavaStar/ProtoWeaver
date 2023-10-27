@@ -11,13 +11,14 @@ import me.mrnavastar.protoweaver.protocol.CompressionType;
 import me.mrnavastar.protoweaver.protocol.Protocol;
 import me.mrnavastar.protoweaver.protocol.Side;
 
+import java.net.InetSocketAddress;
+
 public class ProtoConnection {
 
     private final ProtoPacketSender packetSender;
     private final ProtoPacketDecoder packetDecoder;
     @Getter
     private final Side side;
-
     private final Channel channel;
     @Getter
     private Protocol protocol;
@@ -80,6 +81,10 @@ public class ProtoConnection {
 
     public boolean isOpen() {
         return channel.isOpen();
+    }
+
+    public InetSocketAddress getAddress() {
+        return ((InetSocketAddress) channel.remoteAddress());
     }
 
     public ProtoPacketSender.Sender send(@NonNull ProtoPacket packet) {

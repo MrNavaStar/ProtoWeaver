@@ -60,12 +60,4 @@ public class ProtoPacketSender extends SimpleChannelInboundHandler<ProtoPacket> 
         buf.writeBytes(packetBuf); // Combine bufs
         return new Sender(ctx.writeAndFlush(buf));
     }
-
-    public void sendMagicBytes(ChannelHandlerContext ctx) {
-        System.out.println("magic");
-        ByteBuf buf = Unpooled.buffer();
-        buf.writeByte(0);
-        buf.writeByte(ProtoConstants.PROTOWEAVER_MAGIC_BYTE);
-        ctx.writeAndFlush(buf);
-    }
 }
