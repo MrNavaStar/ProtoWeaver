@@ -15,7 +15,8 @@ public class ProtoBuilder {
     private List<Class<? extends ProtoPacket>> packets = new ArrayList<>();
     private Class<? extends ProtoPacketHandler> serverHandler = null;
     private Class<? extends ProtoPacketHandler> clientHandler = null;
-    private Class<? extends ProtoAuthHandler> authHandler = null;
+    private Class<? extends ServerAuthHandler> serverAuthHandler = null;
+    private Class<? extends ClientAuthHandler> clientAuthHandler = null;
     private CompressionType compression = CompressionType.NONE;
     private int compressionLevel = -37;
 
@@ -45,8 +46,13 @@ public class ProtoBuilder {
         return this;
     }
 
-    public ProtoBuilder setAuthHandler(@NonNull Class<? extends ProtoAuthHandler> handler) {
-        this.authHandler = handler;
+    public ProtoBuilder setServerAuthHandler(@NonNull Class<? extends ServerAuthHandler> handler) {
+        this.serverAuthHandler = handler;
+        return this;
+    }
+
+    public ProtoBuilder setClientAuthHandler(@NonNull Class<? extends ClientAuthHandler> handler) {
+        this.clientAuthHandler = handler;
         return this;
     }
 
@@ -84,7 +90,7 @@ public class ProtoBuilder {
     }
 
     public Protocol build() {
-        if (compression != CompressionType.NONE) compressionLevel = compression.getDefaultLevel();
-        return new Protocol(name, Collections.unmodifiableList(packets), serverHandler, clientHandler, authHandler, compression, compressionLevel);
+        if (compression != CompressionType.NONE && compressionLevel == -37) compressionLevel = compression.getDefaultLevel();
+        return new Protocol(name, Collections.unmodifiableList(packets), serverHandler, clientHandler, serverAuthHandler, clientAuthHandler, compression, compressionLevel);
     }
 }

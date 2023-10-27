@@ -4,6 +4,7 @@ import lombok.Getter;
 import me.mrnavastar.protoweaver.api.ProtoBuilder;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
+import me.mrnavastar.protoweaver.api.ServerAuthHandler;
 import me.mrnavastar.protoweaver.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.protocol.Protocol;
 import me.mrnavastar.protoweaver.protocol.protoweaver.AuthStatus;
@@ -20,13 +21,16 @@ public class ServerHandler extends ProtoWeaver implements ProtoPacketHandler {
 
     private boolean authenticated = false;
     private Protocol nextProtocol = null;
+    private ServerAuthHandler authHandler = null;
 
     static {
         load(serverProtocol);
     }
 
     @Override
-    public void ready(ProtoConnection connection) {}
+    public void ready(ProtoConnection connection) {
+
+    }
 
     @Override
     public void handlePacket(ProtoConnection connection, ProtoPacket packet) {
@@ -40,17 +44,18 @@ public class ServerHandler extends ProtoWeaver implements ProtoPacketHandler {
             }
 
             // Check if protocol needs authentication
-            if (nextProtocol.getAuthHandler() == null) {
-                authenticated = true;
-            } else {
+            if (nextProtocol.getServerAuthHandler() != null) {
+                authHandler = nextProtocol.newServerAuthHandler();
                 connection.send(new AuthStatus(AuthStatus.Status.REQUIRED));
                 return;
             }
+
+            authenticated = true;
         }
 
         // Authenticate client
-        if (packet instanceof ClientSecret auth) {
-            authenticated = nextProtocol.newAuthHandler().handleAuth(auth.getSecret());
+        if (nextProtocol != null && packet instanceof ClientSecret auth) {
+            authenticated = authHandler.handleAuth(connection, auth.getSecret());
         }
 
         if (!authenticated) {

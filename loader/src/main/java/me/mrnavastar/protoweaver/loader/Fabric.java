@@ -1,6 +1,6 @@
 package me.mrnavastar.protoweaver.loader;
 
-import me.mrnavastar.protoweaver.loader.external.FabricProxyLite;
+import me.mrnavastar.protoweaver.loader.protocol.velocity.FabricProxyLite;
 import me.mrnavastar.protoweaver.loader.netty.SSLContext;
 import me.mrnavastar.protoweaver.protocol.protomessage.Message;
 import me.mrnavastar.protoweaver.protocol.protomessage.ProtoMessage;

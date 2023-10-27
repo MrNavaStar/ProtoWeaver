@@ -36,9 +36,8 @@ public class ProtoConnection {
         packetDecoder.setHandler(handler);
         this.channel = channel;
 
-        // Sender must be active first
-        channel.pipeline().addLast("protoSender", packetSender);
         channel.pipeline().addLast("protoDecoder", packetDecoder);
+        channel.pipeline().addLast("protoSender", packetSender);
         setCompression(protocol);
     }
 

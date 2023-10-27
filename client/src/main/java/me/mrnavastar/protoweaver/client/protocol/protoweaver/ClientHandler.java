@@ -1,6 +1,7 @@
 package me.mrnavastar.protoweaver.client.protocol.protoweaver;
 
 import lombok.Getter;
+import me.mrnavastar.protoweaver.api.ClientAuthHandler;
 import me.mrnavastar.protoweaver.api.ProtoBuilder;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
@@ -16,6 +17,7 @@ public class ClientHandler extends ProtoWeaver implements ProtoPacketHandler {
     @Getter
     private static final Protocol clientProtocol = ProtoBuilder.protocol(baseProtocol).setClientHandler(ClientHandler.class).build();
     private boolean authenticated = false;
+    private ClientAuthHandler authHandler = null;
 
     static {
         load(clientProtocol);
@@ -23,6 +25,7 @@ public class ClientHandler extends ProtoWeaver implements ProtoPacketHandler {
 
     @Override
     public void ready(ProtoConnection connection) {
+        if (connection.getNext().getClientAuthHandler() != null) authHandler = connection.getNext().newClientAuthHandler();
         connection.send(new ProtocolStatus(connection.getNext().getName(), ProtocolStatus.Status.START));
     }
 
@@ -44,11 +47,14 @@ public class ClientHandler extends ProtoWeaver implements ProtoPacketHandler {
 
         if (packet instanceof AuthStatus auth) {
             switch (auth.getStatus()) {
-                case OK -> {
-                    authenticated = true;
-                }
+                case OK -> authenticated = true;
                 case REQUIRED -> {
-                    connection.send(new ClientSecret("1234"));
+                    if (authHandler == null) {
+                        // Client protocol is unable to supply secret
+                        connection.disconnect();
+                        return;
+                    }
+                    connection.send(new ClientSecret(authHandler.getSecret()));
                 }
                 case DENIED -> {
                     // This client is not authorized to connect on this protocol
