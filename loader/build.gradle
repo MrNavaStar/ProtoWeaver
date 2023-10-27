@@ -26,6 +26,7 @@ dependencies {
 
     // Dev Env
     modImplementation("maven.modrinth:easy-eula:1.0.0")
+    modImplementation("maven.modrinth:fabricproxy-lite:v2.6.0")
     compileOnly "net.minecraftforge:javafmllanguage:${project.forge_version}"
     compileOnly "net.minecraftforge:fmlloader:${project.forge_version}"
 

@@ -3,6 +3,7 @@ package me.mrnavastar.protoweaver.protocol.protoweaver;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
+import me.mrnavastar.protoweaver.util.BufUtils;
 
 import java.nio.charset.StandardCharsets;
 
@@ -26,15 +27,13 @@ public class Handshake implements ProtoPacket {
 
     @Override
     public void encode(ByteBuf buf) {
-        buf.writeInt(protocolName.length());
-        buf.writeBytes(protocolName.getBytes(StandardCharsets.UTF_8));
+        BufUtils.writeString(buf, protocolName);
         buf.writeInt(side.ordinal());
     }
 
     @Override
     public void decode(ByteBuf buf) throws IndexOutOfBoundsException {
-        int len = buf.readInt();
-        protocolName = buf.readCharSequence(len, StandardCharsets.UTF_8).toString();
+        protocolName = BufUtils.readString(buf);
         side = Side.values()[buf.readInt()];
     }
 

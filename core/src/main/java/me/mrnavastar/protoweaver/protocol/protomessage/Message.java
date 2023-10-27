@@ -3,6 +3,7 @@ package me.mrnavastar.protoweaver.protocol.protomessage;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
+import me.mrnavastar.protoweaver.util.BufUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -24,19 +25,15 @@ public class Message implements ProtoPacket {
 
     @Override
     public void encode(ByteBuf buf) {
-        buf.writeInt(channel.length());
-        buf.writeBytes(channel.getBytes(StandardCharsets.UTF_8));
-        buf.writeInt(message.length());
-        buf.writeBytes(message.getBytes(StandardCharsets.UTF_8));
+        BufUtils.writeString(buf, channel);
+        BufUtils.writeString(buf, message);
         buf.writeLong(time.getTime());
     }
 
     @Override
     public void decode(ByteBuf buf) throws IndexOutOfBoundsException {
-        int channelLen = buf.readInt();
-        channel = buf.readCharSequence(channelLen, StandardCharsets.UTF_8).toString();
-        int messageLen = buf.readInt();
-        message = buf.readCharSequence(messageLen, StandardCharsets.UTF_8).toString();
+        channel = BufUtils.readString(buf);
+        message = BufUtils.readString(buf);
         time = new Date(buf.readLong());
     }
 }

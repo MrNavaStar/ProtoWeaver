@@ -12,8 +12,9 @@ public class ProtoBuilder {
 
     private final String name;
     private List<Class<? extends ProtoPacket>> packets = new ArrayList<>();
-    private Class<? extends ProtoPacketHandler> serverHandler;
-    private Class<? extends ProtoPacketHandler> clientHandler;
+    private Class<? extends ProtoPacketHandler> serverHandler = null;
+    private Class<? extends ProtoPacketHandler> clientHandler = null;
+    private Class<? extends ProtoAuthHandler> authHandler = null;
     private CompressionType compression = CompressionType.NONE;
     private int compressionLevel = -37;
 
@@ -43,12 +44,17 @@ public class ProtoBuilder {
         return this;
     }
 
+    public ProtoBuilder setAuthHandler(Class<? extends ProtoAuthHandler> handler) {
+        this.authHandler = handler;
+        return this;
+    }
+
     public <T extends ProtoPacket> ProtoBuilder addPacket(Class<T> packet) {
         packets.add(packet);
         return this;
     }
 
-    public ProtoBuilder setCompression(CompressionType type) {
+    public ProtoBuilder enableCompression(CompressionType type) {
         switch (compression) {
             case BROTLI -> {
                 if (Brotli.isAvailable()) break;
@@ -78,6 +84,6 @@ public class ProtoBuilder {
 
     public Protocol build() {
         if (compression != CompressionType.NONE) compressionLevel = compression.getDefaultLevel();
-        return new Protocol(name, Collections.unmodifiableList(packets), serverHandler, clientHandler, compression, compressionLevel);
+        return new Protocol(name, Collections.unmodifiableList(packets), serverHandler, clientHandler, authHandler, compression, compressionLevel);
     }
 }

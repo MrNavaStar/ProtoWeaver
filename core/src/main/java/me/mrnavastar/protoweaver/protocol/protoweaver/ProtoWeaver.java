@@ -11,35 +11,34 @@ import java.util.HashMap;
 
 public class ProtoWeaver implements ProtoPacketHandler {
 
-    private static final HashMap<String, Protocol> loadedProtocols = new HashMap<>();
+    protected static final HashMap<String, Protocol> loadedProtocols = new HashMap<>();
     @Getter
-    private static final Protocol protocol = ProtoBuilder.protocol("protoweaver", "internal")
+    protected static final Protocol protocol = ProtoBuilder.protocol("protoweaver", "internal")
             .setServerHandler(ProtoWeaver.class)
             .setClientHandler(ProtoWeaver.class)
-            .addPacket(Handshake.class)
+            .addPacket(ClientAuthResponse.class)
+            .addPacket(ServerAuthState.class)
+            .addPacket(UpgradeProtocol.class)
+            .addPacket(ProtocolResponse.class)
             .build();
-
-    static {
-        load(protocol);
-    }
 
     @Override
     public void handlePacket(ProtoConnection connection, ProtoPacket packet) {
-        if (!(packet instanceof Handshake handshake)) return;
+        if (!(packet instanceof UpgradeProtocol request)) return;
 
-        Protocol newProtocol = loadedProtocols.get(handshake.getProtocolName());
+        Protocol newProtocol = loadedProtocols.get(request.getProtocol());
         if (newProtocol == null) {
-            protocolNotLoaded(handshake.getProtocolName());
+            protocolNotLoaded(request.getProtocol());
             connection.disconnect();
             return;
         }
 
         // Only respond if handshake from client
-        if (handshake.from(Handshake.Side.CLIENT)) connection.send(new Handshake(handshake.getProtocolName(), Handshake.Side.SERVER));
+        //if (handshake.from(Handshake.Side.CLIENT)) connection.send(new Handshake(handshake.getProtocolName(), Handshake.Side.SERVER));
         connection.upgradeProtocol(newProtocol, newProtocol.newServerHandler());
     }
 
-    private void protocolNotLoaded(String name) {
+    protected void protocolNotLoaded(String name) {
         System.out.println("Protocol: " + name + " is not loaded! Closing connection!");
     }
 

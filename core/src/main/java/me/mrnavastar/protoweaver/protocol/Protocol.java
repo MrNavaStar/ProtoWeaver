@@ -2,6 +2,7 @@ package me.mrnavastar.protoweaver.protocol;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
+import me.mrnavastar.protoweaver.api.ProtoAuthHandler;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
 
@@ -14,14 +15,24 @@ public class Protocol {
     private final List<Class<? extends ProtoPacket>> packets;
     private final Class<? extends ProtoPacketHandler> serverHandler;
     private final Class<? extends ProtoPacketHandler> clientHandler;
+    private final Class<? extends ProtoAuthHandler> authHandler;
     private final CompressionType compression;
     private final int compressionLevel;
 
-    public Protocol(String name, List<Class<? extends ProtoPacket>> packets, Class<? extends ProtoPacketHandler> serverHandler, Class<? extends ProtoPacketHandler> clientHandler, CompressionType compression, int compressionLevel) {
+    public Protocol(
+            String name,
+            List<Class<? extends ProtoPacket>> packets,
+            Class<? extends ProtoPacketHandler> serverHandler,
+            Class<? extends ProtoPacketHandler> clientHandler,
+            Class<? extends ProtoAuthHandler> authHandler,
+            CompressionType compression,
+            int compressionLevel)
+    {
         this.name = name;
         this.packets = packets;
         this.serverHandler = serverHandler;
         this.clientHandler = clientHandler;
+        this.authHandler = authHandler;
         this.compression = compression;
         this.compressionLevel = compressionLevel;
     }
@@ -34,6 +45,11 @@ public class Protocol {
     @SneakyThrows
     public ProtoPacketHandler newServerHandler() {
         return serverHandler.getDeclaredConstructor().newInstance();
+    }
+
+    @SneakyThrows
+    public ProtoAuthHandler newAuthHandler() {
+        return authHandler.getDeclaredConstructor().newInstance();
     }
 
     @SneakyThrows

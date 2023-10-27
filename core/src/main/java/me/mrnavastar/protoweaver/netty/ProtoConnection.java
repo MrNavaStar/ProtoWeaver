@@ -29,7 +29,7 @@ public class ProtoConnection {
         setCompression(protocol);
     }
 
-    private void enabledSSL(Protocol protocol) {
+    private void enableSSL() {
 
     }
 
