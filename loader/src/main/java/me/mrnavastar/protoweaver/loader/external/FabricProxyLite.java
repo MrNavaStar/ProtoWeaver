@@ -7,7 +7,7 @@ public class FabricProxyLite {
 
     public static void init() {
         // FabricProxyLites config is initialized as a mixin plugin, so it's guaranteed to be loaded before protoweaver
-        loadedSecret = one.oktw.FabricProxyLite.config.getSecret();
+        //loadedSecret = one.oktw.FabricProxyLite.config.getSecret();
     }
 
     public static boolean validate(String secret) {

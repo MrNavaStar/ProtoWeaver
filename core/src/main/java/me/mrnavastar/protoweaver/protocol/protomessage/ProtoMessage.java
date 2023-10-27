@@ -1,6 +1,7 @@
 package me.mrnavastar.protoweaver.protocol.protomessage;
 
 import lombok.Getter;
+import me.mrnavastar.protoweaver.api.ProtoAuthHandler;
 import me.mrnavastar.protoweaver.api.ProtoBuilder;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
@@ -9,11 +10,12 @@ import me.mrnavastar.protoweaver.protocol.CompressionType;
 import me.mrnavastar.protoweaver.protocol.Protocol;
 import me.mrnavastar.protoweaver.util.Event;
 
-public class ProtoMessage implements ProtoPacketHandler {
+public class ProtoMessage implements ProtoPacketHandler, ProtoAuthHandler {
 
     @Getter
     private static final Protocol protocol = ProtoBuilder.protocol("protoweaver", "proto-message")
-            .enableCompression(CompressionType.SNAPPY)
+            //.enableCompression(CompressionType.SNAPPY)
+            //.setAuthHandler(ProtoMessage.class)
             .setServerHandler(ProtoMessage.class)
             .setClientHandler(ProtoMessage.class)
             .addPacket(Message.class)
@@ -30,6 +32,11 @@ public class ProtoMessage implements ProtoPacketHandler {
     public static final Event<MessageReceived> MESSAGE_RECEIVED = new Event<>(callbacks -> (connection, message) -> {
         callbacks.forEach(callback -> callback.trigger(connection, message));
     });
+
+    @Override
+    public boolean handleAuth(String key) {
+        return false;
+    }
 
     @FunctionalInterface
     public interface MessageReceived {

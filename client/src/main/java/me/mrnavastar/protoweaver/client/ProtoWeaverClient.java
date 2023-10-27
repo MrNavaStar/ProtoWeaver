@@ -47,13 +47,13 @@ public class ProtoWeaverClient {
 
                     @Override
                     public void initChannel(@NonNull SocketChannel ch) {
-                        connection = new ProtoConnection(ClientHandler.getClientProtocol(), Side.CLIENT, ch.pipeline());
+                        connection = new ProtoConnection(ClientHandler.getClientProtocol(), protocol, Side.CLIENT, ch);
                     }
                 });
 
                 ChannelFuture f = b.connect(host, port).sync();
+                connection.getHandler().ready(connection);
                 f.channel().closeFuture().sync();
-
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             } finally {
@@ -63,7 +63,7 @@ public class ProtoWeaverClient {
 
         thread.start();
         // Block until connection is set up with the specified protocol
-        while (connection == null || !connection.getProtocol().getName().equals(protocol.getName())) Thread.onSpinWait();
+        while (connection == null || connection.isOpen() && !connection.getProtocol().getName().equals(protocol.getName())) Thread.onSpinWait();
     }
 
     public void disconnect() {

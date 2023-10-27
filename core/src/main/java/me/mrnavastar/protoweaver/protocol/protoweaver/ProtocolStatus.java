@@ -14,6 +14,7 @@ public class ProtocolStatus implements ProtoPacket {
 
     public enum Status {
         MISSING,
+        START,
         UPGRADE
     }
 

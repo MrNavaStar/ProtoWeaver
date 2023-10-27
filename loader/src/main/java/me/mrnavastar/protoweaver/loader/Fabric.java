@@ -2,7 +2,6 @@ package me.mrnavastar.protoweaver.loader;
 
 import me.mrnavastar.protoweaver.loader.external.FabricProxyLite;
 import me.mrnavastar.protoweaver.loader.netty.SSLContext;
-import me.mrnavastar.protoweaver.loader.protocol.protoweaver.ServerHandler;
 import me.mrnavastar.protoweaver.protocol.protomessage.Message;
 import me.mrnavastar.protoweaver.protocol.protomessage.ProtoMessage;
 import me.mrnavastar.protoweaver.protocol.protoweaver.ProtoWeaver;
@@ -15,8 +14,6 @@ public class Fabric implements DedicatedServerModInitializer {
     public void onInitializeServer() {
         SSLContext.init();
         FabricLoader.getInstance().getModContainer("fabricproxy-lite").ifPresent(modContainer -> FabricProxyLite.init());
-
-        ProtoWeaver.load(ServerHandler.getServerProtocol());
 
         // Testing
         ProtoWeaver.load(ProtoMessage.getProtocol());

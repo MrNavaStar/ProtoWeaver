@@ -15,15 +15,14 @@ public class ProtoPacketDecoder extends ByteToMessageDecoder {
     private final ProtoConnection connection;
     private ProtoPacketHandler handler;
 
-    public ProtoPacketDecoder(ProtoConnection connection, Side side) {
+    public ProtoPacketDecoder(ProtoConnection connection) {
         this.connection = connection;
-        this.handler = connection.getProtocol().newHandler(side);
     }
 
-    @Override
+    /*@Override
     public void handlerAdded(ChannelHandlerContext ctx) {
         handler.ready(connection);
-    }
+    }*/
 
     public void setHandler(ProtoPacketHandler handler) {
         this.handler = handler;

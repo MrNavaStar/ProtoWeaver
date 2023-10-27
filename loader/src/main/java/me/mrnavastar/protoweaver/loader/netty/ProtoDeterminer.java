@@ -46,7 +46,7 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> list) throws Exception {
+    protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> list) {
         if (buf.readableBytes() < 5) {
             return;
         }
@@ -81,7 +81,7 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
         }
         // Downstream protocol
         if (isProtoWeaver(magic1, magic2)) {
-            ProtoConnection connection = new ProtoConnection(ServerHandler.getServerProtocol(), Side.SERVER, pipeline);
+            new ProtoConnection(ServerHandler.getServerProtocol(), null, Side.SERVER, ctx.channel());
             buf.readerIndex(2);
             pipeline.remove(this);
             return;

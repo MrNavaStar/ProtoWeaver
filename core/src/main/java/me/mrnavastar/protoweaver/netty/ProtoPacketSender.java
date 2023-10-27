@@ -2,10 +2,14 @@ package me.mrnavastar.protoweaver.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import lombok.RequiredArgsConstructor;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.protocol.Side;
+import me.mrnavastar.protoweaver.protocol.protoweaver.ProtocolStatus;
 import me.mrnavastar.protoweaver.util.ProtoConstants;
 
 public class ProtoPacketSender extends SimpleChannelInboundHandler<ProtoPacket> {
@@ -21,7 +25,6 @@ public class ProtoPacketSender extends SimpleChannelInboundHandler<ProtoPacket> 
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
-        if (side.equals(Side.CLIENT)) sendMagicBytes(ctx);
         this.ctx = ctx;
     }
 
@@ -30,25 +33,36 @@ public class ProtoPacketSender extends SimpleChannelInboundHandler<ProtoPacket> 
         send(msg);
     }
 
+    @RequiredArgsConstructor
+    public static class Sender {
+
+        private final ChannelFuture future;
+
+        public void disconnect() {
+            future.addListener(ChannelFutureListener.CLOSE);
+        }
+    }
+
     // Done with two bufs to prevent the user from messing with the internal data
-    public void send(ProtoPacket packet) {
+    public Sender send(ProtoPacket packet) {
         ByteBuf buf = Unpooled.buffer();
         ByteBuf packetBuf = Unpooled.buffer();
         packet.encode(packetBuf);
 
-        // Add ProtoWeaver identifiers if client sends to server
-        /*if (packet instanceof ProtocolStatus status && handshake.from(Handshake.Side.CLIENT)) {
-            buf.writeByte(0);
+        // Add ProtoWeaver magic bytes if client sends to server
+        if (side.equals(Side.CLIENT) && packet instanceof ProtocolStatus status && status.getStatus().equals(ProtocolStatus.Status.START)) {
+            buf.writeByte(0); // Fake out minecraft packet len
             buf.writeByte(ProtoConstants.PROTOWEAVER_MAGIC_BYTE);
-        }*/
+        }
 
         buf.writeInt(packetBuf.readableBytes()); // Packet Len
         buf.writeInt(connection.getProtocol().getPacketId(packet)); // Packet Id
         buf.writeBytes(packetBuf); // Combine bufs
-        ctx.writeAndFlush(buf);
+        return new Sender(ctx.writeAndFlush(buf));
     }
 
     public void sendMagicBytes(ChannelHandlerContext ctx) {
+        System.out.println("magic");
         ByteBuf buf = Unpooled.buffer();
         buf.writeByte(0);
         buf.writeByte(ProtoConstants.PROTOWEAVER_MAGIC_BYTE);

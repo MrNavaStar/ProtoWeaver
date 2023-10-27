@@ -17,9 +17,13 @@ public class ClientHandler extends ProtoWeaver implements ProtoPacketHandler {
     private static final Protocol clientProtocol = ProtoBuilder.protocol(baseProtocol).setClientHandler(ClientHandler.class).build();
     private boolean authenticated = false;
 
+    static {
+        load(clientProtocol);
+    }
+
     @Override
     public void ready(ProtoConnection connection) {
-        connection.send(new ProtocolStatus("???", ProtocolStatus.Status.UPGRADE));
+        connection.send(new ProtocolStatus(connection.getNext().getName(), ProtocolStatus.Status.START));
     }
 
     @Override
@@ -32,7 +36,7 @@ public class ClientHandler extends ProtoWeaver implements ProtoPacketHandler {
                 }
                 case UPGRADE -> {
                     if (!authenticated) return;
-                    connection.upgradeProtocol();
+                    connection.upgradeProtocol(connection.getNext());
                 }
             }
             return;
@@ -44,7 +48,7 @@ public class ClientHandler extends ProtoWeaver implements ProtoPacketHandler {
                     authenticated = true;
                 }
                 case REQUIRED -> {
-                    connection.send(new ClientSecret("????????????"));
+                    connection.send(new ClientSecret("1234"));
                 }
                 case DENIED -> {
                     // This client is not authorized to connect on this protocol

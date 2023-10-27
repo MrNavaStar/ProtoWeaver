@@ -2,11 +2,11 @@ package me.mrnavastar.protoweaver.netty;
 
 import com.aayushatharva.brotli4j.encoder.Encoder;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.compression.*;
 import lombok.Getter;
 import lombok.NonNull;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
+import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
 import me.mrnavastar.protoweaver.protocol.CompressionType;
 import me.mrnavastar.protoweaver.protocol.Protocol;
 import me.mrnavastar.protoweaver.protocol.Side;
@@ -17,26 +17,29 @@ public class ProtoConnection {
     private final ProtoPacketDecoder packetDecoder;
     @Getter
     private final Side side;
-    @Getter
+
     private final Channel channel;
     @Getter
     private Protocol protocol;
+    @Getter
+    private final Protocol next;
+    @Getter
+    private ProtoPacketHandler handler;
 
-    public ProtoConnection(@NonNull Protocol protocol, @NonNull Side side, @NonNull ChannelPipeline pipeline) {
+    public ProtoConnection(@NonNull Protocol protocol, Protocol next, @NonNull Side side, @NonNull Channel channel) {
         this.side = side;
-        this.packetSender = new ProtoPacketSender(this, side);
-        this.packetDecoder = new ProtoPacketDecoder(this, side);
-        this.channel = pipeline.channel();
         this.protocol = protocol;
+        this.handler = protocol.newHandler(side);
+        this.next = next;
+        this.packetSender = new ProtoPacketSender(this, side);
+        this.packetDecoder = new ProtoPacketDecoder(this);
+        packetDecoder.setHandler(handler);
+        this.channel = channel;
 
         // Sender must be active first
-        pipeline.addLast("protoSender", packetSender);
-        pipeline.addLast("protoDecoder", packetDecoder);
+        channel.pipeline().addLast("protoSender", packetSender);
+        channel.pipeline().addLast("protoDecoder", packetDecoder);
         setCompression(protocol);
-    }
-
-    private void enableSSL() {
-
     }
 
     private void setCompression(@NonNull Protocol protocol) {
@@ -70,16 +73,21 @@ public class ProtoConnection {
     }
 
     public void upgradeProtocol(@NonNull Protocol protocol) {
-        packetDecoder.setHandler(protocol.newHandler(side));
         setCompression(protocol);
         this.protocol = protocol;
+        this.handler = protocol.newHandler(side);
+        packetDecoder.setHandler(handler);
     }
 
-    public void send(@NonNull ProtoPacket packet) {
-        packetSender.send(packet);
+    public boolean isOpen() {
+        return channel.isOpen();
+    }
+
+    public ProtoPacketSender.Sender send(@NonNull ProtoPacket packet) {
+        return packetSender.send(packet);
     }
 
     public void disconnect() {
-        channel.close();
+        if (isOpen()) channel.close();
     }
 }
