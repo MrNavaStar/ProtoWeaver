@@ -1,6 +1,8 @@
 package me.mrnavastar.protoweaver.protocol;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.mrnavastar.protoweaver.api.ProtoAuthHandler;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
@@ -9,6 +11,7 @@ import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
 import java.util.List;
 
 @Getter
+@AllArgsConstructor
 public class Protocol {
     
     private final String name;
@@ -19,32 +22,12 @@ public class Protocol {
     private final CompressionType compression;
     private final int compressionLevel;
 
-    public Protocol(
-            String name,
-            List<Class<? extends ProtoPacket>> packets,
-            Class<? extends ProtoPacketHandler> serverHandler,
-            Class<? extends ProtoPacketHandler> clientHandler,
-            Class<? extends ProtoAuthHandler> authHandler,
-            CompressionType compression,
-            int compressionLevel)
-    {
-        this.name = name;
-        this.packets = packets;
-        this.serverHandler = serverHandler;
-        this.clientHandler = clientHandler;
-        this.authHandler = authHandler;
-        this.compression = compression;
-        this.compressionLevel = compressionLevel;
-    }
-
     @SneakyThrows
-    public ProtoPacketHandler newClientHandler() {
-        return clientHandler.getConstructor().newInstance();
-    }
-
-    @SneakyThrows
-    public ProtoPacketHandler newServerHandler() {
-        return serverHandler.getDeclaredConstructor().newInstance();
+    public ProtoPacketHandler newHandler(@NonNull Side side) {
+        return switch (side) {
+            case CLIENT -> clientHandler.getDeclaredConstructor().newInstance();
+            case SERVER -> serverHandler.getDeclaredConstructor().newInstance();
+        };
     }
 
     @SneakyThrows
@@ -58,7 +41,7 @@ public class Protocol {
         return packets.get(packetID).getDeclaredConstructor().newInstance();
     }
 
-    public int getPacketId(ProtoPacket packet) {
+    public int getPacketId(@NonNull ProtoPacket packet) {
         return packets.indexOf(packet.getClass());
     }
 }

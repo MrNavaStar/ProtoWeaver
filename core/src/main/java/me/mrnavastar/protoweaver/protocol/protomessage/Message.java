@@ -2,20 +2,19 @@ package me.mrnavastar.protoweaver.protocol.protomessage;
 
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.util.BufUtils;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Getter
+@NoArgsConstructor
 public class Message implements ProtoPacket {
 
     private String channel;
     private String message;
     private Date time;
-
-    public Message() {}
 
     public Message(String channel, String message) {
         this.channel = channel;

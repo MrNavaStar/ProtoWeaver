@@ -11,9 +11,10 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.Getter;
 import lombok.NonNull;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
+import me.mrnavastar.protoweaver.client.protocol.protoweaver.ClientHandler;
 import me.mrnavastar.protoweaver.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.protocol.Protocol;
-import me.mrnavastar.protoweaver.protocol.protoweaver.Handshake;
+import me.mrnavastar.protoweaver.protocol.Side;
 import me.mrnavastar.protoweaver.protocol.protoweaver.ProtoWeaver;
 
 public class ProtoWeaverClient {
@@ -46,13 +47,11 @@ public class ProtoWeaverClient {
 
                     @Override
                     public void initChannel(@NonNull SocketChannel ch) {
-                        Protocol internal = ProtoWeaver.getProtocol();
-                        connection = new ProtoConnection(internal, internal.newClientHandler(), ch.pipeline());
+                        connection = new ProtoConnection(ClientHandler.getClientProtocol(), Side.CLIENT, ch.pipeline());
                     }
                 });
 
                 ChannelFuture f = b.connect(host, port).sync();
-                connection.send(new Handshake(protocol.getName(), Handshake.Side.CLIENT));
                 f.channel().closeFuture().sync();
 
             } catch (InterruptedException e) {

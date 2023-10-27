@@ -6,6 +6,7 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
 import me.mrnavastar.protoweaver.protocol.Protocol;
+import me.mrnavastar.protoweaver.protocol.Side;
 
 import java.util.List;
 
@@ -14,8 +15,14 @@ public class ProtoPacketDecoder extends ByteToMessageDecoder {
     private final ProtoConnection connection;
     private ProtoPacketHandler handler;
 
-    public ProtoPacketDecoder(ProtoConnection connection) {
+    public ProtoPacketDecoder(ProtoConnection connection, Side side) {
         this.connection = connection;
+        this.handler = connection.getProtocol().newHandler(side);
+    }
+
+    @Override
+    public void handlerAdded(ChannelHandlerContext ctx) {
+        handler.ready(connection);
     }
 
     public void setHandler(ProtoPacketHandler handler) {

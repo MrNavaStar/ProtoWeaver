@@ -5,27 +5,33 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.compression.*;
 import lombok.Getter;
+import lombok.NonNull;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
-import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
 import me.mrnavastar.protoweaver.protocol.CompressionType;
 import me.mrnavastar.protoweaver.protocol.Protocol;
+import me.mrnavastar.protoweaver.protocol.Side;
 
 public class ProtoConnection {
 
-    private final ProtoPacketSender packetSender = new ProtoPacketSender(this);
-    private final ProtoPacketDecoder packetDecoder = new ProtoPacketDecoder(this);
+    private final ProtoPacketSender packetSender;
+    private final ProtoPacketDecoder packetDecoder;
     @Getter
-    private Protocol protocol;
+    private final Side side;
     @Getter
     private final Channel channel;
+    @Getter
+    private Protocol protocol;
 
-    public ProtoConnection(Protocol protocol, ProtoPacketHandler handler, ChannelPipeline pipeline) {
-        this.protocol = protocol;
+    public ProtoConnection(@NonNull Protocol protocol, @NonNull Side side, @NonNull ChannelPipeline pipeline) {
+        this.side = side;
+        this.packetSender = new ProtoPacketSender(this, side);
+        this.packetDecoder = new ProtoPacketDecoder(this, side);
         this.channel = pipeline.channel();
-        packetDecoder.setHandler(handler);
+        this.protocol = protocol;
 
-        pipeline.addLast("protoDecoder", packetDecoder);
+        // Sender must be active first
         pipeline.addLast("protoSender", packetSender);
+        pipeline.addLast("protoDecoder", packetDecoder);
         setCompression(protocol);
     }
 
@@ -33,7 +39,7 @@ public class ProtoConnection {
 
     }
 
-    private void setCompression(Protocol protocol) {
+    private void setCompression(@NonNull Protocol protocol) {
         CompressionType compression = this.protocol.getCompression();
         if (protocol.getCompression().equals(compression)) return;
 
@@ -63,13 +69,13 @@ public class ProtoConnection {
         }
     }
 
-    public void upgradeProtocol(Protocol protocol, ProtoPacketHandler handler) {
-        packetDecoder.setHandler(handler);
+    public void upgradeProtocol(@NonNull Protocol protocol) {
+        packetDecoder.setHandler(protocol.newHandler(side));
         setCompression(protocol);
         this.protocol = protocol;
     }
 
-    public void send(ProtoPacket packet) {
+    public void send(@NonNull ProtoPacket packet) {
         packetSender.send(packet);
     }
 
