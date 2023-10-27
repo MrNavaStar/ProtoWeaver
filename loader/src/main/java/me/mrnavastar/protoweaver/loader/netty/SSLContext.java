@@ -3,10 +3,12 @@ package me.mrnavastar.protoweaver.loader.netty;
 import io.netty.handler.codec.http2.Http2SecurityUtil;
 import io.netty.handler.ssl.*;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
+import lombok.experimental.UtilityClass;
 
 import javax.net.ssl.SSLException;
 import java.security.cert.CertificateException;
 
+@UtilityClass
 public class SSLContext {
 
     public static io.netty.handler.ssl.SslContext context;

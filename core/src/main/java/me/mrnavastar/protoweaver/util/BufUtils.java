@@ -1,9 +1,11 @@
 package me.mrnavastar.protoweaver.util;
 
 import io.netty.buffer.ByteBuf;
+import lombok.experimental.UtilityClass;
 
 import java.nio.charset.StandardCharsets;
 
+@UtilityClass
 public class BufUtils {
 
     public static void writeString(ByteBuf buf, String s) {
