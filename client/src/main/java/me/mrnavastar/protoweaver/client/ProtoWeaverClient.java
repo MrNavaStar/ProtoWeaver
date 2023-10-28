@@ -8,14 +8,23 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.FingerprintTrustManagerFactory;
+import io.netty.handler.ssl.util.FingerprintTrustManagerFactoryBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import lombok.Getter;
 import lombok.NonNull;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
+import me.mrnavastar.protoweaver.client.netty.ProtoTrustManagerFactory;
 import me.mrnavastar.protoweaver.client.protocol.protoweaver.ClientHandler;
 import me.mrnavastar.protoweaver.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.protocol.Protocol;
 import me.mrnavastar.protoweaver.protocol.Side;
 import me.mrnavastar.protoweaver.protocol.protoweaver.ProtoWeaver;
+
+import javax.net.ssl.SSLException;
+import java.security.NoSuchAlgorithmException;
 
 public class ProtoWeaverClient {
 
@@ -37,8 +46,16 @@ public class ProtoWeaverClient {
     }
 
     public void connect() {
+        FingerprintTrustManagerFactory trustManagerFactory = FingerprintTrustManagerFactory
+                .builder(FingerprintTrustManagerFactory.getDefaultAlgorithm())
+                .fingerprints("1234")
+                .build();
+
         thread = new Thread(() -> {
             try {
+                final SslContext sslCtx = SslContextBuilder.forClient()
+                    .trustManager(trustManagerFactory).build();
+
                 Bootstrap b = new Bootstrap();
                 b.group(workerGroup);
                 b.channel(NioSocketChannel.class);
@@ -48,6 +65,7 @@ public class ProtoWeaverClient {
 
                     @Override
                     public void initChannel(@NonNull SocketChannel ch) {
+                        ch.pipeline().addLast(sslCtx.newHandler(ch.alloc(), host, port));
                         connection = new ProtoConnection(ClientHandler.getClientProtocol(), protocol, Side.CLIENT, ch);
                     }
                 });
@@ -55,7 +73,7 @@ public class ProtoWeaverClient {
                 ChannelFuture f = b.connect(host, port).sync();
                 connection.getHandler().ready(connection);
                 f.channel().closeFuture().sync();
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | SSLException e) {
                 throw new RuntimeException(e);
             } finally {
                 disconnect();

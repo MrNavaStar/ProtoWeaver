@@ -9,7 +9,11 @@ import io.netty.handler.codec.compression.ZlibWrapper;
 import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslHandler;
+import io.netty.handler.ssl.util.SelfSignedCertificate;
+import lombok.SneakyThrows;
 import me.mrnavastar.protoweaver.loader.protocol.protoweaver.ServerHandler;
 import me.mrnavastar.protoweaver.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.protocol.Protocol;
@@ -46,6 +50,7 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
     }
 
     @Override
+    @SneakyThrows
     protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> list) {
         if (buf.readableBytes() < 5) {
             return;
@@ -81,6 +86,12 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
         }
         // Downstream protocol
         if (isProtoWeaver(magic1, magic2)) {
+            // Enforce ssl. Not sure if this should be configurable
+            if (!sslEnabled) {
+                ctx.close();
+                return;
+            }
+
             new ProtoConnection(ServerHandler.getServerProtocol(), null, Side.SERVER, ctx.channel());
             buf.readerIndex(2);
             pipeline.remove(this);
