@@ -11,20 +11,16 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.FingerprintTrustManagerFactory;
-import io.netty.handler.ssl.util.FingerprintTrustManagerFactoryBuilder;
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import lombok.Getter;
 import lombok.NonNull;
-import me.mrnavastar.protoweaver.api.ProtoPacket;
-import me.mrnavastar.protoweaver.client.netty.ProtoTrustManagerFactory;
 import me.mrnavastar.protoweaver.client.protocol.protoweaver.ClientHandler;
-import me.mrnavastar.protoweaver.netty.ProtoConnection;
-import me.mrnavastar.protoweaver.protocol.Protocol;
-import me.mrnavastar.protoweaver.protocol.Side;
-import me.mrnavastar.protoweaver.protocol.protoweaver.ProtoWeaver;
+import me.mrnavastar.protoweaver.api.ProtoPacket;
+import me.mrnavastar.protoweaver.core.netty.ProtoConnection;
+import me.mrnavastar.protoweaver.api.protocol.Protocol;
+import me.mrnavastar.protoweaver.api.protocol.Side;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtoWeaver;
 
 import javax.net.ssl.SSLException;
-import java.security.NoSuchAlgorithmException;
 
 public class ProtoWeaverClient {
 

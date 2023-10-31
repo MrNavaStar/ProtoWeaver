@@ -14,6 +14,7 @@ repositories {
 }
 
 dependencies {
+    include(implementation project(path: ':api', configuration: 'default'))
     include(implementation project(path: ':core', configuration: 'default'))
 
     // To change the versions see the gradle.properties file

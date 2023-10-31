@@ -1,16 +1,16 @@
 package me.mrnavastar.protoweaver.client.protocol.protoweaver;
 
 import lombok.Getter;
-import me.mrnavastar.protoweaver.api.ClientAuthHandler;
+import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
 import me.mrnavastar.protoweaver.api.ProtoBuilder;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
-import me.mrnavastar.protoweaver.netty.ProtoConnection;
-import me.mrnavastar.protoweaver.protocol.Protocol;
-import me.mrnavastar.protoweaver.protocol.protoweaver.AuthStatus;
-import me.mrnavastar.protoweaver.protocol.protoweaver.ClientSecret;
-import me.mrnavastar.protoweaver.protocol.protoweaver.ProtoWeaver;
-import me.mrnavastar.protoweaver.protocol.protoweaver.ProtocolStatus;
+import me.mrnavastar.protoweaver.api.protocol.Protocol;
+import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.AuthStatus;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtoWeaver;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtocolStatus;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.ClientSecret;
 
 public class ClientHandler extends ProtoWeaver implements ProtoPacketHandler {
 
@@ -24,13 +24,17 @@ public class ClientHandler extends ProtoWeaver implements ProtoPacketHandler {
     }
 
     @Override
-    public void ready(ProtoConnection connection) {
+    public void ready(ProtoConnection c) {
+        me.mrnavastar.protoweaver.core.netty.ProtoConnection connection = (me.mrnavastar.protoweaver.core.netty.ProtoConnection) c;
+
         if (connection.getNext().getClientAuthHandler() != null) authHandler = connection.getNext().newClientAuthHandler();
         connection.send(new ProtocolStatus(connection.getNext().getName(), ProtocolStatus.Status.START));
     }
 
     @Override
-    public void handlePacket(ProtoConnection connection, ProtoPacket packet) {
+    public void handlePacket(ProtoConnection c, ProtoPacket packet) {
+        me.mrnavastar.protoweaver.core.netty.ProtoConnection connection = (me.mrnavastar.protoweaver.core.netty.ProtoConnection) c;
+
         if (packet instanceof ProtocolStatus status) {
             switch (status.getStatus()) {
                 case MISSING -> {

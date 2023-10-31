@@ -1,6 +1,6 @@
 package me.mrnavastar.protoweaver.loader.protocol.velocity;
 
-import me.mrnavastar.protoweaver.protocol.velocity.VelocityAuth;
+import me.mrnavastar.protoweaver.api.protocol.velocity.VelocityAuth;
 
 public class FabricProxyLite {
 

@@ -6,6 +6,8 @@ repositories {
 }
 
 dependencies {
+    implementation project(path: ':api', configuration: 'default')
+
     implementation 'io.netty:netty-all:4.1.97.Final'
     implementation 'com.google.code.gson:gson:2.8.9'
     // Compression

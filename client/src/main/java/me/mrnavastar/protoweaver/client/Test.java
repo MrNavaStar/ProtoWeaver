@@ -1,7 +1,7 @@
 package me.mrnavastar.protoweaver.client;
 
-import me.mrnavastar.protoweaver.protocol.protomessage.Message;
-import me.mrnavastar.protoweaver.protocol.protomessage.ProtoMessage;
+import me.mrnavastar.protoweaver.api.protocol.protomessage.Message;
+import me.mrnavastar.protoweaver.api.protocol.protomessage.ProtoMessage;
 
 public class Test {
 

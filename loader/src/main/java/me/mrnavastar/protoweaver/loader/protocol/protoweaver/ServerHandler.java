@@ -4,13 +4,13 @@ import lombok.Getter;
 import me.mrnavastar.protoweaver.api.ProtoBuilder;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
-import me.mrnavastar.protoweaver.api.ServerAuthHandler;
-import me.mrnavastar.protoweaver.netty.ProtoConnection;
-import me.mrnavastar.protoweaver.protocol.Protocol;
-import me.mrnavastar.protoweaver.protocol.protoweaver.AuthStatus;
-import me.mrnavastar.protoweaver.protocol.protoweaver.ClientSecret;
-import me.mrnavastar.protoweaver.protocol.protoweaver.ProtoWeaver;
-import me.mrnavastar.protoweaver.protocol.protoweaver.ProtocolStatus;
+import me.mrnavastar.protoweaver.api.auth.ServerAuthHandler;
+import me.mrnavastar.protoweaver.api.protocol.Protocol;
+import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.AuthStatus;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtoWeaver;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtocolStatus;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.ClientSecret;
 
 public class ServerHandler extends ProtoWeaver implements ProtoPacketHandler {
 

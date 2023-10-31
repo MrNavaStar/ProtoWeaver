@@ -9,17 +9,12 @@ import io.netty.handler.codec.compression.ZlibWrapper;
 import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslHandler;
-import io.netty.handler.ssl.util.SelfSignedCertificate;
 import lombok.SneakyThrows;
+import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.loader.protocol.protoweaver.ServerHandler;
-import me.mrnavastar.protoweaver.netty.ProtoConnection;
-import me.mrnavastar.protoweaver.protocol.Protocol;
-import me.mrnavastar.protoweaver.protocol.Side;
-import me.mrnavastar.protoweaver.protocol.protoweaver.ProtoWeaver;
-import me.mrnavastar.protoweaver.util.ProtoConstants;
+import me.mrnavastar.protoweaver.core.netty.ProtoConnection;
+import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 
 import java.util.List;
 
