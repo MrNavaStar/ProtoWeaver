@@ -1,6 +1,6 @@
 package me.mrnavastar.protoweaver.core.util;
 
-// No idea how this works, Robbed from https://codegolf.stackexchange.com/questions/59670/the-drunken-bishop
+// Robbed from https://codegolf.stackexchange.com/questions/59670/the-drunken-bishop
 public class DrunkenBishop {
 
     // Returns a randomart image that represents the given fingerprint

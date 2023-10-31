@@ -64,8 +64,8 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
         if (!(sslEnabled || gzipEnabled)) for (String handler : minecraftHandlers) pipeline.remove(handler);
 
         // Upstream protocol
-        if (SSLContext.context != null && enableSSL(buf)) {
-            pipeline.addLast("ssl", SSLContext.context.newHandler(ctx.alloc()));
+        if (SSLContext.getContext() != null && enableSSL(buf)) {
+            pipeline.addLast("ssl", SSLContext.getContext().newHandler(ctx.alloc()));
             pipeline.addLast("sslProtoDeterminer", new ProtoDeterminer(true, gzipEnabled));
             pipeline.remove(this);
             return;

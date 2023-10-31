@@ -13,6 +13,7 @@ public class Fabric implements DedicatedServerModInitializer {
 
     @Override
     public void onInitializeServer() {
+        SSLContext.genKeys();
         SSLContext.init();
         FabricLoader.getInstance().getModContainer("fabricproxy-lite").ifPresent(modContainer -> FabricProxyLite.init());
 
@@ -22,7 +23,5 @@ public class Fabric implements DedicatedServerModInitializer {
             System.out.println(message.getMessage());
             connection.send(new Message("pog", "bigger pog"));
         });
-
-        System.out.println(DrunkenBishop.parse("37:e4:ed:2d:48:38:4a:0a:f3:45:6d:d9:17:6b:bd:9d"));
     }
 }
