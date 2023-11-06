@@ -1,6 +1,7 @@
 package me.mrnavastar.protoweaver.loader.netty;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -17,22 +18,12 @@ import me.mrnavastar.protoweaver.core.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 
 import java.util.List;
+import java.util.Map;
 
 public class ProtoDeterminer extends ByteToMessageDecoder {
 
     private final boolean sslEnabled;
     private final boolean gzipEnabled;
-    private static final String[] minecraftHandlers = {
-            "timeout",
-            "legacy_query",
-            "splitter",
-            "decoder",
-            "prepender",
-            "encoder",
-            "unbundler",
-            "bundler",
-            "packet_handler"
-    };
 
     public ProtoDeterminer() {
         this.sslEnabled = false;
@@ -61,7 +52,12 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
         }
 
         // Not a player - clear the pipeline
-        if (!(sslEnabled || gzipEnabled)) for (String handler : minecraftHandlers) pipeline.remove(handler);
+        if (!(sslEnabled || gzipEnabled)) {
+            for (Map.Entry<String, ChannelHandler> handler : pipeline.toMap().entrySet()) {
+                if (handler.getKey().equals("protoDeterminer")) continue;
+                pipeline.remove(handler.getValue());
+            }
+        }
 
         // Upstream protocol
         if (SSLContext.getContext() != null && enableSSL(buf)) {
