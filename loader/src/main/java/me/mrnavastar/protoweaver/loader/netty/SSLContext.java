@@ -34,11 +34,11 @@ public class SSLContext {
 
     @Getter
     private static io.netty.handler.ssl.SslContext context;
-    private static final File privateKey = new File("./protoweaver/keys/private.pem");
-    private static final File cert = new File("./protoweaver/keys/cert.pem");
+    private static final File privateKey = new File("./config/protoweaver/keys/private.pem");
+    private static final File cert = new File("./config/protoweaver/keys/cert.pem");
 
     @SneakyThrows
-    public static void init() {
+    public static void initContext() {
         context = SslContextBuilder.forServer(cert, privateKey)
             .sslProvider(OpenSsl.isAvailable() ? SslProvider.OPENSSL : SslProvider.JDK)
             .ciphers(Http2SecurityUtil.CIPHERS, SupportedCipherSuiteFilter.INSTANCE)
@@ -81,33 +81,19 @@ public class SSLContext {
     private static X509Certificate genCert(KeyPair keyPair) throws OperatorCreationException, CertificateException, IOException {
         Provider bcProvider = new BouncyCastleProvider();
         Security.addProvider(bcProvider);
+        X500Name dnName = new X500Name("CN=PROTOWEAVER");
 
         long now = System.currentTimeMillis();
         Date startDate = new Date(now);
-
-        X500Name dnName = new X500Name("CN=PROTOWEAVER");
-        BigInteger certSerialNumber = new BigInteger(Long.toString(now)); // <-- Using the current timestamp as the certificate serial number
-
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(startDate);
-        calendar.add(Calendar.YEAR, 1); // <-- 1 Yr validity
-
+        calendar.add(Calendar.YEAR, 999);
         Date endDate = calendar.getTime();
 
-        String signatureAlgorithm = "SHA256WithRSA"; // <-- Use appropriate signature algorithm based on your keyPair algorithm.
-
-        ContentSigner contentSigner = new JcaContentSignerBuilder(signatureAlgorithm).build(keyPair.getPrivate());
-
-        JcaX509v3CertificateBuilder certBuilder = new JcaX509v3CertificateBuilder(dnName, certSerialNumber, startDate, endDate, dnName, keyPair.getPublic());
-
-        // Extensions --------------------------
-
-        // Basic Constraints
-        BasicConstraints basicConstraints = new BasicConstraints(true); // <-- true for CA, false for EndEntity
-
-        certBuilder.addExtension(new ASN1ObjectIdentifier("2.5.29.19"), true, basicConstraints); // Basic Constraints is usually marked as critical.
-
-        // -------------------------------------
+        ContentSigner contentSigner = new JcaContentSignerBuilder("SHA256WithRSA").build(keyPair.getPrivate());
+        JcaX509v3CertificateBuilder certBuilder = new JcaX509v3CertificateBuilder(dnName, new BigInteger(Long.toString(now)), startDate, endDate, dnName, keyPair.getPublic());
+        BasicConstraints basicConstraints = new BasicConstraints(true);
+        certBuilder.addExtension(new ASN1ObjectIdentifier("2.5.29.19"), true, basicConstraints);
 
         return new JcaX509CertificateConverter().setProvider(bcProvider).getCertificate(certBuilder.build(contentSigner));
     }

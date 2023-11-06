@@ -24,7 +24,7 @@ public class ClientHandler extends ProtoWeaver implements ProtoPacketHandler {
     }
 
     @Override
-    public void ready(ProtoConnection c) {
+    public void onReady(ProtoConnection c) {
         me.mrnavastar.protoweaver.core.netty.ProtoConnection connection = (me.mrnavastar.protoweaver.core.netty.ProtoConnection) c;
 
         if (connection.getNext().getClientAuthHandler() != null) authHandler = connection.getNext().newClientAuthHandler();

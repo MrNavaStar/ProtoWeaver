@@ -8,6 +8,7 @@ import net.minecraftforge.fml.common.Mod;
 public class Forge {
 
     public Forge() {
-        SSLContext.init();
+        SSLContext.genKeys();
+        SSLContext.initContext();
     }
 }

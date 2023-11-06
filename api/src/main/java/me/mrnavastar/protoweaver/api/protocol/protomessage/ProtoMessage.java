@@ -23,9 +23,6 @@ public class ProtoMessage implements ProtoPacketHandler {
             .build();
 
     @Override
-    public void ready(ProtoConnection connection) {}
-
-    @Override
     public void handlePacket(ProtoConnection connection, ProtoPacket packet) {
         if (packet instanceof Message message) MESSAGE_RECEIVED.getInvoker().trigger(connection, message);
     }

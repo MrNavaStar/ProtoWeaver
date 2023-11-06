@@ -28,11 +28,6 @@ public class ServerHandler extends ProtoWeaver implements ProtoPacketHandler {
     }
 
     @Override
-    public void ready(ProtoConnection connection) {
-
-    }
-
-    @Override
     public void handlePacket(ProtoConnection connection, ProtoPacket packet) {
         if (packet instanceof ProtocolStatus upgrade && upgrade.getStatus().equals(ProtocolStatus.Status.START)) {
             // Check if protocol loaded

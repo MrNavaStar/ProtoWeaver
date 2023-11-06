@@ -10,7 +10,13 @@ public interface ProtoPacketHandler {
      * This function is called once the connection is ready to start receiving packets.
      * @param connection The current connection.
      */
-    void ready(ProtoConnection connection);
+    default void onReady(ProtoConnection connection) {}
+
+    /**
+     * This function is called when the connection is closed.
+     * @param connection The closed connection.
+     */
+    default void onDisconnect(ProtoConnection connection) {}
 
     /**
      * This function is called everytime a packet is received on your protocol.

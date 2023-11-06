@@ -10,14 +10,14 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.util.FingerprintTrustManagerFactory;
 import lombok.Getter;
 import lombok.NonNull;
-import me.mrnavastar.protoweaver.client.protocol.protoweaver.ClientHandler;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
-import me.mrnavastar.protoweaver.core.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
+import me.mrnavastar.protoweaver.client.netty.ProtoTrustManager;
+import me.mrnavastar.protoweaver.client.protocol.protoweaver.ClientHandler;
+import me.mrnavastar.protoweaver.core.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtoWeaver;
 
 import javax.net.ssl.SSLException;
@@ -32,25 +32,21 @@ public class ProtoWeaverClient {
     private final int port;
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
     private ProtoConnection connection;
+    private final ProtoTrustManager trustManager;
     private Thread thread;
 
     public ProtoWeaverClient(Protocol protocol, String host, int port) {
         this.protocol = protocol;
         this.host = host;
         this.port = port;
+        this.trustManager = new ProtoTrustManager(host, port);
         ProtoWeaver.load(protocol);
     }
 
     public void connect() {
-        FingerprintTrustManagerFactory trustManagerFactory = FingerprintTrustManagerFactory
-                .builder(FingerprintTrustManagerFactory.getDefaultAlgorithm())
-                .fingerprints("1234")
-                .build();
-
         thread = new Thread(() -> {
             try {
-                final SslContext sslCtx = SslContextBuilder.forClient()
-                    .trustManager(trustManagerFactory).build();
+                SslContext sslCtx = SslContextBuilder.forClient().trustManager(trustManager.getTm()).build();
 
                 Bootstrap b = new Bootstrap();
                 b.group(workerGroup);
@@ -67,7 +63,7 @@ public class ProtoWeaverClient {
                 });
 
                 ChannelFuture f = b.connect(host, port).sync();
-                connection.getHandler().ready(connection);
+                connection.getHandler().onReady(connection);
                 f.channel().closeFuture().sync();
             } catch (InterruptedException | SSLException e) {
                 throw new RuntimeException(e);
