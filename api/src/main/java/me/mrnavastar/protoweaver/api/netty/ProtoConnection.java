@@ -21,10 +21,10 @@ public interface ProtoConnection {
     void disconnect();
 
     /**
-     * Get the address of the connection. Check {@link InetSocketAddress} for more information.
+     * Get the remote address of the connection. Check {@link InetSocketAddress} for more information.
      * @return {@link InetSocketAddress}
      */
-    InetSocketAddress getAddress();
+    InetSocketAddress getRemoteAddress();
 
     /**
      * Sends a {@link ProtoPacket} to the connected peer.

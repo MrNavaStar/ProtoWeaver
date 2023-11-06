@@ -33,7 +33,7 @@ public class ProtoConnection implements me.mrnavastar.protoweaver.api.netty.Prot
         this.protocol = protocol;
         this.handler = protocol.newHandler(side);
         this.next = next;
-        this.packetSender = new ProtoPacketSender(this, side);
+        this.packetSender = new ProtoPacketSender(this);
         this.packetDecoder = new ProtoPacketDecoder(this);
         packetDecoder.setHandler(handler);
         this.channel = channel;
@@ -78,13 +78,14 @@ public class ProtoConnection implements me.mrnavastar.protoweaver.api.netty.Prot
         this.protocol = protocol;
         this.handler = protocol.newHandler(side);
         packetDecoder.setHandler(handler);
+        this.handler.onReady(this);
     }
 
     public boolean isOpen() {
         return channel.isOpen();
     }
 
-    public InetSocketAddress getAddress() {
+    public InetSocketAddress getRemoteAddress() {
         return ((InetSocketAddress) channel.remoteAddress());
     }
 

@@ -13,12 +13,10 @@ import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 public class ProtoPacketSender extends SimpleChannelInboundHandler<ProtoPacket> {
 
     private final ProtoConnection connection;
-    private final Side side;
     private ChannelHandlerContext ctx;
 
-    public ProtoPacketSender(ProtoConnection connection, Side side) {
+    public ProtoPacketSender(ProtoConnection connection) {
         this.connection = connection;
-        this.side = side;
     }
 
     @Override
@@ -38,7 +36,7 @@ public class ProtoPacketSender extends SimpleChannelInboundHandler<ProtoPacket> 
         packet.encode(packetBuf);
 
         // Add ProtoWeaver magic bytes if client sends to server
-        if (side.equals(Side.CLIENT) && packet instanceof ProtocolStatus status && status.getStatus().equals(ProtocolStatus.Status.START)) {
+        if (connection.getSide().equals(Side.CLIENT) && packet instanceof ProtocolStatus status && status.getStatus().equals(ProtocolStatus.Status.START)) {
             buf.writeByte(0); // Fake out minecraft packet len
             buf.writeByte(ProtoConstants.PROTOWEAVER_MAGIC_BYTE);
         }

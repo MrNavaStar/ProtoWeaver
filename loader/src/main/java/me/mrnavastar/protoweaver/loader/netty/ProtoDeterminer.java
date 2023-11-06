@@ -134,4 +134,10 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
             magic1 == 'T' && magic2 == 'R' || // TRACE
             magic1 == 'C' && magic2 == 'O';   // CONNECT
     }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        // Client rejected us :( very sad add some sad logging here
+        System.out.println("PAAAin");
+    }
 }

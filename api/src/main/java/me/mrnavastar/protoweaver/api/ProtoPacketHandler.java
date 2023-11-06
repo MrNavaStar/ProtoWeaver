@@ -7,7 +7,7 @@ import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
  */
 public interface ProtoPacketHandler {
     /**
-     * This function is called once the connection is ready to start receiving packets.
+     * This function is called once the connection is ready to start sending/receiving packets.
      * @param connection The current connection.
      */
     default void onReady(ProtoConnection connection) {}

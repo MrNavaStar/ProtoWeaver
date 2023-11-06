@@ -5,6 +5,7 @@ import io.netty.util.internal.EmptyArrays;
 import io.netty.util.internal.StringUtil;
 import lombok.Cleanup;
 import lombok.Getter;
+import me.mrnavastar.protoweaver.core.util.DrunkenBishop;
 
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -46,15 +47,15 @@ public class ProtoTrustManager {
 
         @Override
         public void checkClientTrusted(X509Certificate[] chain, String s) throws CertificateException {
-            checkTrusted("client", chain);
+            checkTrusted(chain);
         }
 
         @Override
         public void checkServerTrusted(X509Certificate[] chain, String s) throws CertificateException {
-            checkTrusted("server", chain);
+            checkTrusted(chain);
         }
 
-        private void checkTrusted(String type, X509Certificate[] chain) throws CertificateException {
+        private void checkTrusted(X509Certificate[] chain) throws CertificateException {
             X509Certificate cert = chain[0];
             byte[] fingerprint = fingerprint(cert);
             if (trusted == null) {
@@ -70,7 +71,7 @@ public class ProtoTrustManager {
             }
 
             if (Arrays.equals(trusted, fingerprint)) return;
-            throw new CertificateException(type + " certificate with unknown fingerprint: " + cert.getSubjectDN());
+            throw new CertificateException("protoweaver-client-cert-error:" + hostId + ":" + StringUtil.toHexString(trusted) + "!=" + StringUtil.toHexString(fingerprint));
         }
 
         private byte[] fingerprint(X509Certificate cert) throws CertificateEncodingException {

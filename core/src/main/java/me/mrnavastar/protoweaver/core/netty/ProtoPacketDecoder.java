@@ -6,7 +6,12 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
+import me.mrnavastar.protoweaver.core.util.DrunkenBishop;
 
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLHandshakeException;
+import java.security.cert.CertificateException;
+import java.util.Arrays;
 import java.util.List;
 
 public class ProtoPacketDecoder extends ByteToMessageDecoder {
@@ -17,11 +22,6 @@ public class ProtoPacketDecoder extends ByteToMessageDecoder {
     public ProtoPacketDecoder(ProtoConnection connection) {
         this.connection = connection;
     }
-
-    /*@Override
-    public void handlerAdded(ChannelHandlerContext ctx) {
-        handler.ready(connection);
-    }*/
 
     public void setHandler(ProtoPacketHandler handler) {
         this.handler = handler;
@@ -54,5 +54,24 @@ public class ProtoPacketDecoder extends ByteToMessageDecoder {
 
     private void failedToDecodePacket(Protocol protocol, int packetID, Class<? extends ProtoPacket> packetClass) {
 
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        String message = cause.getMessage();
+        String[] parts = message.split(":");
+
+        if (parts[1].contains("protoweaver-client-cert-error")) {
+            String[] fingerprints = parts[4].split("!=");
+
+            System.out.println(" Saved Fingerprint:     Server Fingerprint:");
+            System.out.println(DrunkenBishop.inlineImages(DrunkenBishop.parse(fingerprints[0]), DrunkenBishop.parse(fingerprints[1])));
+            System.err.println(
+                "Failed to connect to: " + parts[2] + ":" + parts[3] +
+                "\nServer SSL fingerprint does not match saved fingerprint! This could be a MITM ATTACK!\n" +
+                " - https://en.wikipedia.org/wiki/Man-in-the-middle_attack\n" +
+                "If you've reset your server configuration recently, you can probably ignore this and reset/remove the \"protoweaver_hosts\" file.\n");
+            connection.disconnect();
+        }
     }
 }
