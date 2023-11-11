@@ -35,12 +35,16 @@ public class ProtoWeaverClient {
     private final ProtoTrustManager trustManager;
     private Thread thread;
 
-    public ProtoWeaverClient(Protocol protocol, String host, int port) {
+    public ProtoWeaverClient(Protocol protocol, String host, int port, String hostsFile) {
         this.protocol = protocol;
         this.host = host;
         this.port = port;
-        this.trustManager = new ProtoTrustManager(host, port);
+        this.trustManager = new ProtoTrustManager(host, port, hostsFile);
         ProtoWeaver.load(protocol);
+    }
+
+    public ProtoWeaverClient(Protocol protocol, String host, int port) {
+        this(protocol, host, port, "./protoweaver_hosts");
     }
 
     public void connect() {

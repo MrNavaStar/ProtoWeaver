@@ -22,7 +22,7 @@ import java.util.Arrays;
  */
 public class ProtoTrustManager {
 
-    private static final File hostsFile = new File("./protoweaver_hosts");
+    private final File hostsFile;
     private static final FastThreadLocal<MessageDigest> tlmd;
 
     static {
@@ -85,7 +85,8 @@ public class ProtoTrustManager {
         }
     };
 
-    public ProtoTrustManager(String host, int port) {
+    public ProtoTrustManager(String host, int port, String file) {
+        hostsFile = new File(file);
         this.hostId = host + ":" + port;
         if (!hostsFile.exists()) return;
 
