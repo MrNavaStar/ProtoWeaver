@@ -1,10 +1,10 @@
 package me.mrnavastar.protoweaver.loader;
 
-import me.mrnavastar.protoweaver.loader.protocol.velocity.FabricProxyLite;
-import me.mrnavastar.protoweaver.loader.netty.SSLContext;
 import me.mrnavastar.protoweaver.api.protocol.protomessage.Message;
 import me.mrnavastar.protoweaver.api.protocol.protomessage.ProtoMessage;
 import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtoWeaver;
+import me.mrnavastar.protoweaver.loader.netty.SSLContext;
+import me.mrnavastar.protoweaver.loader.protocol.velocity.FabricProxyLite;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 

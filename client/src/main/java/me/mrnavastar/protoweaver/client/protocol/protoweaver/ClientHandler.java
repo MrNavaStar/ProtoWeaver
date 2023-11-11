@@ -11,6 +11,7 @@ import me.mrnavastar.protoweaver.core.protocol.protoweaver.AuthStatus;
 import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtoWeaver;
 import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtocolStatus;
 import me.mrnavastar.protoweaver.core.protocol.protoweaver.ClientSecret;
+import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
 public class ClientHandler extends ProtoWeaver implements ProtoPacketHandler {
 
@@ -38,11 +39,17 @@ public class ClientHandler extends ProtoWeaver implements ProtoPacketHandler {
         if (packet instanceof ProtocolStatus status) {
             switch (status.getStatus()) {
                 case MISSING -> {
-                    // Protocol is missing on server
+                    ProtoLogger.error("Protocol is not loaded on server. Closing connection.");
                     connection.disconnect();
                 }
                 case UPGRADE -> {
                     if (!authenticated) return;
+                    if (!connection.getNext().getName().equals(status.getProtocol())) {
+                        protocolNotLoaded(status.getProtocol());
+                        connection.send(new ProtocolStatus(status.getProtocol(), ProtocolStatus.Status.MISSING)).disconnect();
+                        return;
+                    }
+
                     connection.upgradeProtocol(connection.getNext());
                 }
             }
@@ -54,14 +61,14 @@ public class ClientHandler extends ProtoWeaver implements ProtoPacketHandler {
                 case OK -> authenticated = true;
                 case REQUIRED -> {
                     if (authHandler == null) {
-                        // Client protocol is unable to supply secret
+                        ProtoLogger.error("Client protocol has not defined an auth handler, but the server requires auth. Closing connection.");
                         connection.disconnect();
                         return;
                     }
                     connection.send(new ClientSecret(authHandler.getSecret()));
                 }
                 case DENIED -> {
-                    // This client is not authorized to connect on this protocol
+                    ProtoLogger.error("Client was denied access by the server. Closing connection.");
                     connection.disconnect();
                 }
             }

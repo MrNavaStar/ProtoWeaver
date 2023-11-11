@@ -5,7 +5,6 @@ import io.netty.util.internal.EmptyArrays;
 import io.netty.util.internal.StringUtil;
 import lombok.Cleanup;
 import lombok.Getter;
-import me.mrnavastar.protoweaver.core.util.DrunkenBishop;
 
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -63,7 +62,7 @@ public class ProtoTrustManager {
 
                 try {
                     @Cleanup BufferedWriter writer = new BufferedWriter(new FileWriter(hostsFile));
-                    writer.append(hostId).append("=").append(StringUtil.toHexString(fingerprint));
+                    writer.append("\n").append(hostId).append("=").append(StringUtil.toHexString(fingerprint));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -93,6 +92,8 @@ public class ProtoTrustManager {
         try {
             @Cleanup BufferedReader reader = new BufferedReader(new FileReader(hostsFile));
             for (String line : reader.lines().toArray(String[]::new)) {
+                line = line.replace(" ", "");
+
                 if (line.startsWith(hostId)) {
                     trusted = StringUtil.decodeHexDump(line.split("=")[1]);
                     break;

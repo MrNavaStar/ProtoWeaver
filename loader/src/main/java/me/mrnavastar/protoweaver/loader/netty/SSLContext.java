@@ -6,6 +6,7 @@ import lombok.Cleanup;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.asn1.x500.X500Name;
@@ -13,6 +14,7 @@ import org.bouncycastle.asn1.x509.BasicConstraints;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
@@ -56,25 +58,19 @@ public class SSLContext {
     public static void genKeys() {
         if (privateKey.exists() && cert.exists()) return;
 
-        // Gen
+        ProtoLogger.info("Generating SSL Keys");
+
         KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
         kpg.initialize(2048);
         KeyPair kp = kpg.generateKeyPair();
-        PrivateKeyInfo info = PrivateKeyInfo.getInstance(kp.getPrivate().getEncoded());
         X509Certificate certificate = genCert(kp);
 
-        // Save Private
         privateKey.getParentFile().mkdirs();
-        @Cleanup BufferedWriter privateWriter = new BufferedWriter(new FileWriter(privateKey));
-        privateWriter.write("-----BEGIN RSA PRIVATE KEY-----\n"
-                        + Base64.getMimeEncoder().encodeToString(info.getEncoded())
-                        + "\n-----END RSA PRIVATE KEY-----");
+        @Cleanup JcaPEMWriter privateWriter = new JcaPEMWriter(new FileWriter(privateKey));
+        privateWriter.writeObject(kp.getPrivate());
 
-        // Save Cert
-        @Cleanup BufferedWriter certWriter = new BufferedWriter(new FileWriter(cert));
-        certWriter.write("-----BEGIN CERTIFICATE-----\n"
-                        + Base64.getMimeEncoder().encodeToString(certificate.getEncoded())
-                        + "\n-----END CERTIFICATE-----");
+        @Cleanup JcaPEMWriter certWriter = new JcaPEMWriter(new FileWriter(cert));
+        certWriter.writeObject(certificate);
     }
 
     // From https://stackoverflow.com/questions/29852290/self-signed-x509-certificate-with-bouncy-castle-in-java

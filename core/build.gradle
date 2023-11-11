@@ -8,6 +8,8 @@ repositories {
 dependencies {
     implementation project(path: ':api', configuration: 'default')
 
+    implementation "org.apache.logging.log4j:log4j-api:2.12.4"
+    implementation 'org.apache.logging.log4j:log4j-core:2.12.4'
     implementation 'io.netty:netty-all:4.1.97.Final'
     implementation 'com.google.code.gson:gson:2.8.9'
     // Compression

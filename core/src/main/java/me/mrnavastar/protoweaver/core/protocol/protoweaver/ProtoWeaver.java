@@ -3,6 +3,7 @@ package me.mrnavastar.protoweaver.core.protocol.protoweaver;
 import lombok.extern.java.Log;
 import me.mrnavastar.protoweaver.api.ProtoBuilder;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
+import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
 @Log
 public class ProtoWeaver extends me.mrnavastar.protoweaver.api.ProtoWeaver {
@@ -14,6 +15,6 @@ public class ProtoWeaver extends me.mrnavastar.protoweaver.api.ProtoWeaver {
             .build();
 
     protected void protocolNotLoaded(String name) {
-        log.warning("Protocol: " + name + " is not loaded! Closing connection!");
+        ProtoLogger.warn("Protocol: " + name + " is not loaded! Closing connection!");
     }
 }

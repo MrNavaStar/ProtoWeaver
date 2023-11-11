@@ -13,6 +13,7 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.ssl.SslHandler;
 import lombok.SneakyThrows;
 import me.mrnavastar.protoweaver.api.protocol.Side;
+import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 import me.mrnavastar.protoweaver.loader.protocol.protoweaver.ServerHandler;
 import me.mrnavastar.protoweaver.core.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.core.util.ProtoConstants;
@@ -23,16 +24,13 @@ import java.util.Map;
 public class ProtoDeterminer extends ByteToMessageDecoder {
 
     private final boolean sslEnabled;
-    private final boolean gzipEnabled;
 
     public ProtoDeterminer() {
         this.sslEnabled = false;
-        this.gzipEnabled = false;
     }
 
-    public ProtoDeterminer(boolean sslEnabled, boolean gzipEnabled) {
+    public ProtoDeterminer(boolean sslEnabled) {
         this.sslEnabled = sslEnabled;
-        this.gzipEnabled = gzipEnabled;
     }
 
     @Override
@@ -52,7 +50,7 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
         }
 
         // Not a player - clear the pipeline
-        if (!(sslEnabled || gzipEnabled)) {
+        if (!(sslEnabled)) {
             for (Map.Entry<String, ChannelHandler> handler : pipeline.toMap().entrySet()) {
                 if (handler.getKey().equals("protoDeterminer")) continue;
                 pipeline.remove(handler.getValue());
@@ -62,19 +60,11 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
         // Upstream protocol
         if (SSLContext.getContext() != null && enableSSL(buf)) {
             pipeline.addLast("ssl", SSLContext.getContext().newHandler(ctx.alloc()));
-            pipeline.addLast("sslProtoDeterminer", new ProtoDeterminer(true, gzipEnabled));
+            pipeline.addLast("sslProtoDeterminer", new ProtoDeterminer(true));
             pipeline.remove(this);
             return;
         }
 
-        // Upstream protocol
-        if (enableGzip(magic1, magic2)) {
-            pipeline.addLast("compressionEncoder", ZlibCodecFactory.newZlibEncoder(ZlibWrapper.GZIP));
-            pipeline.addLast("compressionDecoder", ZlibCodecFactory.newZlibDecoder(ZlibWrapper.GZIP));
-            pipeline.addLast("gzipProtoDeterminer", new ProtoDeterminer(sslEnabled, true));
-            pipeline.remove(this);
-            return;
-        }
         // Downstream protocol
         if (isProtoWeaver(magic1, magic2)) {
             // Enforce ssl. Not sure if this should be configurable
@@ -109,11 +99,6 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
         return SslHandler.isEncrypted(buf);
     }
 
-    private boolean enableGzip(int magic1, int magic2) {
-        if (gzipEnabled) return false;
-        return magic1 == 31 && magic2 == 139;
-    }
-
     private boolean isProtoWeaver(int magic1, int magic2) {
         return magic1 == 0 && magic2 == ProtoConstants.PROTOWEAVER_MAGIC_BYTE;
     }
@@ -133,7 +118,7 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        // Client rejected us :( very sad add some sad logging here
-        System.out.println("PAAAin");
+        ProtoLogger.warn("Client rejected ssl certificate. Closing connection");
+        ctx.close();
     }
 }
