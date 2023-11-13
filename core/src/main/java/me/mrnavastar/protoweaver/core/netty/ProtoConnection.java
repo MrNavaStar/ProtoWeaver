@@ -24,15 +24,12 @@ public class ProtoConnection implements me.mrnavastar.protoweaver.api.netty.Prot
     @Getter
     private Protocol protocol;
     @Getter
-    private final Protocol next;
-    @Getter
     private ProtoPacketHandler handler;
 
-    public ProtoConnection(@NonNull Protocol protocol, Protocol next, @NonNull Side side, @NonNull Channel channel) {
+    public ProtoConnection(@NonNull Protocol protocol, @NonNull Side side, @NonNull Channel channel) {
         this.side = side;
         this.protocol = protocol;
         this.handler = protocol.newHandler(side);
-        this.next = next;
         this.packetSender = new ProtoPacketSender(this);
         this.packetDecoder = new ProtoPacketDecoder(this);
         packetDecoder.setHandler(handler);

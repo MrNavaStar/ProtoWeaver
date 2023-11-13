@@ -1,19 +1,21 @@
 version = project.mod_version
 group = project.maven_group
 
-repositories {
-    maven { url 'https://jitpack.io' }
-}
-
 dependencies {
-    implementation project(path: ':api', configuration: 'default')
+    shadow project(path: ':api', configuration: 'shadow')
 
-    implementation "org.apache.logging.log4j:log4j-api:2.12.4"
-    implementation 'org.apache.logging.log4j:log4j-core:2.12.4'
-    implementation 'io.netty:netty-all:4.1.97.Final'
-    implementation 'com.google.code.gson:gson:2.8.9'
+    shadow "org.apache.logging.log4j:log4j-api:2.12.4"
+    shadow 'org.apache.logging.log4j:log4j-core:2.12.4'
+
     // Compression
-    implementation 'com.aayushatharva.brotli4j:brotli4j:1.12.0'
-    runtimeOnly 'com.aayushatharva.brotli4j:native-linux-x86_64:1.12.0'
-    runtimeOnly 'net.jpountz.lz4:lz4:1.3.0'
+    shadow 'com.aayushatharva.brotli4j:brotli4j:1.12.0'
+    shadow 'com.aayushatharva.brotli4j:native-linux-x86_64:1.12.0'
+    shadow 'net.jpountz.lz4:lz4:1.3.0'
 }
+
+shadowJar {
+    configurations = [project.configurations.shadow]
+    minimize()
+}
+
+jar.finalizedBy(shadowJar)

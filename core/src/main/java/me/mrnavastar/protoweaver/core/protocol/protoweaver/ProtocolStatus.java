@@ -18,18 +18,21 @@ public class ProtocolStatus implements ProtoPacket {
         UPGRADE
     }
 
-    private String protocol;
+    private String currentProtocol;
+    private String nextProtocol;
     private Status status;
 
     @Override
     public void encode(ByteBuf buf) {
-        BufUtils.writeString(buf, protocol);
+        BufUtils.writeString(buf, currentProtocol);
+        BufUtils.writeString(buf, nextProtocol);
         buf.writeInt(status.ordinal());
     }
 
     @Override
     public void decode(ByteBuf buf) throws IndexOutOfBoundsException {
-        protocol = BufUtils.readString(buf);
+        currentProtocol = BufUtils.readString(buf);
+        nextProtocol = BufUtils.readString(buf);
         status = Status.values()[buf.readInt()];
     }
 }

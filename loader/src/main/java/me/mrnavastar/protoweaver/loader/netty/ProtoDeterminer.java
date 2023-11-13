@@ -5,18 +5,17 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import io.netty.handler.codec.compression.ZlibCodecFactory;
-import io.netty.handler.codec.compression.ZlibWrapper;
 import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.ssl.SslHandler;
 import lombok.SneakyThrows;
 import me.mrnavastar.protoweaver.api.protocol.Side;
-import me.mrnavastar.protoweaver.core.util.ProtoLogger;
-import me.mrnavastar.protoweaver.loader.protocol.protoweaver.ServerHandler;
 import me.mrnavastar.protoweaver.core.netty.ProtoConnection;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtoWeaver;
 import me.mrnavastar.protoweaver.core.util.ProtoConstants;
+import me.mrnavastar.protoweaver.core.util.ProtoLogger;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.ServerHandler;
 
 import java.util.List;
 import java.util.Map;
@@ -50,7 +49,7 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
         }
 
         // Not a player - clear the pipeline
-        if (!(sslEnabled)) {
+        if (!sslEnabled) {
             for (Map.Entry<String, ChannelHandler> handler : pipeline.toMap().entrySet()) {
                 if (handler.getKey().equals("protoDeterminer")) continue;
                 pipeline.remove(handler.getValue());
@@ -73,7 +72,7 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
                 return;
             }
 
-            new ProtoConnection(ServerHandler.getServerProtocol(), null, Side.SERVER, ctx.channel());
+            new ProtoConnection(ProtoWeaver.getProtocol(), Side.SERVER, ctx.channel());
             buf.readerIndex(2);
             pipeline.remove(this);
             return;
@@ -87,6 +86,8 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
             pipeline.addLast("httpHandler", new HttpHandler());
             pipeline.remove(this);
         }
+
+        ctx.close();
     }
 
     // Check if packet is minecraft handshake - https://wiki.vg/Protocol#Handshaking

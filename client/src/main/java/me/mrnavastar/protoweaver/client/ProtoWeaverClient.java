@@ -16,8 +16,8 @@ import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.client.netty.ProtoTrustManager;
-import me.mrnavastar.protoweaver.client.protocol.protoweaver.ClientHandler;
 import me.mrnavastar.protoweaver.core.netty.ProtoConnection;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.ClientHandler;
 import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtoWeaver;
 
 import javax.net.ssl.SSLException;
@@ -25,7 +25,7 @@ import javax.net.ssl.SSLException;
 public class ProtoWeaverClient {
 
     @Getter
-    private final Protocol protocol;
+    private Protocol currentProtocol;
     @Getter
     private final String host;
     @Getter
@@ -35,19 +35,18 @@ public class ProtoWeaverClient {
     private final ProtoTrustManager trustManager;
     private Thread thread;
 
-    public ProtoWeaverClient(Protocol protocol, String host, int port, String hostsFile) {
-        this.protocol = protocol;
+    public ProtoWeaverClient(String host, int port, String hostsFile) {
         this.host = host;
         this.port = port;
         this.trustManager = new ProtoTrustManager(host, port, hostsFile);
-        ProtoWeaver.load(protocol);
     }
 
-    public ProtoWeaverClient(Protocol protocol, String host, int port) {
-        this(protocol, host, port, "./protoweaver_hosts");
+    public ProtoWeaverClient(String host, int port) {
+        this(host, port, "./protoweaver_hosts");
     }
 
-    public void connect() {
+    public void connect(Protocol protocol) {
+        currentProtocol = protocol;
         thread = new Thread(() -> {
             try {
                 SslContext sslCtx = SslContextBuilder.forClient().trustManager(trustManager.getTm()).build();
@@ -58,16 +57,15 @@ public class ProtoWeaverClient {
                 b.option(ChannelOption.SO_KEEPALIVE, true);
                 b.option(ChannelOption.TCP_NODELAY, true);
                 b.handler(new ChannelInitializer<SocketChannel>() {
-
                     @Override
                     public void initChannel(@NonNull SocketChannel ch) {
                         ch.pipeline().addLast(sslCtx.newHandler(ch.alloc(), host, port));
-                        connection = new ProtoConnection(ClientHandler.getClientProtocol(), protocol, Side.CLIENT, ch);
+                        connection = new ProtoConnection(ProtoWeaver.getProtocol(), Side.CLIENT, ch);
                     }
                 });
 
                 ChannelFuture f = b.connect(host, port).sync();
-                connection.getHandler().onReady(connection);
+                ((ClientHandler) connection.getHandler()).start(connection, protocol.getName());
                 f.channel().closeFuture().sync();
             } catch (InterruptedException | SSLException e) {
                 throw new RuntimeException(e);

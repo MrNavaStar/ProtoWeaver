@@ -5,14 +5,11 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
-import me.mrnavastar.protoweaver.api.protocol.Protocol;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtoWeaver;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtocolStatus;
 import me.mrnavastar.protoweaver.core.util.DrunkenBishop;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLHandshakeException;
-import java.security.cert.CertificateException;
-import java.util.Arrays;
 import java.util.List;
 
 public class ProtoPacketDecoder extends ByteToMessageDecoder {
@@ -29,12 +26,23 @@ public class ProtoPacketDecoder extends ByteToMessageDecoder {
     }
 
     @Override
+    public void channelInactive(ChannelHandlerContext ctx) {
+        handler.onDisconnect(connection);
+    }
+
+    @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) {
         if (byteBuf.readableBytes() == 0) return;
 
         int packetLen = byteBuf.readInt();
         int packetID = byteBuf.readInt();
-        ProtoPacket packet = connection.getProtocol().getPacket(packetID);
+
+        ProtoPacket packet;
+        if (packetID == -1) {
+            packet = new ProtocolStatus();
+            handler = ProtoWeaver.getProtocol().newHandler(connection.getSide());
+        }
+        else packet = connection.getProtocol().getPacket(packetID);
         if (packet == null) {
             ProtoLogger.error("Got unknown packet with id: " + packetID + " on protocol: " + connection.getProtocol().getName());
             return;
@@ -44,6 +52,7 @@ public class ProtoPacketDecoder extends ByteToMessageDecoder {
             packet.decode(byteBuf.readBytes(packetLen));
         } catch (IndexOutOfBoundsException e) {
             ProtoLogger.error("Failed to decode packet: " + packet.getClass());
+            return;
         }
 
         handler.handlePacket(connection, packet);

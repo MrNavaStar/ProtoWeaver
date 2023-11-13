@@ -18,8 +18,8 @@ public class Fabric implements DedicatedServerModInitializer {
 
         // Testing
         ProtoWeaver.load(ProtoMessage.getProtocol());
-        ProtoMessage.MESSAGE_RECEIVED.register((connection, message) -> {
-            System.out.println(message.getMessage());
+        ProtoMessage.MESSAGE_RECEIVED.register((connection, channel, message) -> {
+            System.out.println(message);
             connection.send(new Message("pog", "bigger pog"));
         });
     }
