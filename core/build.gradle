@@ -5,7 +5,7 @@ dependencies {
     shadow project(path: ':api', configuration: 'shadow')
 
     shadow "org.apache.logging.log4j:log4j-api:2.12.4"
-    shadow 'org.apache.logging.log4j:log4j-core:2.12.4'
+    shadow 'org.apache.logging.log4j:log4j-core:2.21.1'
 
     // Compression
     shadow 'com.aayushatharva.brotli4j:brotli4j:1.12.0'
