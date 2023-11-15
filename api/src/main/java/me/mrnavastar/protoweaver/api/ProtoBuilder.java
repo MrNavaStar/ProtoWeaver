@@ -1,6 +1,7 @@
 package me.mrnavastar.protoweaver.api;
 
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
 import me.mrnavastar.protoweaver.api.auth.ServerAuthHandler;
 import me.mrnavastar.protoweaver.api.protocol.CompressionType;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@RequiredArgsConstructor
 public class ProtoBuilder {
 
     private final String name;
@@ -20,10 +22,6 @@ public class ProtoBuilder {
     private Class<? extends ClientAuthHandler> clientAuthHandler = null;
     private CompressionType compression = CompressionType.NONE;
     private int compressionLevel = -37;
-
-    public ProtoBuilder(String name) {
-        this.name = name;
-    }
 
     /**
      * <p>Creates a new protocol builder. A good rule of thumb for naming that ensures maximum compatibility is to use your

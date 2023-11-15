@@ -8,7 +8,7 @@
   "contact": {
   },
   "license": "All-Rights-Reserved",
-  "icon": "assets/singularity/icon.png",
+  "icon": "assets/protoweaver/icon.png",
   "environment": "*",
   "entrypoints": {
     "server": [
