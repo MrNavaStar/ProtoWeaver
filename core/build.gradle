@@ -9,7 +9,7 @@ dependencies {
 
     // Compression
     shadow 'com.aayushatharva.brotli4j:brotli4j:1.12.0'
-    shadow 'com.aayushatharva.brotli4j:native-linux-x86_64:1.12.0'
+    shadow 'com.aayushatharva.brotli4j:native-linux-x86_64:1.13.0'
     shadow 'net.jpountz.lz4:lz4:1.3.0'
 }
 
