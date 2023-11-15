@@ -1,9 +1,11 @@
 buildscript {
     repositories {
         gradlePluginPortal()
+        maven { url = uri("https://plugins.gradle.org/m2/") }
     }
     dependencies {
-        classpath 'com.github.johnrengelman:shadow:8.1.1'
+        classpath "com.github.johnrengelman:shadow:8.1.1"
+        classpath "io.freefair.gradle:lombok-plugin:8.4"
     }
 }
 
@@ -17,10 +19,11 @@ allprojects {
 subprojects {
     apply plugin: "java"
     apply plugin: "com.github.johnrengelman.shadow"
+    apply plugin: "io.freefair.lombok"
 
     dependencies {
-        compileOnly 'org.projectlombok:lombok:1.18.30'
-	    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+        compileOnly "org.projectlombok:lombok:1.18.30"
+	    annotationProcessor "org.projectlombok:lombok:1.18.30"
     }
 }
 
