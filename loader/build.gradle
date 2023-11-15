@@ -27,7 +27,7 @@ dependencies {
 
     // Dev Env
     modImplementation("maven.modrinth:easy-eula:1.0.0")
-    modImplementation("maven.modrinth:fabricproxy-lite:v2.6.0")
+    modImplementation("maven.modrinth:fabricproxy-lite:v2.7.0")
     modImplementation "com.moandjiezana.toml:toml4j:0.7.2"
 }
 
