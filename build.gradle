@@ -19,8 +19,8 @@ subprojects {
     apply plugin: "com.github.johnrengelman.shadow"
 
     dependencies {
-        compileOnly 'org.projectlombok:lombok:1.18.28'
-	    annotationProcessor 'org.projectlombok:lombok:1.18.28'
+        compileOnly 'org.projectlombok:lombok:1.18.30'
+	    annotationProcessor 'org.projectlombok:lombok:1.18.30'
     }
 }
 
