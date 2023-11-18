@@ -20,7 +20,7 @@ public class ClientSecret implements ProtoPacket {
     }
 
     @Override
-    public void decode(ByteBuf buf) throws IndexOutOfBoundsException {
+    public void decode(ByteBuf buf) {
         secret = BufUtils.readString(buf);
     }
 }

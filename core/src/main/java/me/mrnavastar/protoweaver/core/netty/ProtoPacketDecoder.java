@@ -5,8 +5,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
-import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtoWeaver;
-import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtocolStatus;
 import me.mrnavastar.protoweaver.core.util.DrunkenBishop;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
@@ -37,12 +35,7 @@ public class ProtoPacketDecoder extends ByteToMessageDecoder {
         int packetLen = byteBuf.readInt();
         int packetID = byteBuf.readInt();
 
-        ProtoPacket packet;
-        if (packetID == -1) {
-            packet = new ProtocolStatus();
-            handler = ProtoWeaver.getProtocol().newHandler(connection.getSide());
-        }
-        else packet = connection.getProtocol().getPacket(packetID);
+        ProtoPacket packet = connection.getProtocol().getPacket(packetID);
         if (packet == null) {
             ProtoLogger.error("Got unknown packet with id: " + packetID + " on protocol: " + connection.getProtocol().getName());
             return;
@@ -50,8 +43,9 @@ public class ProtoPacketDecoder extends ByteToMessageDecoder {
 
         try {
             packet.decode(byteBuf.readBytes(packetLen));
-        } catch (IndexOutOfBoundsException e) {
-            ProtoLogger.error("Failed to decode packet: " + packet.getClass());
+        } catch (Exception e) {
+            ProtoLogger.error("Failed to decode packet: " + packet.getClass().getName());
+            ProtoLogger.error(e.getMessage());
             return;
         }
 

@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A simple builder class for constructing {@link Protocol}'s
+ */
 @RequiredArgsConstructor
 public class ProtoBuilder {
 
@@ -45,6 +48,10 @@ public class ProtoBuilder {
         builder.packets = protocol.getPackets();
         builder.serverHandler = protocol.getServerHandler();
         builder.clientHandler = protocol.getClientHandler();
+        builder.serverAuthHandler = protocol.getServerAuthHandler();
+        builder.clientAuthHandler = protocol.getClientAuthHandler();
+        builder.compression = protocol.getCompression();
+        builder.compressionLevel = protocol.getCompressionLevel();
         return builder;
     }
 

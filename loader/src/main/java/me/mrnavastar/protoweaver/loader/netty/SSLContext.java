@@ -5,10 +5,8 @@ import io.netty.handler.ssl.*;
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.BasicConstraints;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
@@ -19,19 +17,19 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.*;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.Provider;
+import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 
-@UtilityClass
 public class SSLContext {
 
     @Getter
@@ -40,7 +38,7 @@ public class SSLContext {
     private static final File cert = new File("./config/protoweaver/keys/cert.pem");
 
     @SneakyThrows
-    public static void initContext() {
+    protected static void initContext() {
         context = SslContextBuilder.forServer(cert, privateKey)
             .sslProvider(OpenSsl.isAvailable() ? SslProvider.OPENSSL : SslProvider.JDK)
             .ciphers(Http2SecurityUtil.CIPHERS, SupportedCipherSuiteFilter.INSTANCE)
@@ -55,7 +53,7 @@ public class SSLContext {
     }
 
     @SneakyThrows
-    public static void genKeys() {
+    protected static void genKeys() {
         if (privateKey.exists() && cert.exists()) return;
 
         ProtoLogger.info("Generating SSL Keys");

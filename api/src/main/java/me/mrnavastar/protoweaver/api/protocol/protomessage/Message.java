@@ -30,7 +30,7 @@ public class Message implements ProtoPacket {
     }
 
     @Override
-    public void decode(ByteBuf buf) throws IndexOutOfBoundsException {
+    public void decode(ByteBuf buf) {
         channel = BufUtils.readString(buf);
         message = BufUtils.readString(buf);
         time = new Date(buf.readLong());

@@ -1,7 +1,7 @@
 package me.mrnavastar.protoweaver.core.netty;
 
-import com.aayushatharva.brotli4j.encoder.Encoder;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.compression.*;
 import lombok.Getter;
 import lombok.NonNull;
@@ -11,6 +11,7 @@ import me.mrnavastar.protoweaver.api.Sender;
 import me.mrnavastar.protoweaver.api.protocol.CompressionType;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtocolStatus;
 
 import java.net.InetSocketAddress;
 
@@ -21,6 +22,7 @@ public class ProtoConnection implements me.mrnavastar.protoweaver.api.netty.Prot
     @Getter
     private final Side side;
     private final Channel channel;
+    private final ChannelPipeline pipeline;
     @Getter
     private Protocol protocol;
     @Getter
@@ -34,9 +36,10 @@ public class ProtoConnection implements me.mrnavastar.protoweaver.api.netty.Prot
         this.packetDecoder = new ProtoPacketDecoder(this);
         packetDecoder.setHandler(handler);
         this.channel = channel;
+        this.pipeline = channel.pipeline();
 
-        channel.pipeline().addLast("protoDecoder", packetDecoder);
-        channel.pipeline().addLast("protoSender", packetSender);
+        pipeline.addLast("protoDecoder", packetDecoder);
+        pipeline.addLast("protoSender", packetSender);
         setCompression(protocol);
     }
 
@@ -44,28 +47,24 @@ public class ProtoConnection implements me.mrnavastar.protoweaver.api.netty.Prot
         CompressionType compression = this.protocol.getCompression();
         if (protocol.getCompression().equals(compression)) return;
 
-        if (channel.pipeline().names().contains("compressionEncoder")) {
-            channel.pipeline().remove("compressionEncoder");
-            channel.pipeline().remove("compressionDecoder");
+        if (pipeline.names().contains("compressionEncoder")) {
+            pipeline.remove("compressionEncoder");
+            pipeline.remove("compressionDecoder");
         }
 
         int level = protocol.getCompressionLevel();
         switch (protocol.getCompression()) {
-            case BROTLI -> {
-                channel.pipeline().addBefore("protoDecoder", "compressionEncoder", new BrotliEncoder(new Encoder.Parameters().setQuality(level)));
-                channel.pipeline().addAfter("compressionEncoder", "compressionDecoder", new BrotliDecoder());
-            }
             case GZIP -> {
-                channel.pipeline().addBefore("protoDecoder", "compressionEncoder", ZlibCodecFactory.newZlibEncoder(ZlibWrapper.GZIP, level));
-                channel.pipeline().addAfter("compressionEncoder", "compressionDecoder", ZlibCodecFactory.newZlibDecoder(ZlibWrapper.GZIP));
+                pipeline.addBefore("protoDecoder", "compressionEncoder", ZlibCodecFactory.newZlibEncoder(ZlibWrapper.GZIP, level));
+                pipeline.addAfter("compressionEncoder", "compressionDecoder", ZlibCodecFactory.newZlibDecoder(ZlibWrapper.GZIP));
             }
             case SNAPPY -> {
-                channel.pipeline().addBefore("protoDecoder", "compressionEncoder", new SnappyFrameEncoder());
-                channel.pipeline().addAfter("compressionEncoder", "compressionDecoder", new SnappyFrameDecoder());
+                pipeline.addBefore("protoDecoder", "compressionEncoder", new SnappyFrameEncoder());
+                pipeline.addAfter("compressionEncoder", "compressionDecoder", new SnappyFrameDecoder());
             }
             case LZ4 -> {
-                channel.pipeline().addBefore("protoDecoder", "compressionEncoder", new Lz4FrameEncoder(level > 0));
-                channel.pipeline().addAfter("compressionEncoder", "compressionDecoder", new Lz4FrameDecoder());
+                pipeline.addBefore("protoDecoder", "compressionEncoder", new Lz4FrameEncoder(level > 0));
+                pipeline.addAfter("compressionEncoder", "compressionDecoder", new Lz4FrameDecoder());
             }
         }
     }

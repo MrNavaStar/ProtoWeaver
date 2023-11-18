@@ -17,6 +17,8 @@ public class Test {
         ProtoWeaverClient client = new ProtoWeaverClient("localhost", 25565);
         client.connect(ProtoMessage.getProtocol());
 
+        System.out.println("sending");
+
         client.send(new Message("pog", "champ"));
     }
 }

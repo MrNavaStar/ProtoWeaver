@@ -2,12 +2,11 @@ version = project.mod_version
 group = project.maven_group
 
 dependencies {
-    shadow project(path: ':core', configuration: 'shadow')
+    shadow implementation(project(path: ':core', configuration: 'shadow'))
 }
 
 shadowJar {
     configurations = [project.configurations.shadow]
-    minimize()
 }
 
 jar.finalizedBy(shadowJar)

@@ -12,8 +12,10 @@ repositories {
 }
 
 dependencies {
-    shadow project(path: ':core', configuration: 'shadow')
-    shadow "org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}"
+    shadow implementation(project(path: ':core', configuration: 'shadow')) {
+        exclude(group: "org.apache.logging.log4j")
+    }
+    shadow implementation("org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}")
 
     // Fabric
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -27,13 +29,12 @@ dependencies {
 
     // Dev Env
     modImplementation("maven.modrinth:easy-eula:1.0.0")
-    modImplementation("maven.modrinth:fabricproxy-lite:v2.6.0")
+    modImplementation("maven.modrinth:fabricproxy-lite:v2.7.0")
     modImplementation "com.moandjiezana.toml:toml4j:0.7.2"
 }
 
 shadowJar {
     configurations = [project.configurations.shadow]
-    minimize()
 }
 
 jar.finalizedBy(shadowJar)

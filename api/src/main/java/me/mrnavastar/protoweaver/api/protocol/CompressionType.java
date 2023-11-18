@@ -9,7 +9,6 @@ public enum CompressionType {
     NONE(),
     GZIP(6),
     SNAPPY(),
-    BROTLI(),
     LZ4();
 
     private final int defaultLevel;

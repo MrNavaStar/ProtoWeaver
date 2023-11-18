@@ -8,7 +8,7 @@ import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
-public class ServerHandler extends ProtoWeaver implements ProtoPacketHandler {
+public class ServerHandler extends InternalProtocol implements ProtoPacketHandler {
 
     private boolean authenticated = false;
     private Protocol nextProtocol = null;
@@ -18,7 +18,7 @@ public class ServerHandler extends ProtoWeaver implements ProtoPacketHandler {
     public void handlePacket(ProtoConnection connection, ProtoPacket packet) {
         if (packet instanceof ProtocolStatus status) {
             switch (status.getStatus()) {
-                case START, UPGRADE -> {
+                case START -> {
                     // Check if protocol loaded
                     nextProtocol = loadedProtocols.get(status.getNextProtocol());
                     if (nextProtocol == null) {

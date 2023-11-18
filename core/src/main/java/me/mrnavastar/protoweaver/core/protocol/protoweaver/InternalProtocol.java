@@ -4,11 +4,12 @@ import lombok.Getter;
 import me.mrnavastar.protoweaver.api.ProtoBuilder;
 import me.mrnavastar.protoweaver.api.Sender;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
+import me.mrnavastar.protoweaver.api.protocol.CompressionType;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
-public class ProtoWeaver extends me.mrnavastar.protoweaver.api.ProtoWeaver {
+public class InternalProtocol extends me.mrnavastar.protoweaver.api.ProtoWeaver {
 
     @Getter
     protected static final Protocol protocol = ProtoBuilder.protocol("protoweaver", "internal")

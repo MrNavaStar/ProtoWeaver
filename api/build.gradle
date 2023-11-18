@@ -2,7 +2,7 @@ version = project.mod_version
 group = project.maven_group
 
 dependencies {
-    shadow 'io.netty:netty-all:4.1.101.Final'
+    shadow implementation('io.netty:netty-all:4.1.101.Final')
 }
 
 shadowJar {

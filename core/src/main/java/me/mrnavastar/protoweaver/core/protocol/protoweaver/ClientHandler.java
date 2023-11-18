@@ -7,28 +7,27 @@ import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
-public class ClientHandler extends ProtoWeaver implements ProtoPacketHandler {
+public class ClientHandler extends InternalProtocol implements ProtoPacketHandler {
 
     private boolean authenticated = false;
     private ClientAuthHandler authHandler = null;
 
-    public boolean start(ProtoConnection connection, String nextProtocolName) {
+    public void start(ProtoConnection connection, String nextProtocolName) {
         Protocol nextProtocol = loadedProtocols.get(nextProtocolName);
         if (nextProtocol == null) {
             protocolNotLoaded(connection, nextProtocolName);
-            return false;
+            return;
         }
 
+        authenticated = false;
         if (nextProtocol.getClientAuthHandler() != null) authHandler = nextProtocol.newClientAuthHandler();
         connection.send(new ProtocolStatus(connection.getProtocol().getName(), nextProtocol.getName(), ProtocolStatus.Status.START));
-        return true;
     }
 
     @Override
     public void handlePacket(ProtoConnection connection, ProtoPacket packet) {
         if (packet instanceof ProtocolStatus status) {
             switch (status.getStatus()) {
-                case START -> start(connection, status.getNextProtocol());
                 case MISSING -> {
                     ProtoLogger.error("Protocol: \"" + status.getNextProtocol() + "\" is not loaded on server.");
                     disconnectIfNeverUpgraded(connection);

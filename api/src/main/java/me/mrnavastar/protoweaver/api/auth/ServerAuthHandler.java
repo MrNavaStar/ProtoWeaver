@@ -2,6 +2,9 @@ package me.mrnavastar.protoweaver.api.auth;
 
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 
+/**
+ * A simple provider class for server authentication. Any implementations loaded on the client won't do anything.
+ */
 public interface ServerAuthHandler {
 
     /**

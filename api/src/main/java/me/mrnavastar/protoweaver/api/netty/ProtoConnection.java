@@ -7,6 +7,9 @@ import me.mrnavastar.protoweaver.api.protocol.Side;
 
 import java.net.InetSocketAddress;
 
+/**
+ * This provider represents a connection to either a client or a server
+ */
 public interface ProtoConnection {
 
     /**

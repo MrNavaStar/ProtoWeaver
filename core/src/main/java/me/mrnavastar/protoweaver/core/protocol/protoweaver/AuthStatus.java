@@ -25,7 +25,7 @@ public class AuthStatus implements ProtoPacket {
     }
 
     @Override
-    public void decode(ByteBuf buf) throws IndexOutOfBoundsException {
+    public void decode(ByteBuf buf) {
         status = Status.values()[buf.readInt()];
     }
 }

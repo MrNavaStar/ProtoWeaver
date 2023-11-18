@@ -30,7 +30,7 @@ public class ProtocolStatus implements ProtoPacket {
     }
 
     @Override
-    public void decode(ByteBuf buf) throws IndexOutOfBoundsException {
+    public void decode(ByteBuf buf) {
         currentProtocol = BufUtils.readString(buf);
         nextProtocol = BufUtils.readString(buf);
         status = Status.values()[buf.readInt()];

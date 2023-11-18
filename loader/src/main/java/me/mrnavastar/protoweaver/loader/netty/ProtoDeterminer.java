@@ -5,17 +5,13 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import io.netty.handler.codec.http.HttpContentCompressor;
-import io.netty.handler.codec.http.HttpRequestDecoder;
-import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.ssl.SslHandler;
 import lombok.SneakyThrows;
 import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.core.netty.ProtoConnection;
-import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtoWeaver;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.InternalProtocol;
 import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
-import me.mrnavastar.protoweaver.core.protocol.protoweaver.ServerHandler;
 
 import java.util.List;
 import java.util.Map;
@@ -72,20 +68,20 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
                 return;
             }
 
-            new ProtoConnection(ProtoWeaver.getProtocol(), Side.SERVER, ctx.channel());
+            new ProtoConnection(InternalProtocol.getProtocol(), Side.SERVER, ctx.channel());
             buf.readerIndex(2);
             pipeline.remove(this);
             return;
         }
 
         // Downstream protocol
-        if (isHttp(magic1, magic2)) {
+        /*if (isHttp(magic1, magic2)) {
             pipeline.addLast("httpDecoder", new HttpRequestDecoder());
             pipeline.addLast("httpEncoder", new HttpResponseEncoder());
             pipeline.addLast("compressor", new HttpContentCompressor());
             pipeline.addLast("httpHandler", new HttpHandler());
             pipeline.remove(this);
-        }
+        }*/
 
         ctx.close();
     }

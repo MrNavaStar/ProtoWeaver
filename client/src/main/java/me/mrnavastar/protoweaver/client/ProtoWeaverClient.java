@@ -18,34 +18,40 @@ import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.client.netty.ProtoTrustManager;
 import me.mrnavastar.protoweaver.core.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.core.protocol.protoweaver.ClientHandler;
-import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtoWeaver;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.InternalProtocol;
 
 import javax.net.ssl.SSLException;
+import java.net.InetSocketAddress;
 
 public class ProtoWeaverClient {
 
     @Getter
     private Protocol currentProtocol;
     @Getter
-    private final String host;
-    @Getter
-    private final int port;
+    private final InetSocketAddress address;
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
     private ProtoConnection connection;
     private final ProtoTrustManager trustManager;
     private Thread thread;
 
+    public ProtoWeaverClient(InetSocketAddress address, String hostsFile) {
+        this.address = address;
+        this.trustManager = new ProtoTrustManager(address.getHostName(), address.getPort(), hostsFile);
+    }
+
+    public ProtoWeaverClient(InetSocketAddress address) {
+        this(address, "./protoweaver_hosts");
+    }
+
     public ProtoWeaverClient(String host, int port, String hostsFile) {
-        this.host = host;
-        this.port = port;
-        this.trustManager = new ProtoTrustManager(host, port, hostsFile);
+        this(new InetSocketAddress(host, port), hostsFile);
     }
 
     public ProtoWeaverClient(String host, int port) {
         this(host, port, "./protoweaver_hosts");
     }
 
-    public void connect(Protocol protocol) {
+    public boolean connect(Protocol protocol) {
         currentProtocol = protocol;
         thread = new Thread(() -> {
             try {
@@ -59,12 +65,12 @@ public class ProtoWeaverClient {
                 b.handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(@NonNull SocketChannel ch) {
-                        ch.pipeline().addLast(sslCtx.newHandler(ch.alloc(), host, port));
-                        connection = new ProtoConnection(ProtoWeaver.getProtocol(), Side.CLIENT, ch);
+                        ch.pipeline().addLast("ssl", sslCtx.newHandler(ch.alloc(), address.getHostName(), address.getPort()));
+                        connection = new ProtoConnection(InternalProtocol.getProtocol(), Side.CLIENT, ch);
                     }
                 });
 
-                ChannelFuture f = b.connect(host, port).sync();
+                ChannelFuture f = b.connect(address).sync();
                 ((ClientHandler) connection.getHandler()).start(connection, protocol.getName());
                 f.channel().closeFuture().sync();
             } catch (InterruptedException | SSLException e) {
@@ -76,7 +82,14 @@ public class ProtoWeaverClient {
 
         thread.start();
         // Block until connection is set up with the specified protocol
-        while (connection == null || connection.isOpen() && !connection.getProtocol().getName().equals(protocol.getName())) Thread.onSpinWait();
+        while (connection == null || connection.isOpen() && !connection.getProtocol().getName().equals(protocol.getName())) {
+            Thread.onSpinWait();
+        }
+        return connection != null && connection.isOpen();
+    }
+
+    public boolean isConnected() {
+        return connection != null && connection.isOpen();
     }
 
     public void disconnect() {

@@ -2,20 +2,16 @@ version = project.mod_version
 group = project.maven_group
 
 dependencies {
-    shadow project(path: ':api', configuration: 'shadow')
+    shadow implementation(project(path: ":api", configuration: "shadow"))
 
-    shadow "org.apache.logging.log4j:log4j-api:2.12.4"
-    shadow 'org.apache.logging.log4j:log4j-core:2.21.1'
-
+    shadow implementation("org.apache.logging.log4j:log4j-api:${project.log4j_version}")
+    shadow implementation("org.apache.logging.log4j:log4j-core:${project.log4j_version}")
     // Compression
-    shadow 'com.aayushatharva.brotli4j:brotli4j:1.12.0'
-    shadow 'com.aayushatharva.brotli4j:native-linux-x86_64:1.13.0'
-    shadow 'net.jpountz.lz4:lz4:1.3.0'
+    shadow implementation("org.lz4:lz4-java:${project.lz4_version}")
 }
 
 shadowJar {
     configurations = [project.configurations.shadow]
-    minimize()
 }
 
 jar.finalizedBy(shadowJar)

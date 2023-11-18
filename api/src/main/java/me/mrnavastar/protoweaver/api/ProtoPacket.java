@@ -13,7 +13,6 @@ public interface ProtoPacket {
     /**
      * This function is called to decode the packet from a {@link ByteBuf}.
      * @param buf The {@link ByteBuf} to read packet data from.
-     * @throws IndexOutOfBoundsException If a {@link ByteBuf} read call fails.
      */
-    void decode(ByteBuf buf) throws IndexOutOfBoundsException;
+    void decode(ByteBuf buf);
 }

@@ -7,8 +7,8 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.Sender;
 import me.mrnavastar.protoweaver.api.protocol.Side;
-import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtocolStatus;
 import me.mrnavastar.protoweaver.core.util.ProtoConstants;
+import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
 public class ProtoPacketSender extends SimpleChannelInboundHandler<ProtoPacket> {
 
@@ -37,18 +37,20 @@ public class ProtoPacketSender extends SimpleChannelInboundHandler<ProtoPacket> 
     // Done with two bufs to prevent the user from messing with the internal data
     public Sender send(ProtoPacket packet) {
         ByteBuf packetBuf = Unpooled.buffer();
-        packet.encode(packetBuf);
-
-        // Protocol status gets an id of -1 so that it can be used while any protocol is loaded.
-        int id;
-        if (packet instanceof ProtocolStatus) id = -1;
-        else id = connection.getProtocol().getPacketId(packet);
+        try {
+            packet.encode(packetBuf);
+        } catch (Exception e) {
+            ProtoLogger.error("Failed to encode packet: " + packet.getClass().getName());
+            ProtoLogger.error(e.getMessage());
+            return new Sender(ctx.newSucceededFuture());
+        }
 
         buf.writeInt(packetBuf.readableBytes()); // Packet Len
-        buf.writeInt(id); // Packet Id
+        buf.writeInt(connection.getProtocol().getPacketId(packet)); // Packet Id
         buf.writeBytes(packetBuf); // Combine bufs
 
         Sender sender = new Sender(ctx.writeAndFlush(buf));
+        System.out.println("SENT DATA DAWG!!");
         buf = Unpooled.buffer();
         return sender;
     }
