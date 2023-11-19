@@ -50,7 +50,6 @@ public class ProtoPacketSender extends SimpleChannelInboundHandler<ProtoPacket> 
         buf.writeBytes(packetBuf); // Combine bufs
 
         Sender sender = new Sender(ctx.writeAndFlush(buf));
-        System.out.println("SENT DATA DAWG!!");
         buf = Unpooled.buffer();
         return sender;
     }

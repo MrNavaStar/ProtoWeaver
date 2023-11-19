@@ -6,7 +6,7 @@ import me.mrnavastar.protoweaver.api.protocol.protomessage.ProtoMessage;
 
 public class Test {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         ProtoMessage.MESSAGE_RECEIVED.register((connection, channel, message) -> {
             System.out.println(message);
@@ -15,10 +15,13 @@ public class Test {
         ProtoWeaver.load(ProtoMessage.getProtocol());
 
         ProtoWeaverClient client = new ProtoWeaverClient("localhost", 25565);
-        client.connect(ProtoMessage.getProtocol());
+        client.connectForever(ProtoMessage.getProtocol()).whenCompleteAsync((aBoolean, throwable) -> {
+
+        });
+
 
         System.out.println("sending");
-
-        client.send(new Message("pog", "champ"));
+        client.disconnect();
+       // client.send(new Message("pog", "champ"));
     }
 }

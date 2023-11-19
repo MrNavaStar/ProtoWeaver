@@ -1,10 +1,7 @@
 package me.mrnavastar.protoweaver.client;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -22,6 +19,7 @@ import me.mrnavastar.protoweaver.core.protocol.protoweaver.InternalProtocol;
 
 import javax.net.ssl.SSLException;
 import java.net.InetSocketAddress;
+import java.util.concurrent.CompletableFuture;
 
 public class ProtoWeaverClient {
 
@@ -32,7 +30,6 @@ public class ProtoWeaverClient {
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
     private ProtoConnection connection;
     private final ProtoTrustManager trustManager;
-    private Thread thread;
 
     public ProtoWeaverClient(InetSocketAddress address, String hostsFile) {
         this.address = address;
@@ -51,9 +48,28 @@ public class ProtoWeaverClient {
         this(host, port, "./protoweaver_hosts");
     }
 
-    public boolean connect(Protocol protocol) {
+    private ChannelFuture doConnect(Bootstrap b, EventLoopGroup workerGroup, Protocol protocol, int tries) throws InterruptedException {
+        if (workerGroup.isShutdown() || workerGroup.isShuttingDown()) return null;
+        System.out.println(tries);
+
+        ChannelFuture f = b.connect(address);
+        f.awaitUninterruptibly();
+
+        if (f.isSuccess()) {
+            ((ClientHandler) connection.getHandler()).start(connection, protocol.getName());
+            return f;
+        }
+
+        if (tries == 1) return null;
+        Thread.sleep(5000);
+        f = doConnect(b, workerGroup, protocol, tries - 1);
+        return f;
+    }
+
+    public CompletableFuture<Boolean> connect(Protocol protocol, int tries) {
+        CompletableFuture<Boolean> connected = new CompletableFuture<>();
         currentProtocol = protocol;
-        thread = new Thread(() -> {
+        new Thread(() -> {
             try {
                 SslContext sslCtx = SslContextBuilder.forClient().trustManager(trustManager.getTm()).build();
 
@@ -68,34 +84,50 @@ public class ProtoWeaverClient {
                         ch.pipeline().addLast("ssl", sslCtx.newHandler(ch.alloc(), address.getHostName(), address.getPort()));
                         connection = new ProtoConnection(InternalProtocol.getProtocol(), Side.CLIENT, ch);
                     }
+
+                    @Override
+                    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+                        System.out.println(cause.getMessage());
+                    }
                 });
 
-                ChannelFuture f = b.connect(address).sync();
-                ((ClientHandler) connection.getHandler()).start(connection, protocol.getName());
+                ChannelFuture f = doConnect(b, workerGroup, protocol, tries);
+                if (f == null) {
+                    connected.complete(false);
+                    return;
+                }
+
+                // Wait for protocol to switch to passed in one
+                while (connection == null || connection.isOpen() && !connection.getProtocol().getName().equals(protocol.getName())) {
+                    Thread.onSpinWait();
+                }
+
+                connected.complete(connection != null && connection.isOpen());
                 f.channel().closeFuture().sync();
-            } catch (InterruptedException | SSLException e) {
+            } catch (SSLException | InterruptedException e) {
                 throw new RuntimeException(e);
             } finally {
                 disconnect();
             }
-        });
+        }).start();
+        return connected;
+    }
 
-        thread.start();
-        // Block until connection is set up with the specified protocol
-        while (connection == null || connection.isOpen() && !connection.getProtocol().getName().equals(protocol.getName())) {
-            Thread.onSpinWait();
-        }
-        return connection != null && connection.isOpen();
+    public CompletableFuture<Boolean> connect(Protocol protocol) {
+        return connect(protocol, 1);
+    }
+
+    public CompletableFuture<Boolean> connectForever(Protocol protocol) {
+        return connect(protocol, -1);
     }
 
     public boolean isConnected() {
-        return connection != null && connection.isOpen();
+        return !workerGroup.isShutdown() || !workerGroup.isShuttingDown() || connection != null && connection.isOpen();
     }
 
     public void disconnect() {
         if (connection != null) connection.disconnect();
         workerGroup.shutdownGracefully();
-        if (thread != null) thread.interrupt();
     }
 
     public void send(ProtoPacket packet) {
