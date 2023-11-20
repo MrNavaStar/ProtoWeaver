@@ -6,12 +6,12 @@ import io.netty.handler.codec.compression.*;
 import lombok.Getter;
 import lombok.NonNull;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
-import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
+import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.Sender;
 import me.mrnavastar.protoweaver.api.protocol.CompressionType;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
-import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtocolStatus;
+import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
 import java.net.InetSocketAddress;
 
@@ -26,9 +26,9 @@ public class ProtoConnection implements me.mrnavastar.protoweaver.api.netty.Prot
     @Getter
     private Protocol protocol;
     @Getter
-    private ProtoPacketHandler handler;
+    private ProtoConnectionHandler handler;
 
-    public ProtoConnection(@NonNull Protocol protocol, @NonNull Side side, @NonNull Channel channel) {
+    public ProtoConnection(@NonNull Protocol protocol, @NonNull Side side, @NonNull Channel channel) throws NoSuchMethodException {
         this.side = side;
         this.protocol = protocol;
         this.handler = protocol.newHandler(side);
@@ -72,9 +72,25 @@ public class ProtoConnection implements me.mrnavastar.protoweaver.api.netty.Prot
     public void upgradeProtocol(@NonNull Protocol protocol) {
         setCompression(protocol);
         this.protocol = protocol;
-        this.handler = protocol.newHandler(side);
+
+        try {
+            this.handler = protocol.newHandler(side);
+        } catch (NoSuchMethodException e) {
+            ProtoLogger.error("Failed to upgrade to protocol: " + protocol.getName());
+            Class<?> handler = side.equals(Side.CLIENT) ? protocol.getClientHandler() : protocol.getServerHandler();
+            ProtoLogger.error(protocol.getName() + "'s connection handler doesn't have a zero arg constructor.");
+            ProtoLogger.error("The mod author must add one to: " + handler.getName());
+            disconnect();
+        }
+
         packetDecoder.setHandler(handler);
-        this.handler.onReady(this);
+
+        try {
+            this.handler.onReady(this);
+        } catch (Exception e) {
+            ProtoLogger.error("Protocol: " + protocol.getName() + " threw an error on initialization!");
+            e.printStackTrace();
+        }
     }
 
     public boolean isOpen() {

@@ -9,7 +9,7 @@ import io.netty.handler.ssl.SslHandler;
 import lombok.SneakyThrows;
 import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.core.netty.ProtoConnection;
-import me.mrnavastar.protoweaver.core.protocol.protoweaver.InternalProtocol;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.InternalConnectionHandler;
 import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
@@ -68,7 +68,7 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
                 return;
             }
 
-            new ProtoConnection(InternalProtocol.getProtocol(), Side.SERVER, ctx.channel());
+            new ProtoConnection(InternalConnectionHandler.getProtocol(), Side.SERVER, ctx.channel());
             buf.readerIndex(2);
             pipeline.remove(this);
             return;

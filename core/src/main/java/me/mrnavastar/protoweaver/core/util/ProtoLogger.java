@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 public class ProtoLogger {
 
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger("ProtoLogger");
 
     private static void log(Level level, String message) {
         logger.log(level, "[" + ProtoConstants.PROTOWEAVER_NAME + "] " + message);

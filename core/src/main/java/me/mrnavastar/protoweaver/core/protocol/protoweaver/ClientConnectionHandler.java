@@ -1,13 +1,13 @@
 package me.mrnavastar.protoweaver.core.protocol.protoweaver;
 
 import me.mrnavastar.protoweaver.api.ProtoPacket;
-import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
+import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
-public class ClientHandler extends InternalProtocol implements ProtoPacketHandler {
+public class ClientConnectionHandler extends InternalConnectionHandler implements ProtoConnectionHandler {
 
     private boolean authenticated = false;
     private ClientAuthHandler authHandler = null;

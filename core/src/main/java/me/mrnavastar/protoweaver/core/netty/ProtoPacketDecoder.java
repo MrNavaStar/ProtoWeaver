@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
-import me.mrnavastar.protoweaver.api.ProtoPacketHandler;
+import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.core.util.DrunkenBishop;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
@@ -13,19 +13,24 @@ import java.util.List;
 public class ProtoPacketDecoder extends ByteToMessageDecoder {
 
     private final ProtoConnection connection;
-    private ProtoPacketHandler handler;
+    private ProtoConnectionHandler handler;
 
     public ProtoPacketDecoder(ProtoConnection connection) {
         this.connection = connection;
     }
 
-    public void setHandler(ProtoPacketHandler handler) {
+    public void setHandler(ProtoConnectionHandler handler) {
         this.handler = handler;
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        handler.onDisconnect(connection);
+        try {
+            this.handler.onDisconnect(connection);
+        } catch (Exception e) {
+            ProtoLogger.error("Protocol: " + connection.getProtocol().getName() + " threw an error on disconnect!");
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -44,7 +49,7 @@ public class ProtoPacketDecoder extends ByteToMessageDecoder {
         try {
             packet.decode(byteBuf.readBytes(packetLen));
         } catch (Exception e) {
-            ProtoLogger.error("Failed to decode packet: " + packet.getClass().getName());
+            ProtoLogger.error("Failed to decode packet: " + packet.getClass().getName() + " on protocol: " + connection.getProtocol().getName());
             ProtoLogger.error(e.getMessage());
             return;
         }

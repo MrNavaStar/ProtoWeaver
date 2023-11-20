@@ -14,8 +14,8 @@ import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.client.netty.ProtoTrustManager;
 import me.mrnavastar.protoweaver.core.netty.ProtoConnection;
-import me.mrnavastar.protoweaver.core.protocol.protoweaver.ClientHandler;
-import me.mrnavastar.protoweaver.core.protocol.protoweaver.InternalProtocol;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.ClientConnectionHandler;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.InternalConnectionHandler;
 
 import javax.net.ssl.SSLException;
 import java.net.InetSocketAddress;
@@ -24,11 +24,9 @@ import java.util.concurrent.CompletableFuture;
 public class ProtoWeaverClient {
 
     @Getter
-    private Protocol currentProtocol;
-    @Getter
     private final InetSocketAddress address;
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
-    private ProtoConnection connection;
+    private ProtoConnection connection = null;
     private final ProtoTrustManager trustManager;
 
     public ProtoWeaverClient(InetSocketAddress address, String hostsFile) {
@@ -50,25 +48,21 @@ public class ProtoWeaverClient {
 
     private ChannelFuture doConnect(Bootstrap b, EventLoopGroup workerGroup, Protocol protocol, int tries) throws InterruptedException {
         if (workerGroup.isShutdown() || workerGroup.isShuttingDown()) return null;
-        System.out.println(tries);
 
         ChannelFuture f = b.connect(address);
         f.awaitUninterruptibly();
-
         if (f.isSuccess()) {
-            ((ClientHandler) connection.getHandler()).start(connection, protocol.getName());
+            ((ClientConnectionHandler) connection.getHandler()).start(connection, protocol.getName());
             return f;
         }
 
         if (tries == 1) return null;
         Thread.sleep(5000);
-        f = doConnect(b, workerGroup, protocol, tries - 1);
-        return f;
+        return doConnect(b, workerGroup, protocol, tries - 1);
     }
 
     public CompletableFuture<Boolean> connect(Protocol protocol, int tries) {
         CompletableFuture<Boolean> connected = new CompletableFuture<>();
-        currentProtocol = protocol;
         new Thread(() -> {
             try {
                 SslContext sslCtx = SslContextBuilder.forClient().trustManager(trustManager.getTm()).build();
@@ -80,9 +74,9 @@ public class ProtoWeaverClient {
                 b.option(ChannelOption.TCP_NODELAY, true);
                 b.handler(new ChannelInitializer<SocketChannel>() {
                     @Override
-                    public void initChannel(@NonNull SocketChannel ch) {
+                    public void initChannel(@NonNull SocketChannel ch) throws NoSuchMethodException {
                         ch.pipeline().addLast("ssl", sslCtx.newHandler(ch.alloc(), address.getHostName(), address.getPort()));
-                        connection = new ProtoConnection(InternalProtocol.getProtocol(), Side.CLIENT, ch);
+                        connection = new ProtoConnection(InternalConnectionHandler.getProtocol(), Side.CLIENT, ch);
                     }
 
                     @Override
@@ -132,5 +126,9 @@ public class ProtoWeaverClient {
 
     public void send(ProtoPacket packet) {
         if (connection != null) connection.send(packet);
+    }
+
+    public Protocol getCurrentProtocol() {
+        return connection == null ? null : connection.getProtocol();
     }
 }

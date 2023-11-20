@@ -19,8 +19,8 @@ public class ProtoBuilder {
 
     private final String name;
     private List<Class<? extends ProtoPacket>> packets = new ArrayList<>();
-    private Class<? extends ProtoPacketHandler> serverHandler = null;
-    private Class<? extends ProtoPacketHandler> clientHandler = null;
+    private Class<? extends ProtoConnectionHandler> serverHandler = null;
+    private Class<? extends ProtoConnectionHandler> clientHandler = null;
     private Class<? extends ServerAuthHandler> serverAuthHandler = null;
     private Class<? extends ClientAuthHandler> clientAuthHandler = null;
     private CompressionType compression = CompressionType.NONE;
@@ -60,7 +60,7 @@ public class ProtoBuilder {
      * @param packetHandler The class of the packet handler.
      * @return {@link ProtoBuilder}
      */
-    public ProtoBuilder setServerHandler(@NonNull Class<? extends ProtoPacketHandler> packetHandler) {
+    public ProtoBuilder setServerHandler(@NonNull Class<? extends ProtoConnectionHandler> packetHandler) {
         this.serverHandler = packetHandler;
         return this;
     }
@@ -70,7 +70,7 @@ public class ProtoBuilder {
      * @param packetHandler The class of the packet handler.
      * @return {@link ProtoBuilder}
      */
-    public ProtoBuilder setClientHandler(@NonNull Class<? extends ProtoPacketHandler> packetHandler) {
+    public ProtoBuilder setClientHandler(@NonNull Class<? extends ProtoConnectionHandler> packetHandler) {
         this.clientHandler = packetHandler;
         return this;
     }

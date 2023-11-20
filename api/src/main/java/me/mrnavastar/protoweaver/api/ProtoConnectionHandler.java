@@ -5,7 +5,7 @@ import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 /**
  * A packet handler for your custom protocol.
  */
-public interface ProtoPacketHandler {
+public interface ProtoConnectionHandler {
     /**
      * This function is called once the connection is ready to start sending/receiving packets.
      * @param connection The current connection.
@@ -23,5 +23,5 @@ public interface ProtoPacketHandler {
      * @param connection The current connection.
      * @param packet The received packet. use "instanceof" to check which one of your packets it is.
      */
-    void handlePacket(ProtoConnection connection, ProtoPacket packet);
+    default void handlePacket(ProtoConnection connection, ProtoPacket packet) {};
 }
