@@ -20,12 +20,5 @@ public class Fabric extends SSLContext implements DedicatedServerModInitializer 
             // FabricProxyLites config is initialized as a mixin plugin, so it's guaranteed to be loaded before protoweaver
             VelocityAuth.setSecret(one.oktw.FabricProxyLite.config.getSecret());
         });
-
-        // Testing
-        ProtoWeaver.load(ProtoMessage.getProtocol());
-        ProtoMessage.MESSAGE_RECEIVED.register((connection, channel, message) -> {
-            System.out.println(message);
-            connection.send(new Message("pog", "bigger pog"));
-        });
     }
 }
