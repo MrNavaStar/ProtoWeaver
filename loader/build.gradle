@@ -23,7 +23,7 @@ dependencies {
     compileOnly "io.netty:netty-transport:${project.netty_version}"
     compileOnly "io.netty:netty-handler:${project.netty_version}"
     compileOnly "io.netty:netty-codec-http:${project.netty_version}"
-    compileOnly "io.netty:netty-codec-http2:${project.netty_version}"
+    shadow implementation("io.netty:netty-codec-http2:${project.netty_version}")
 
     shadow implementation("org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}")
 
@@ -44,15 +44,28 @@ dependencies {
 }
 
 shadowJar {
+    archiveBaseName.set('protoweaver')
     configurations = [project.configurations.shadow]
+
+    dependencies {
+        mergeServiceFiles()
+    }
 
     minimize {
         exclude(project(":api"))
+        exclude(dependency("org.bouncycastle:bcpkix-jdk18on:.*"))
     }
     minimize()
 }
 
 jar.finalizedBy(shadowJar)
+
+remapJar {
+    dependsOn(shadowJar)
+    mustRunAfter(shadowJar)
+
+    inputFile = file(shadowJar.archivePath)
+}
 
 tasks.withType(JavaCompile).configureEach {
     it.options.encoding = "UTF-8"

@@ -7,12 +7,14 @@ dependencies {
 
     shadow implementation("org.apache.logging.log4j:log4j-api:${project.log4j_version}")
     shadow implementation("org.apache.logging.log4j:log4j-core:${project.log4j_version}")
-    // Compression
-    shadow implementation("org.lz4:lz4-java:${project.lz4_version}")
 }
 
 shadowJar {
     configurations = [project.configurations.shadow]
+
+    dependencies {
+        mergeServiceFiles()
+    }
 }
 
 jar.finalizedBy(shadowJar)

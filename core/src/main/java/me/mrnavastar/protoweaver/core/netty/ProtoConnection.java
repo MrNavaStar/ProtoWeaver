@@ -62,9 +62,9 @@ public class ProtoConnection implements me.mrnavastar.protoweaver.api.netty.Prot
                 pipeline.addBefore("protoDecoder", "compressionEncoder", new SnappyFrameEncoder());
                 pipeline.addAfter("compressionEncoder", "compressionDecoder", new SnappyFrameDecoder());
             }
-            case LZ4 -> {
-                pipeline.addBefore("protoDecoder", "compressionEncoder", new Lz4FrameEncoder(level > 0));
-                pipeline.addAfter("compressionEncoder", "compressionDecoder", new Lz4FrameDecoder());
+            case FAST_LZ -> {
+                pipeline.addBefore("protoDecoder", "compressionEncoder", new FastLzFrameEncoder(level));
+                pipeline.addAfter("compressionEncoder", "compressionDecoder", new FastLzFrameDecoder());
             }
         }
     }

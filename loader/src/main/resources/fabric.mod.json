@@ -17,8 +17,5 @@
   },
   "mixins": [
     "protoweaver.mixins.json"
-  ],
-  "depends": {
-
-  }
+  ]
 }

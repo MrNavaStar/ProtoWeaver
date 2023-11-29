@@ -35,19 +35,14 @@ public class HttpHandler extends SimpleChannelInboundHandler<Object> {
             // Handle body here I think
 
             if (msg instanceof LastHttpContent lastHttpContent) {
-
-                if (!writeResponse(lastHttpContent, ctx)) {
-                    // If keep-alive is off, close the connection once the content is fully written.
-                    ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
-                }
+                if (writeResponse(lastHttpContent, ctx)) return;
+                ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
             }
         }
     }
 
     private boolean writeResponse(HttpObject currentObj, ChannelHandlerContext ctx) {
-        // Decide whether to close the connection or not.
         boolean keepAlive = HttpUtil.isKeepAlive(request);
-        // Build the response object.
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HTTP_1_1, currentObj.decoderResult().isSuccess()? OK : BAD_REQUEST,
                 Unpooled.copiedBuffer("", CharsetUtil.UTF_8));

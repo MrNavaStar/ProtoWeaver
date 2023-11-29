@@ -6,8 +6,6 @@
   "mixins": [
     "ServerNetworkIoMixin"
   ],
-  "client": [
-  ],
   "injectors": {
     "defaultRequire": 1
   }
