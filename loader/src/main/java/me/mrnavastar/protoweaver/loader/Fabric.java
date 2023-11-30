@@ -1,8 +1,5 @@
 package me.mrnavastar.protoweaver.loader;
 
-import me.mrnavastar.protoweaver.api.ProtoWeaver;
-import me.mrnavastar.protoweaver.api.protocol.protomessage.Message;
-import me.mrnavastar.protoweaver.api.protocol.protomessage.ProtoMessage;
 import me.mrnavastar.protoweaver.api.protocol.velocity.VelocityAuth;
 import me.mrnavastar.protoweaver.loader.netty.SSLContext;
 import net.fabricmc.api.DedicatedServerModInitializer;

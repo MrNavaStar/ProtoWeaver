@@ -1,14 +1,14 @@
-package me.mrnavastar.protoweaver.api;
+package me.mrnavastar.protoweaver.proxy.api;
 
 import lombok.NonNull;
+import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ProtoWeaver {
+public class ProtoProxy {
+
 
     protected static final ConcurrentHashMap<String, Protocol> loadedProtocols = new ConcurrentHashMap<>();
 
@@ -16,6 +16,7 @@ public class ProtoWeaver {
      * Loads the given protocol.
      */
     public static void load(@NonNull Protocol protocol) {
+        ProtoWeaver.load(protocol);
         loadedProtocols.put(protocol.getName(), protocol);
     }
 

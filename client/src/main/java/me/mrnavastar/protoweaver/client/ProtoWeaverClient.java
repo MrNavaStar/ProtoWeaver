@@ -23,10 +23,16 @@ import java.util.concurrent.CompletableFuture;
 
 public class ProtoWeaverClient {
 
+    @FunctionalInterface
+    public interface DisconnectHandler {
+        void onDisconnect(ProtoConnection connection);
+    }
+
     @Getter
     private final InetSocketAddress address;
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
     private ProtoConnection connection = null;
+    private DisconnectHandler disconnectHandler = null;
     private final ProtoTrustManager trustManager;
 
     public ProtoWeaverClient(InetSocketAddress address, String hostsFile) {
@@ -120,8 +126,16 @@ public class ProtoWeaverClient {
     }
 
     public void disconnect() {
-        if (connection != null) connection.disconnect();
+        if (connection != null) {
+            connection.disconnect();
+            disconnectHandler.onDisconnect(connection);
+            connection = null;
+        }
         workerGroup.shutdownGracefully();
+    }
+
+    public void onDisconnect(DisconnectHandler handler) {
+        disconnectHandler = handler;
     }
 
     public void send(ProtoPacket packet) {

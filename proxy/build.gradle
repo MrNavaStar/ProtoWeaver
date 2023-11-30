@@ -1,0 +1,52 @@
+plugins {
+    id "xyz.jpenilla.run-velocity" version "2.2.2"
+    id "xyz.jpenilla.run-waterfall" version "2.2.2"
+}
+
+def targetJavaVersion = project.javaVersion as Integer
+version = project.mod_version
+group = project.maven_group
+
+dependencies {
+    shadow implementation(project(path: ':client', configuration: 'shadow'))
+
+    compileOnly 'io.github.waterfallmc:waterfall-api:1.20-R0.1-SNAPSHOT'
+    compileOnly "com.velocitypowered:velocity-api:3.2.0-SNAPSHOT"
+    annotationProcessor "com.velocitypowered:velocity-api:3.2.0-SNAPSHOT"
+}
+
+shadowJar {
+    archiveBaseName.set('proxy')
+    configurations = [project.configurations.shadow]
+
+    dependencies {
+        mergeServiceFiles()
+    }
+}
+
+jar.finalizedBy(shadowJar)
+
+
+tasks {
+    runVelocity {
+        velocityVersion("3.2.0-SNAPSHOT")
+    }
+    runWaterfall {
+        waterfallVersion("1.20")
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = "UTF-8"
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        it.options.release = targetJavaVersion
+    }
+}
+
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+    archivesBaseName = project.archives_base_name
+}
