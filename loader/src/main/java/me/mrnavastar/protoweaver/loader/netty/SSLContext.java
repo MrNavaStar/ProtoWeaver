@@ -38,7 +38,7 @@ public class SSLContext {
     private static final File cert = new File("./config/protoweaver/keys/cert.pem");
 
     @SneakyThrows
-    protected static void initContext() {
+    public static void initContext() {
         context = SslContextBuilder.forServer(cert, privateKey)
             .sslProvider(OpenSsl.isAvailable() ? SslProvider.OPENSSL : SslProvider.JDK)
             .ciphers(Http2SecurityUtil.CIPHERS, SupportedCipherSuiteFilter.INSTANCE)
@@ -46,14 +46,13 @@ public class SSLContext {
                     ApplicationProtocolConfig.Protocol.ALPN,
                     ApplicationProtocolConfig.SelectorFailureBehavior.NO_ADVERTISE,
                     ApplicationProtocolConfig.SelectedListenerFailureBehavior.ACCEPT,
-
                     //ApplicationProtocolNames.HTTP_2,
-                    ApplicationProtocolNames.HTTP_1_1))
-            .build();
+                    ApplicationProtocolNames.HTTP_1_1)
+            ).build();
     }
 
     @SneakyThrows
-    protected static void genKeys() {
+    public static void genKeys() {
         if (privateKey.exists() && cert.exists()) return;
 
         ProtoLogger.info("Generating SSL Keys");

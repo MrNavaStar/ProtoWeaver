@@ -12,6 +12,6 @@ public class ServerNetworkIoMixin {
 
     @Inject(method = "initChannel", at = @At("HEAD"))
     public void bind(Channel channel, CallbackInfo ci) {
-        channel.pipeline().addLast("protoDeterminer", new ProtoDeterminer());
+        ProtoDeterminer.registerToPipeline(channel);
     }
 }

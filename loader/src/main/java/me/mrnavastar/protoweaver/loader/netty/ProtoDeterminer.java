@@ -1,10 +1,14 @@
 package me.mrnavastar.protoweaver.loader.netty;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.handler.codec.http.HttpContentCompressor;
+import io.netty.handler.codec.http.HttpRequestDecoder;
+import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.ssl.SslHandler;
 import lombok.SneakyThrows;
 import me.mrnavastar.protoweaver.api.protocol.Side;
@@ -26,6 +30,10 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
 
     public ProtoDeterminer(boolean sslEnabled) {
         this.sslEnabled = sslEnabled;
+    }
+
+    public static void registerToPipeline(Channel channel) {
+        channel.pipeline().addFirst("protoDeterminer", new ProtoDeterminer());
     }
 
     @Override
@@ -76,12 +84,16 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
 
         // Downstream protocol
         /*if (isHttp(magic1, magic2)) {
+            pipeline.addLast("http", Http2Util.getAPNHandler());
+            pipeline.remove(this);
+        }*/
+        if (isHttp(magic1, magic2)) {
             pipeline.addLast("httpDecoder", new HttpRequestDecoder());
             pipeline.addLast("httpEncoder", new HttpResponseEncoder());
             pipeline.addLast("compressor", new HttpContentCompressor());
             pipeline.addLast("httpHandler", new HttpHandler());
             pipeline.remove(this);
-        }*/
+        }
 
         ctx.close();
     }

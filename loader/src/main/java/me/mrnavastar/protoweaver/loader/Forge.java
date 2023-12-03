@@ -5,7 +5,7 @@ import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod(ProtoConstants.PROTOWEAVER_ID)
-public class Forge extends SSLContext {
+public class Forge {
 
     public Forge() {
         SSLContext.genKeys();

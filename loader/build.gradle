@@ -9,6 +9,12 @@ group = project.maven_group
 repositories {
     maven { url "https://api.modrinth.com/maven" }
     maven { url = 'https://maven.minecraftforge.net' }
+    maven { url "https://api.modrinth.com/maven" }
+    maven {
+        name = "sonatype-oss-snapshots1"
+        url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+        mavenContent { snapshotsOnly() }
+    }
 }
 
 dependencies {
@@ -33,9 +39,13 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    //Forge
+    // Forge
     compileOnly "net.minecraftforge:javafmllanguage:${project.forge_version}"
     compileOnly "net.minecraftforge:fmlloader:${project.forge_version}"
+
+    // Paper
+    compileOnly "io.papermc.paper:paper-api:1.20.2-R0.1-SNAPSHOT"
+    modImplementation "net.kyori:adventure-platform-fabric:5.10.0"
 
     // Dev Env
     modImplementation("maven.modrinth:easy-eula:1.0.0")
@@ -50,6 +60,8 @@ shadowJar {
     dependencies {
         mergeServiceFiles()
     }
+
+    exclude 'io/papermc/*'
 
     minimize {
         exclude(project(":api"))

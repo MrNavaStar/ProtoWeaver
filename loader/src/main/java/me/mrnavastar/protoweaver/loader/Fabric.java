@@ -5,7 +5,7 @@ import me.mrnavastar.protoweaver.loader.netty.SSLContext;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 
-public class Fabric extends SSLContext implements DedicatedServerModInitializer {
+public class Fabric implements DedicatedServerModInitializer {
 
     @Override
     public void onInitializeServer() {
