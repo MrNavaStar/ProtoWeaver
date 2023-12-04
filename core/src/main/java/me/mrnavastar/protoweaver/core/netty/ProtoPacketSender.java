@@ -30,12 +30,12 @@ public class ProtoPacketSender extends SimpleChannelInboundHandler<ProtoPacket> 
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, ProtoPacket msg) {
+    protected void channelRead0(ChannelHandlerContext ctx, ProtoPacket msg) throws Exception {
         send(msg);
     }
 
     // Done with two bufs to prevent the user from messing with the internal data
-    public Sender send(ProtoPacket packet) {
+    public Sender send(ProtoPacket packet) throws Exception {
         ByteBuf packetBuf = Unpooled.buffer();
         try {
             packet.encode(packetBuf);
@@ -45,8 +45,11 @@ public class ProtoPacketSender extends SimpleChannelInboundHandler<ProtoPacket> 
             return new Sender(ctx.newSucceededFuture());
         }
 
+        int packetId = connection.getProtocol().getPacketId(packet);
+        if (packetId == -1) throw new Exception("Tried to send packet that is not loaded on this protocol");
+
         buf.writeInt(packetBuf.readableBytes()); // Packet Len
-        buf.writeInt(connection.getProtocol().getPacketId(packet)); // Packet Id
+        buf.writeInt(packetId);
         buf.writeBytes(packetBuf); // Combine bufs
 
         Sender sender = new Sender(ctx.writeAndFlush(buf));

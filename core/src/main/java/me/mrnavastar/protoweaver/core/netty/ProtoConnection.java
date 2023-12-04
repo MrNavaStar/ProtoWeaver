@@ -5,6 +5,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.compression.*;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.Sender;
@@ -101,6 +102,7 @@ public class ProtoConnection implements me.mrnavastar.protoweaver.api.netty.Prot
         return ((InetSocketAddress) channel.remoteAddress());
     }
 
+    @SneakyThrows
     public Sender send(@NonNull ProtoPacket packet) {
         return packetSender.send(packet);
     }

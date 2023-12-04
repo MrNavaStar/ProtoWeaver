@@ -9,6 +9,7 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
@@ -19,20 +20,14 @@ import me.mrnavastar.protoweaver.core.protocol.protoweaver.InternalConnectionHan
 
 import javax.net.ssl.SSLException;
 import java.net.InetSocketAddress;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ProtoWeaverClient {
-
-    @FunctionalInterface
-    public interface DisconnectHandler {
-        void onDisconnect(ProtoConnection connection);
-    }
 
     @Getter
     private final InetSocketAddress address;
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
     private ProtoConnection connection = null;
-    private DisconnectHandler disconnectHandler = null;
     private final ProtoTrustManager trustManager;
 
     public ProtoWeaverClient(InetSocketAddress address, String hostsFile) {
@@ -52,9 +47,7 @@ public class ProtoWeaverClient {
         this(host, port, "./protoweaver_hosts");
     }
 
-    private ChannelFuture doConnect(Bootstrap b, EventLoopGroup workerGroup, Protocol protocol, int tries) throws InterruptedException {
-        if (workerGroup.isShutdown() || workerGroup.isShuttingDown()) return null;
-
+    private ChannelFuture doConnect(Bootstrap b, Protocol protocol, int tries) throws InterruptedException {
         ChannelFuture f = b.connect(address);
         f.awaitUninterruptibly();
         if (f.isSuccess()) {
@@ -62,13 +55,13 @@ public class ProtoWeaverClient {
             return f;
         }
 
-        if (tries == 1) return null;
+        if (tries == 1) return f;
         Thread.sleep(5000);
-        return doConnect(b, workerGroup, protocol, tries - 1);
+        return doConnect(b, protocol, tries - 1);
     }
 
-    public CompletableFuture<Boolean> connect(Protocol protocol, int tries) {
-        CompletableFuture<Boolean> connected = new CompletableFuture<>();
+    public ChannelFuture connect(Protocol protocol, int tries) {
+        AtomicReference<ChannelFuture> f = new AtomicReference<>();
         new Thread(() -> {
             try {
                 SslContext sslCtx = SslContextBuilder.forClient().trustManager(trustManager.getTm()).build();
@@ -91,33 +84,27 @@ public class ProtoWeaverClient {
                     }
                 });
 
-                ChannelFuture f = doConnect(b, workerGroup, protocol, tries);
-                if (f == null) {
-                    connected.complete(false);
-                    return;
-                }
-
+                f.set(doConnect(b, protocol, tries));
                 // Wait for protocol to switch to passed in one
                 while (connection == null || connection.isOpen() && !connection.getProtocol().getName().equals(protocol.getName())) {
                     Thread.onSpinWait();
                 }
 
-                connected.complete(connection != null && connection.isOpen());
-                f.channel().closeFuture().sync();
+                f.get().channel().closeFuture().sync();
             } catch (SSLException | InterruptedException e) {
                 throw new RuntimeException(e);
             } finally {
                 disconnect();
             }
         }).start();
-        return connected;
+        return f.get();
     }
 
-    public CompletableFuture<Boolean> connect(Protocol protocol) {
+    public ChannelFuture connect(Protocol protocol) {
         return connect(protocol, 1);
     }
 
-    public CompletableFuture<Boolean> connectForever(Protocol protocol) {
+    public ChannelFuture connectForever(Protocol protocol) {
         return connect(protocol, -1);
     }
 
@@ -128,16 +115,12 @@ public class ProtoWeaverClient {
     public void disconnect() {
         if (connection != null) {
             connection.disconnect();
-            disconnectHandler.onDisconnect(connection);
             connection = null;
         }
         workerGroup.shutdownGracefully();
     }
 
-    public void onDisconnect(DisconnectHandler handler) {
-        disconnectHandler = handler;
-    }
-
+    @SneakyThrows
     public void send(ProtoPacket packet) {
         if (connection != null) connection.send(packet);
     }
