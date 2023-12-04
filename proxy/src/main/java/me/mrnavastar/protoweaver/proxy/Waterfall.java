@@ -14,6 +14,11 @@ public class Waterfall extends Plugin implements ServerSupplier {
     }
 
     @Override
+    public void onEnable() {
+        ProtoProxy.startAll();
+    }
+
+    @Override
     public void onDisable() {
         ProtoProxy.closeAll();
     }

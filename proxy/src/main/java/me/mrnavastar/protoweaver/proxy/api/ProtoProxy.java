@@ -29,7 +29,6 @@ public class ProtoProxy {
             backendServers.put(serverInfo.getAddress(), new ArrayList<>());
             backendServerLookup.put(serverInfo.getName(), serverInfo.getAddress());
         });
-        startAll();
     }
 
     private static void startProtocol(Protocol protocol) {
@@ -109,6 +108,7 @@ public class ProtoProxy {
 
     /**
      * Sends a packet to a specific server. Does nothing if the server doesn't have the relevant protocol loaded.
+     * @return True if name is valid, false if invalid
      */
     public static boolean send(String serverName, ProtoPacket packet) {
         InetSocketAddress address = backendServerLookup.get(serverName);
