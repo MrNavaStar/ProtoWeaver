@@ -36,18 +36,18 @@ dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     compileOnly "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "maven.modrinth:fabricproxy-lite:${project.proxy_lite_version}"
+    modImplementation "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
 
     // Forge
     compileOnly "net.minecraftforge:javafmllanguage:${project.forge_version}"
 
     // Paper
-    compileOnly "io.papermc.paper:paper-api:1.20.2-R0.1-SNAPSHOT"
-    modImplementation "net.kyori:adventure-platform-fabric:5.10.0"
+    compileOnly "io.papermc.paper:paper-api:${project.paper_version}"
+    modImplementation "net.kyori:adventure-platform-fabric:${project.adventure_version}"
 
     // Dev Env
     modImplementation "maven.modrinth:easy-eula:1.0.0"
-    modImplementation "maven.modrinth:fabricproxy-lite:v2.7.0"
-    modImplementation "com.moandjiezana.toml:toml4j:0.7.2"
 }
 
 shadowJar {

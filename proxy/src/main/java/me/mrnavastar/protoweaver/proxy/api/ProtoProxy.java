@@ -1,8 +1,6 @@
 package me.mrnavastar.protoweaver.proxy.api;
 
-import com.google.common.annotations.Beta;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.util.internal.UnstableApi;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
@@ -33,7 +31,6 @@ public class ProtoProxy {
 
     private static void startProtocol(Protocol protocol) {
         backendServers.forEach((address, clients) -> {
-            System.out.println(address);
             for (ProtoWeaverClient client : clients) {
                 // Don't start a new connection if one already exists for this protocol
                 if (client.getCurrentProtocol().getName().equals(protocol.getName())) return;
@@ -44,16 +41,14 @@ public class ProtoProxy {
 
     private static void connectClient(Protocol protocol, InetSocketAddress address, ArrayList<ProtoWeaverClient> clients) {
         ProtoWeaverClient client = new ProtoWeaverClient(address);
-        client.connectForever(protocol).addListener((ChannelFutureListener) future -> {
-            System.out.println("Listener triggered");
-
-            if (future.channel().isActive()) return;
-
-            System.out.println("Channel is no longer active");
+        client.connect(protocol).addListener((ChannelFutureListener) future -> {
+            if (future.isSuccess()) return;
 
             clients.remove(client);
+            Thread.sleep(5000);
             connectClient(protocol, address, clients);
         });
+        client.onConnectionLost(connection -> connectClient(protocol, address, clients));
 
         clients.add(client);
     }
@@ -113,7 +108,6 @@ public class ProtoProxy {
     public static boolean send(String serverName, ProtoPacket packet) {
         InetSocketAddress address = backendServerLookup.get(serverName);
         if (address == null) return false;
-
         send(address, packet);
         return true;
     }

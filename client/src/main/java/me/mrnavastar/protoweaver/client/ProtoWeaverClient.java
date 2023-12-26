@@ -1,7 +1,10 @@
 package me.mrnavastar.protoweaver.client;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -20,19 +23,29 @@ import me.mrnavastar.protoweaver.core.protocol.protoweaver.InternalConnectionHan
 
 import javax.net.ssl.SSLException;
 import java.net.InetSocketAddress;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class ProtoWeaverClient {
 
+    @FunctionalInterface
+    public interface ConnectionLostHandler {
+        void handle(ProtoConnection connection);
+    }
+
     @Getter
     private final InetSocketAddress address;
-    private final EventLoopGroup workerGroup = new NioEventLoopGroup();
+    private EventLoopGroup workerGroup = null;
     private ProtoConnection connection = null;
-    private final ProtoTrustManager trustManager;
+    private final SslContext sslContext;
+    private ConnectionLostHandler connectionLostHandler;
 
     public ProtoWeaverClient(InetSocketAddress address, String hostsFile) {
-        this.address = address;
-        this.trustManager = new ProtoTrustManager(address.getHostName(), address.getPort(), hostsFile);
+        try {
+            this.address = address;
+            ProtoTrustManager trustManager = new ProtoTrustManager(address.getHostName(), address.getPort(), hostsFile);
+            this.sslContext = SslContextBuilder.forClient().trustManager(trustManager.getTm()).build();
+        } catch (SSLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public ProtoWeaverClient(InetSocketAddress address) {
@@ -47,65 +60,43 @@ public class ProtoWeaverClient {
         this(host, port, "./protoweaver_hosts");
     }
 
-    private ChannelFuture doConnect(Bootstrap b, Protocol protocol, int tries) throws InterruptedException {
+    public ChannelFuture connect(Protocol protocol) {
+        Bootstrap b = new Bootstrap();
+        workerGroup = new NioEventLoopGroup();
+        b.group(workerGroup);
+        b.channel(NioSocketChannel.class);
+        b.option(ChannelOption.SO_KEEPALIVE, true);
+        b.option(ChannelOption.TCP_NODELAY, true);
+        b.handler(new ChannelInitializer<SocketChannel>() {
+            @Override
+            public void initChannel(@NonNull SocketChannel ch) throws NoSuchMethodException {
+                ch.pipeline().addLast("ssl", sslContext.newHandler(ch.alloc(), address.getHostName(), address.getPort()));
+                connection = new ProtoConnection(InternalConnectionHandler.getProtocol(), Side.CLIENT, ch);
+            }
+        });
+
         ChannelFuture f = b.connect(address);
-        f.awaitUninterruptibly();
-        if (f.isSuccess()) {
-            ((ClientConnectionHandler) connection.getHandler()).start(connection, protocol.getName());
-            return f;
-        }
-
-        if (tries == 1) return f;
-        Thread.sleep(5000);
-        return doConnect(b, protocol, tries - 1);
-    }
-
-    public ChannelFuture connect(Protocol protocol, int tries) {
-        AtomicReference<ChannelFuture> f = new AtomicReference<>();
         new Thread(() -> {
             try {
-                SslContext sslCtx = SslContextBuilder.forClient().trustManager(trustManager.getTm()).build();
+                f.awaitUninterruptibly();
+                if (!f.isSuccess()) return;
 
-                Bootstrap b = new Bootstrap();
-                b.group(workerGroup);
-                b.channel(NioSocketChannel.class);
-                b.option(ChannelOption.SO_KEEPALIVE, true);
-                b.option(ChannelOption.TCP_NODELAY, true);
-                b.handler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    public void initChannel(@NonNull SocketChannel ch) throws NoSuchMethodException {
-                        ch.pipeline().addLast("ssl", sslCtx.newHandler(ch.alloc(), address.getHostName(), address.getPort()));
-                        connection = new ProtoConnection(InternalConnectionHandler.getProtocol(), Side.CLIENT, ch);
-                    }
+                ((ClientConnectionHandler) connection.getHandler()).start(connection, protocol.getName());
 
-                    @Override
-                    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-                        System.out.println(cause.getMessage());
-                    }
-                });
-
-                f.set(doConnect(b, protocol, tries));
                 // Wait for protocol to switch to passed in one
                 while (connection == null || connection.isOpen() && !connection.getProtocol().getName().equals(protocol.getName())) {
                     Thread.onSpinWait();
                 }
 
-                f.get().channel().closeFuture().sync();
-            } catch (SSLException | InterruptedException e) {
+                f.channel().closeFuture().sync();
+                connectionLostHandler.handle(connection);
+            } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             } finally {
                 disconnect();
             }
         }).start();
-        return f.get();
-    }
-
-    public ChannelFuture connect(Protocol protocol) {
-        return connect(protocol, 1);
-    }
-
-    public ChannelFuture connectForever(Protocol protocol) {
-        return connect(protocol, -1);
+        return f;
     }
 
     public boolean isConnected() {
@@ -117,7 +108,11 @@ public class ProtoWeaverClient {
             connection.disconnect();
             connection = null;
         }
-        workerGroup.shutdownGracefully();
+        if (workerGroup != null) workerGroup.shutdownGracefully();
+    }
+
+    public void onConnectionLost(ConnectionLostHandler handler) {
+        this.connectionLostHandler = handler;
     }
 
     @SneakyThrows
