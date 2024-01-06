@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.5.2'
+    id 'fabric-loom' version '1.5.3'
 }
 
 def targetJavaVersion = project.javaVersion as Integer
