@@ -1,4 +1,0 @@
-name: ProtoWeaver
-version: 'debug-build'
-main: me.mrnavastar.protoweaver.loader.Paper
-api-version: '1.20'

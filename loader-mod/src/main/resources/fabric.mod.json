@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "protoweaver",
+  "version": "debug-build",
+  "name": "ProtoWeaver",
+  "description": "",
+  "authors": ["MrNavaStar"],
+  "contact": {
+  },
+  "license": "CC0-1.0",
+  "icon": "assets/protoweaver/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "server": [
+      "me.mrnavastar.protoweaver.fabric.Fabric"
+    ]
+  },
+  "mixins": [
+    "protoweaver.mixins.json"
+  ]
+}

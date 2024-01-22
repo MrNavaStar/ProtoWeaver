@@ -7,9 +7,10 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
-import me.mrnavastar.protoweaver.api.protocol.protomessage.ProtoMessage;
 import me.mrnavastar.protoweaver.core.util.ProtoConstants;
+import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 import me.mrnavastar.protoweaver.proxy.api.ProtoProxy;
+import org.slf4j.Logger;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -20,15 +21,18 @@ import java.util.ArrayList;
         version = "debug-build",
         authors = "MrNavaStar"
 )
-public class Velocity implements ServerSupplier {
+public class Velocity implements ServerSupplier, ProtoLogger.IProtoLogger {
 
     private final Path dir;
     private final ProxyServer proxy;
+    private final Logger logger;
 
     @Inject
-    public Velocity(ProxyServer proxyServer, @DataDirectory Path dir) {
+    public Velocity(ProxyServer proxyServer, Logger logger, @DataDirectory Path dir) {
         this.proxy = proxyServer;
         this.dir = dir;
+        this.logger = logger;
+        ProtoLogger.setLogger(this);
         ProtoProxy.setServerSupplier(this);
     }
 
@@ -49,5 +53,20 @@ public class Velocity implements ServerSupplier {
             addresses.add(new ServerInfo(sever.getServerInfo().getName(), sever.getServerInfo().getAddress()));
         });
         return addresses;
+    }
+
+    @Override
+    public void info(String message) {
+        logger.info(message);
+    }
+
+    @Override
+    public void warn(String message) {
+        logger.warn(message);
+    }
+
+    @Override
+    public void error(String message) {
+        logger.error(message);
     }
 }

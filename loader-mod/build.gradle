@@ -1,0 +1,62 @@
+plugins {
+    id 'fabric-loom' version '1.5-SNAPSHOT'
+}
+
+def targetJavaVersion = 17
+version = project.mod_version
+group = project.maven_group
+
+dependencies {
+    shadow implementation(project(path: ':loader-common', configuration: 'default'))
+
+    // Fabric
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    compileOnly "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "maven.modrinth:fabricproxy-lite:${project.proxy_lite_version}"
+    modLocalRuntime "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
+    compileOnly "org.spongepowered:mixin:0.8.5:processor"
+
+    // Forge
+    implementation "net.minecraftforge:javafmllanguage:${project.forge_version}"
+
+    modLocalRuntime "maven.modrinth:easy-eula:1.0.0"
+}
+
+shadowJar {
+    archiveBaseName.set('protoweaver')
+    configurations = [project.configurations.shadow]
+
+    dependencies {
+        mergeServiceFiles()
+    }
+
+    minimize {
+        exclude(dependency("org.bouncycastle:bcpkix-jdk18on:.*"))
+    }
+    minimize()
+}
+
+jar.finalizedBy(shadowJar)
+
+remapJar {
+    dependsOn(shadowJar)
+    mustRunAfter(shadowJar)
+
+    inputFile = file(shadowJar.archivePath)
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = "UTF-8"
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        it.options.release = targetJavaVersion
+    }
+}
+
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+    archivesBaseName = project.archives_base_name
+}

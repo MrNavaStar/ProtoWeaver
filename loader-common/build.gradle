@@ -1,0 +1,34 @@
+version = project.mod_version
+group = project.maven_group
+
+dependencies {
+    shadow implementation(project(path: ':common', configuration: 'shadow')) {
+        exclude(group: "io.netty")
+    }
+
+    compileOnly "io.netty:netty-buffer:${project.netty_version}"
+    compileOnly "io.netty:netty-transport:${project.netty_version}"
+    compileOnly "io.netty:netty-handler:${project.netty_version}"
+    compileOnly "io.netty:netty-codec-http:${project.netty_version}"
+    shadow implementation("io.netty:netty-codec-http2:${project.netty_version}")
+
+    shadow implementation("org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}")
+
+    compileOnly "org.spongepowered:mixin:0.8.5:processor"
+}
+
+shadowJar {
+    archiveBaseName.set('protoweaver')
+    configurations = [project.configurations.shadow]
+
+    dependencies {
+        mergeServiceFiles()
+    }
+
+    minimize {
+        exclude(dependency("org.bouncycastle:bcpkix-jdk18on:.*"))
+    }
+    minimize()
+}
+
+jar.finalizedBy(shadowJar)

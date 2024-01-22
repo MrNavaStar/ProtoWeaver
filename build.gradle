@@ -12,7 +12,9 @@ buildscript {
 allprojects {
     repositories {
         mavenCentral()
+        maven { url = 'https://maven.minecraftforge.net' }                      // Forge
         maven { url = "https://repo.papermc.io/repository/maven-public/" }	    // Paper + Velocity
+        maven { url "https://api.modrinth.com/maven" }                          // Modrinth
     }
 }
 

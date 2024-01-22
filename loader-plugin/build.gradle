@@ -1,0 +1,39 @@
+plugins {
+    id "xyz.jpenilla.run-paper" version "2.2.2"
+    id "io.papermc.paperweight.userdev" version "1.5.11"
+}
+
+def targetJavaVersion = 17
+version = project.mod_version
+group = project.maven_group
+
+dependencies {
+    shadow implementation(project(path: ':loader-mod', configuration: 'default'))
+    paperweight.paperDevBundle(project.paper_version)
+}
+
+shadowJar {
+    archiveBaseName.set('protoweaver')
+    configurations = [project.configurations.shadow]
+
+    dependencies {
+        mergeServiceFiles()
+    }
+}
+
+jar.finalizedBy(shadowJar)
+
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release = targetJavaVersion
+    }
+}

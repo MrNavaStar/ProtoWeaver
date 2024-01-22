@@ -2,22 +2,18 @@ version = project.mod_version
 group = project.maven_group
 
 dependencies {
-    shadow implementation(project(path: ':common', configuration: 'shadow')) {
-        exclude(group: "io.netty")
-    }
-
     shadow implementation("io.netty:netty-buffer:${project.netty_version}")
     shadow implementation("io.netty:netty-transport:${project.netty_version}")
-    shadow implementation("io.netty:netty-handler:${project.netty_version}")
+    compileOnly("io.netty:netty-codec:${project.netty_version}")
 }
 
 shadowJar {
     configurations = [project.configurations.shadow]
 
-    minimize {
-        exclude(dependency("org.lz4:lz4-java:.*"))
+    dependencies {
+        mergeServiceFiles()
     }
-    //minimize()
+    minimize()
 }
 
 jar.finalizedBy(shadowJar)
@@ -33,4 +29,8 @@ sourcesJar {
         sourceSets.main.allSource.contains it.file
     }
     from delombok
+}
+
+processResources {
+
 }
