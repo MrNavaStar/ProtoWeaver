@@ -1,6 +1,8 @@
 package me.mrnavastar.protoweaver.proxy.api;
 
 import io.netty.channel.ChannelFutureListener;
+import lombok.NonNull;
+import lombok.Setter;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
@@ -15,6 +17,12 @@ public class ProtoProxy {
 
     private static final ConcurrentHashMap<InetSocketAddress, ArrayList<ProtoWeaverClient>> backendServers = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String, InetSocketAddress> backendServerLookup = new ConcurrentHashMap<>();
+
+    /**
+     * Sets the polling rate of servers that are disconnected. Defaults to 5 seconds
+     */
+    @Setter
+    private static int serverPollRate = 5000;
 
     /**
      * Sets the supplier that will be used to get info about the backend minecraft servers (their ip addresses and names)
@@ -45,7 +53,7 @@ public class ProtoProxy {
             if (future.isSuccess()) return;
 
             clients.remove(client);
-            Thread.sleep(5000);
+            Thread.sleep(serverPollRate);
             connectClient(protocol, address, clients);
         });
         client.onConnectionLost(connection -> connectClient(protocol, address, clients));
@@ -81,7 +89,7 @@ public class ProtoProxy {
     /**
      * Sends a packet to every server running protoweaver with the correct protocol.
      */
-    public static void sendAll(ProtoPacket packet) {
+    public static void sendAll(@NonNull ProtoPacket packet) {
         backendServers.values().forEach(clients -> clients.forEach(client -> {
             try {
                 client.send(packet);
@@ -92,7 +100,7 @@ public class ProtoProxy {
     /**
      * Sends a packet to a specific server. Does nothing if the server doesn't have the relevant protocol loaded.
      */
-    public static void send(InetSocketAddress address, ProtoPacket packet) {
+    public static void send(@NonNull InetSocketAddress address, @NonNull ProtoPacket packet) {
         backendServers.values().forEach(clients -> clients.forEach(client -> {
             if (!address.equals(client.getAddress())) return;
             try {
@@ -105,7 +113,7 @@ public class ProtoProxy {
      * Sends a packet to a specific server. Does nothing if the server doesn't have the relevant protocol loaded.
      * @return True if name is valid, false if invalid
      */
-    public static boolean send(String serverName, ProtoPacket packet) {
+    public static boolean send(@NonNull String serverName, @NonNull ProtoPacket packet) {
         InetSocketAddress address = backendServerLookup.get(serverName);
         if (address == null) return false;
         send(address, packet);

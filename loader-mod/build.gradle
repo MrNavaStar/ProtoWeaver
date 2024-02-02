@@ -31,10 +31,10 @@ shadowJar {
         mergeServiceFiles()
     }
 
-    minimize {
+    /*minimize {
         exclude(dependency("org.bouncycastle:bcpkix-jdk18on:.*"))
-    }
-    minimize()
+    }*/
+    //minimize()
 }
 
 jar.finalizedBy(shadowJar)

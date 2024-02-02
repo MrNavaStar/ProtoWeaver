@@ -15,11 +15,11 @@ public class Waterfall extends Plugin implements ServerSupplier, ProtoLogger.IPr
     @Override
     public void onLoad() {
         ProtoLogger.setLogger(this);
-        ProtoProxy.setServerSupplier(this);
     }
 
     @Override
     public void onEnable() {
+        ProtoProxy.setServerSupplier(this);
         ProtoProxy.startAll();
     }
 
@@ -31,8 +31,8 @@ public class Waterfall extends Plugin implements ServerSupplier, ProtoLogger.IPr
     @Override
     public ArrayList<ServerInfo> getServers() {
         ArrayList<ServerInfo> addresses = new ArrayList<>();
-        getProxy().getServersCopy().values().forEach(serverInfo -> {
-            addresses.add(new ServerInfo(serverInfo.getName(), (InetSocketAddress) serverInfo.getSocketAddress()));
+        getProxy().getServersCopy().forEach((name, server) -> {
+            addresses.add(new ServerInfo(name, (InetSocketAddress) server.getSocketAddress()));
         });
         return addresses;
     }

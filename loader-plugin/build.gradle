@@ -23,6 +23,11 @@ shadowJar {
 
 jar.finalizedBy(shadowJar)
 
+tasks {
+    runServer {
+        minecraftVersion("1.20.4")
+    }
+}
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     sourceCompatibility = javaVersion
