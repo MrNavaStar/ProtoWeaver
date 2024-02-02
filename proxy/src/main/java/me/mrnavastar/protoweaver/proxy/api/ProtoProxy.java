@@ -101,12 +101,11 @@ public class ProtoProxy {
      * Sends a packet to a specific server. Does nothing if the server doesn't have the relevant protocol loaded.
      */
     public static void send(@NonNull InetSocketAddress address, @NonNull ProtoPacket packet) {
-        backendServers.values().forEach(clients -> clients.forEach(client -> {
-            if (!address.equals(client.getAddress())) return;
+        backendServers.get(address).forEach(client -> {
             try {
                 client.send(packet);
             } catch (Exception ignore) {}
-        }));
+        });
     }
 
     /**

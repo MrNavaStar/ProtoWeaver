@@ -17,6 +17,7 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
+import javax.net.ssl.SSLException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -38,21 +39,9 @@ public class SSLContext {
     private static File privateKey;
     private static File cert;
 
-    @SneakyThrows
-    public static void init(String keystore) {
-        privateKey = new File(keystore + "/keys/private.pem");
-        cert = new File(keystore + "/keys/cert.pem");
-
-        context = SslContextBuilder.forServer(cert, privateKey)
-            .sslProvider(OpenSsl.isAvailable() ? SslProvider.OPENSSL : SslProvider.JDK)
-            .ciphers(Http2SecurityUtil.CIPHERS, SupportedCipherSuiteFilter.INSTANCE)
-            .applicationProtocolConfig(new ApplicationProtocolConfig(
-                    ApplicationProtocolConfig.Protocol.ALPN,
-                    ApplicationProtocolConfig.SelectorFailureBehavior.NO_ADVERTISE,
-                    ApplicationProtocolConfig.SelectedListenerFailureBehavior.ACCEPT,
-                    //ApplicationProtocolNames.HTTP_2,
-                    ApplicationProtocolNames.HTTP_1_1)
-            ).build();
+    public static void initKeystore(String dir) {
+        privateKey = new File(dir + "/keys/private.pem");
+        cert = new File(dir + "/keys/cert.pem");
     }
 
     @SneakyThrows
@@ -72,6 +61,22 @@ public class SSLContext {
 
         @Cleanup JcaPEMWriter certWriter = new JcaPEMWriter(new FileWriter(cert));
         certWriter.writeObject(certificate);
+    }
+
+    @SneakyThrows
+    public static void initContext() {
+        context = SslContextBuilder.forServer(cert, privateKey)
+                .sslProvider(OpenSsl.isAvailable() ? SslProvider.OPENSSL : SslProvider.JDK)
+                .ciphers(Http2SecurityUtil.CIPHERS, SupportedCipherSuiteFilter.INSTANCE)
+                .applicationProtocolConfig(new ApplicationProtocolConfig(
+                        ApplicationProtocolConfig.Protocol.ALPN,
+                        ApplicationProtocolConfig.SelectorFailureBehavior.NO_ADVERTISE,
+                        ApplicationProtocolConfig.SelectedListenerFailureBehavior.ACCEPT,
+                        //ApplicationProtocolNames.HTTP_2,
+                        ApplicationProtocolNames.HTTP_1_1)
+                ).build();
+
+        ProtoLogger.info("Initialized SSL Context");
     }
 
     // From https://stackoverflow.com/questions/29852290/self-signed-x509-certificate-with-bouncy-castle-in-java

@@ -21,9 +21,10 @@ public class Paper extends JavaPlugin implements ChannelInitializeListener, Prot
     @Override
     public void onEnable() {
         ProtoLogger.setLogger(this);
-        ChannelInitializeListenerHolder.addListener(new NamespacedKey("protoweaver", "internal"), new Paper());
+        ChannelInitializeListenerHolder.addListener(new NamespacedKey("protoweaver", "internal"), this);
+        SSLContext.initKeystore(getDataFolder().getAbsolutePath());
         SSLContext.genKeys();
-        SSLContext.init(getDataFolder().getAbsolutePath());
+        SSLContext.initContext();
 
         VelocityAuth.setSecret(GlobalConfiguration.get().proxies.velocity.secret);
     }

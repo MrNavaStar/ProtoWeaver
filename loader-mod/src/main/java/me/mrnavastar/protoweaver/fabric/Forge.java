@@ -15,8 +15,9 @@ public class Forge implements ProtoLogger.IProtoLogger {
 
     public Forge() {
         ProtoLogger.setLogger(this);
+        SSLContext.initKeystore("./config/protoweaver");
         SSLContext.genKeys();
-        SSLContext.init("./config/protoweaver");
+        SSLContext.initContext();
     }
 
     @Override
