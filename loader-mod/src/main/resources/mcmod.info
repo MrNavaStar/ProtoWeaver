@@ -1,0 +1,9 @@
+[{
+  "modid": "protoweaver",
+  "name": "ProtoWeaver",
+  "description": "",
+  "version": "debug-build",
+  "logoFile": "assets/protoweaver/icon.png",
+  "url": "https://github.com/MrNavaStar/ProtoWeaver",
+  "authorList": ["MrNavaStar"]
+}]

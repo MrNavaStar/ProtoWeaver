@@ -1,0 +1,84 @@
+name: Release New Version
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set Fabric Version
+        uses: jossef/action-set-json-field@v2.1
+        with:
+          file: loader-mod/src/main/resources/fabric.mod.json
+          field: version
+          value: ${{ github.event.release.tag_name }}
+
+      - name: Set Paper Version
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          valueFile: 'loader-plugin/src/main/resources/plugin.yml'
+          propertyPath: 'version'
+          value: ${{ github.event.release.tag_name }}
+          commitChange: false
+
+      - name: Set Bungee Version
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          valueFile: 'proxy/src/main/resources/bungee.yml'
+          propertyPath: 'version'
+          value: ${{ github.event.release.tag_name }}
+          commitChange: false
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Execute Gradle build
+        run: ./gradlew build
+
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v4
+        if: success()
+        with:
+          fail_on_failure: true
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+
+      - name: Rename File
+        run: |
+          mv ${{ github.workspace }}/build/libs/sqlib.jar ${{ github.workspace }}/sqlib-${{ github.event.release.tag_name }}.jar; 
+          mv ${{ github.workspace }}/build/libs/sqlib-javadoc.jar ${{ github.workspace }}/sqlib-${{ github.event.release.tag_name }}-javadoc.jar;
+          mv ${{ github.workspace }}/build/libs/sqlib-sources.jar ${{ github.workspace }}/sqlib-${{ github.event.release.tag_name }}-sources.jar;
+
+      - name: Publish Release
+        uses: Kir-Antipov/mc-publish@v3.3.0
+        with:
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          modrinth-featured: true
+          files: |
+            ${{ github.workspace }}/sqlib-${{ github.event.release.tag_name }}.jar
+            ${{ github.workspace }}/sqlib-${{ github.event.release.tag_name }}-javadoc.jar
+            ${{ github.workspace }}/sqlib-${{ github.event.release.tag_name }}-sources.jar
+          java: 17
+          game-versions: |
+            1.20.4
+            1.20.3
+            1.20.2
+            1.20.1
+            1.20
+            1.19.4
+            1.19.3
+            1.19.2
+            1.19.1
+            1.19
+            1.18.2
+            1.18.1
+            1.18
+            1.17.1
+            1.17
+            1.16.5

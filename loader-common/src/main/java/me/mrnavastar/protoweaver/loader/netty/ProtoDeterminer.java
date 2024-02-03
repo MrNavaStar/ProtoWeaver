@@ -87,13 +87,13 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
             pipeline.addLast("http", Http2Util.getAPNHandler());
             pipeline.remove(this);
         }*/
-        if (isHttp(magic1, magic2)) {
+        /*if (isHttp(magic1, magic2)) {
             pipeline.addLast("httpDecoder", new HttpRequestDecoder());
             pipeline.addLast("httpEncoder", new HttpResponseEncoder());
             pipeline.addLast("compressor", new HttpContentCompressor());
             pipeline.addLast("httpHandler", new HttpHandler());
             pipeline.remove(this);
-        }
+        }*/
 
         ctx.close();
     }
