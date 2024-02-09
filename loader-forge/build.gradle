@@ -1,0 +1,15 @@
+apply plugin: "dev.architectury.loom"
+
+architectury {
+    platformSetupLoomIde()
+    forge()
+}
+
+dependencies {
+    shadow implementation(project(path: ':loader-fabric', configuration: 'default'))
+
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    //mappings loom.officialMojangMappings()
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    forge "net.minecraftforge:forge:${project.forge_version}"
+}

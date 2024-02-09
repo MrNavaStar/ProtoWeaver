@@ -1,23 +1,31 @@
 package me.mrnavastar.protoweaver.fabric;
 
+import me.mrnavastar.protoweaver.api.protocol.velocity.VelocityAuth;
 import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 import me.mrnavastar.protoweaver.loader.netty.SSLContext;
-import net.minecraftforge.fml.common.Mod;
+import net.fabricmc.api.DedicatedServerModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
+import one.oktw.FabricProxyLite;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
-@Mod(ProtoConstants.PROTOWEAVER_ID)
-public class Forge implements ProtoLogger.IProtoLogger {
+public class Fabric implements DedicatedServerModInitializer, ProtoLogger.IProtoLogger {
 
     private final Logger logger = LogManager.getLogger();
 
-    public Forge() {
+    @Override
+    public void onInitializeServer() {
         ProtoLogger.setLogger(this);
-        SSLContext.initKeystore("./config/protoweaver");
+        SSLContext.initKeystore(FabricLoader.getInstance().getConfigDir() + "/protoweaver");
         SSLContext.genKeys();
         SSLContext.initContext();
+
+        // Fabric Proxy Lite support
+        FabricLoader.getInstance().getModContainer("fabricproxy-lite").ifPresent(modContainer -> {
+            // FabricProxyLites config is initialized as a mixin plugin, so it's guaranteed to be loaded before protoweaver
+            VelocityAuth.setSecret(FabricProxyLite.config.getSecret());
+        });
     }
 
     @Override

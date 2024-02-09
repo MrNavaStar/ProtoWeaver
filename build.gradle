@@ -1,15 +1,16 @@
-buildscript {
-    repositories {
-        gradlePluginPortal()
-        maven { url = uri("https://plugins.gradle.org/m2/") }
-    }
-    dependencies {
-        classpath "com.github.johnrengelman:shadow:8.1.1"
-        classpath "io.freefair.gradle:lombok-plugin:8.4"
-    }
+plugins {
+    id "com.github.johnrengelman.shadow" version "8.1.1"
+    id "io.freefair.lombok" version "8.4"
+    id "architectury-plugin" version "3.4-SNAPSHOT"
+    id "dev.architectury.loom" version "1.4-SNAPSHOT" apply false
 }
 
 allprojects {
+    apply plugin: "java"
+    apply plugin: "com.github.johnrengelman.shadow"
+    apply plugin: "io.freefair.lombok"
+    apply plugin: "architectury-plugin"
+
     repositories {
         mavenCentral()
         maven { url = 'https://maven.minecraftforge.net' }                      // Forge
@@ -19,13 +20,25 @@ allprojects {
 }
 
 subprojects {
-    apply plugin: "java"
-    apply plugin: "com.github.johnrengelman.shadow"
-    apply plugin: "io.freefair.lombok"
+    version = project.mod_version
+    group = project.maven_group
 
     dependencies {
         compileOnly "org.projectlombok:lombok:${project.lombok_version}"
 	    annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"
+    }
+
+    /*sourcesJar {
+        exclude {
+            sourceSets.main.allSource.contains it.file
+        }
+        from delombok
+    }*/
+
+    java {
+        javadoc.options.addStringOption('Xdoclint:none', '-quiet')
+        withSourcesJar()
+        withJavadocJar()
     }
 }
 

@@ -1,5 +1,8 @@
-version = project.mod_version
-group = project.maven_group
+apply plugin: "dev.architectury.loom"
+
+architectury {
+    common(project.enabled_platforms.split(","))
+}
 
 dependencies {
     shadow implementation(project(path: ':common', configuration: 'shadow')) {

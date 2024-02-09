@@ -1,0 +1,29 @@
+apply plugin: "dev.architectury.loom"
+
+architectury {
+    platformSetupLoomIde()
+    fabric()
+}
+
+dependencies {
+    shadow implementation(project(path: ':loader-common', configuration: 'default'))
+
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    // Mod Compat
+    modImplementation "maven.modrinth:fabricproxy-lite:${project.proxy_lite_version}"
+    modLocalRuntime "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
+
+    // Dev
+    modLocalRuntime "maven.modrinth:easy-eula:1.0.0"
+}
+
+/*
+remapJar {
+    injectAccessWidener = true
+    input.set shadowJar.archiveFile
+    dependsOn shadowJar
+    classifier null
+}*/

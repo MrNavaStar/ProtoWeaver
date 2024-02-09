@@ -1,6 +1,3 @@
-version = project.mod_version
-group = project.maven_group
-
 dependencies {
     shadow implementation(project(path: ':common', configuration: 'shadow')) {
         exclude(group: "io.netty")
@@ -22,15 +19,3 @@ shadowJar {
 
 jar.finalizedBy(shadowJar)
 
-java {
-    javadoc.options.addStringOption('Xdoclint:none', '-quiet')
-    withSourcesJar()
-    withJavadocJar()
-}
-
-sourcesJar {
-    exclude {
-        sourceSets.main.allSource.contains it.file
-    }
-    from delombok
-}

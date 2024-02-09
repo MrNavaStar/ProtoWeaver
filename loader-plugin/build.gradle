@@ -1,14 +1,12 @@
 plugins {
-    id "xyz.jpenilla.run-paper" version "2.2.2"
+    id "xyz.jpenilla.run-paper" version "2.2.3"
     id "io.papermc.paperweight.userdev" version "1.5.11"
 }
 
-def targetJavaVersion = 17
-version = project.mod_version
-group = project.maven_group
+def targetJavaVersion = project.javaVersion as Integer
 
 dependencies {
-    shadow implementation(project(path: ':loader-mod', configuration: 'default'))
+    shadow implementation(project(path: ':loader-forge', configuration: 'default'))
     paperweight.paperDevBundle(project.paper_version)
 }
 

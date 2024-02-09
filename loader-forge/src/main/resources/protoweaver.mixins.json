@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "me.mrnavastar.protoweaver.fabric.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "ServerNetworkIoMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
