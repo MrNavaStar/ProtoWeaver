@@ -4,7 +4,7 @@ dependencies {
     compileOnly("io.netty:netty-codec:${project.netty_version}")
 }
 
-shadowJar {
+/*shadowJar {
     configurations = [project.configurations.shadow]
 
     dependencies {
@@ -13,8 +13,4 @@ shadowJar {
     minimize()
 }
 
-jar.finalizedBy(shadowJar)
-
-processResources {
-
-}
+jar.finalizedBy(shadowJar)*/

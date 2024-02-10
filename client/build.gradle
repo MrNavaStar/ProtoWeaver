@@ -8,7 +8,7 @@ dependencies {
     shadow implementation("io.netty:netty-handler:${project.netty_version}")
 }
 
-shadowJar {
+/*shadowJar {
     configurations = [project.configurations.shadow]
 
     minimize {
@@ -17,5 +17,5 @@ shadowJar {
     //minimize()
 }
 
-jar.finalizedBy(shadowJar)
+jar.finalizedBy(shadowJar)*/
 

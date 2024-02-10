@@ -10,7 +10,7 @@ dependencies {
     paperweight.paperDevBundle(project.paper_version)
 }
 
-shadowJar {
+/*shadowJar {
     archiveBaseName.set('protoweaver')
     configurations = [project.configurations.shadow]
 
@@ -19,7 +19,7 @@ shadowJar {
     }
 }
 
-jar.finalizedBy(shadowJar)
+jar.finalizedBy(shadowJar)*/
 
 tasks {
     runServer {

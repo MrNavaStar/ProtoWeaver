@@ -2,7 +2,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "8.1.1"
     id "io.freefair.lombok" version "8.4"
     id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.4-SNAPSHOT" apply false
+    id "dev.architectury.loom" version "1.5-SNAPSHOT" apply false
 }
 
 allprojects {
@@ -34,6 +34,19 @@ subprojects {
         }
         from delombok
     }*/
+
+    shadowJar {
+        archiveBaseName.set('protoweaver')
+        configurations = [project.configurations.shadow]
+
+        dependencies {
+            mergeServiceFiles()
+        }
+
+        minimize()
+    }
+
+    jar.finalizedBy(shadowJar)
 
     java {
         javadoc.options.addStringOption('Xdoclint:none', '-quiet')
