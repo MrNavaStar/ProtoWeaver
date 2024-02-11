@@ -6,7 +6,8 @@ architectury {
 }
 
 dependencies {
-    shadow implementation(project(path: ':loader-common', configuration: 'default'))
+    common(project(path: ":loader-common", configuration: "shadow"))
+    shadowCommon(project(path: ":loader-common", configuration: "transformProductionFabric")) { transitive false }
 
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
@@ -21,10 +22,8 @@ dependencies {
     modLocalRuntime "maven.modrinth:easy-eula:1.0.0"
 }
 
-/*
 remapJar {
     injectAccessWidener = true
     input.set shadowJar.archiveFile
     dependsOn shadowJar
-    classifier null
-}*/
+}

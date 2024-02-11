@@ -1,16 +1,5 @@
 dependencies {
-    shadow implementation("io.netty:netty-buffer:${project.netty_version}")
-    shadow implementation("io.netty:netty-transport:${project.netty_version}")
+    compileOnly("io.netty:netty-buffer:${project.netty_version}")
+    compileOnly("io.netty:netty-transport:${project.netty_version}")
     compileOnly("io.netty:netty-codec:${project.netty_version}")
 }
-
-/*shadowJar {
-    configurations = [project.configurations.shadow]
-
-    dependencies {
-        mergeServiceFiles()
-    }
-    minimize()
-}
-
-jar.finalizedBy(shadowJar)*/

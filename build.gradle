@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     id "com.github.johnrengelman.shadow" version "8.1.1"
     id "io.freefair.lombok" version "8.4"
@@ -23,6 +25,14 @@ subprojects {
     version = project.mod_version
     group = project.maven_group
 
+    configurations {
+        common
+        shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+        compileClasspath.extendsFrom common
+        runtimeClasspath.extendsFrom common
+        developmentForge.extendsFrom common
+    }
+
     dependencies {
         compileOnly "org.projectlombok:lombok:${project.lombok_version}"
 	    annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"
@@ -36,8 +46,8 @@ subprojects {
     }*/
 
     shadowJar {
-        archiveBaseName.set('protoweaver')
-        configurations = [project.configurations.shadow]
+        archiveClassifier.set("shadow")
+        configurations = [project.configurations.shadowCommon]
 
         dependencies {
             mergeServiceFiles()

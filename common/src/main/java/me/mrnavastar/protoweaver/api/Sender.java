@@ -5,7 +5,7 @@ import io.netty.channel.ChannelFutureListener;
 import lombok.RequiredArgsConstructor;
 
 /**
- * A wrapper that allows for closing the connection after the previously sent {@link api.ProtoPacket} is done sending.
+ * A wrapper that allows for closing the connection after the previously sent {@link ProtoPacket} is done sending.
  */
 @RequiredArgsConstructor
 public class Sender {
