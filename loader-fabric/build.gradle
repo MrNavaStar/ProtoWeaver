@@ -12,12 +12,10 @@ loom {
 
 dependencies {
     shadowCommon(api(project(path: ":common", configuration: "default")))
-    api(project(path: ":loader-common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":loader-common", configuration: "transformProductionFabric")) { transitive false }
+    shadowCommon(api(project(path: ":loader-common", configuration: "transformProductionFabric"))) { transitive false }
 
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
-    //mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     // Include

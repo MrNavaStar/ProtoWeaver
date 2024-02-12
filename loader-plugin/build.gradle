@@ -6,7 +6,7 @@ plugins {
 def targetJavaVersion = project.javaVersion as Integer
 
 dependencies {
-    shadowCommon implementation(project(path: ':loader-forge', configuration: 'default'))
+    shadowCommon(implementation(project(path: ":loader-common", configuration: "shadow"))) { transitive false }
     paperweight.paperDevBundle(project.paper_version)
 }
 
@@ -14,7 +14,7 @@ jar.finalizedBy(shadowJar)
 
 tasks {
     runServer {
-        minecraftVersion("1.20.4")
+        minecraftVersion(project.minecraft_version)
     }
 }
 java {

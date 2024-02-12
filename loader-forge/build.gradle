@@ -14,17 +14,15 @@ loom {
 }
 
 dependencies {
-    shadowCommon(api(project(path: ":loader-fabric", configuration: "default"))) { transitive false }
-    //api(project(path: ":loader-common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":loader-common", configuration: "transformProductionForge")) { transitive false }
+    shadowCommon(api(project(path: ":common", configuration: "default"))) { transitive false }
+    shadowCommon(api(project(path: ":loader-common", configuration: "transformProductionForge"))) { transitive false }
 
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
-    //mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     forge "net.minecraftforge:forge:${project.forge_version}"
 
     // Include
-    /*shadowCommon api("io.netty:netty-codec-http:${project.netty_version}") {
+    shadowCommon api("io.netty:netty-codec-http:${project.netty_version}") {
         exclude group: "io.netty", module: "netty-buffer"
         exclude group: "io.netty", module: "netty-transport"
         exclude group: "io.netty", module: "netty-handler"
@@ -34,10 +32,10 @@ dependencies {
         exclude group: "io.netty", module: "netty-transport"
         exclude group: "io.netty", module: "netty-handler"
     }
-    shadowCommon api("org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}")*/
+    shadowCommon api("org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}")
 }
 
-/*shadowJar {
+shadowJar {
     relocate('io.netty', 'me.mrnavastar.protoweaver.libs.netty') {
         exclude 'io.netty.channel.*'
         exclude 'io.netty.buffer.*'
@@ -49,7 +47,7 @@ dependencies {
         exclude(dependency("org.bouncycastle:bcpkix-jdk18on:.*"))
     }
     minimize()
-}*/
+}
 
 jar.finalizedBy(shadowJar)
 

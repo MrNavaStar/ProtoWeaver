@@ -6,11 +6,10 @@ architectury {
 }
 
 dependencies {
-    compileOnly project(path: ':common', configuration: 'shadow')
+    shadowCommon api(project(path: ':common', configuration: 'shadow'))
 
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
-    //mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     compileOnly "io.netty:netty-buffer:${project.netty_version}"
@@ -20,3 +19,5 @@ dependencies {
     compileOnly "io.netty:netty-codec-http2:${project.netty_version}"
     compileOnly "org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}"
 }
+
+jar.finalizedBy(shadowJar)
