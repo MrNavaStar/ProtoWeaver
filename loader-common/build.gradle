@@ -1,31 +1,22 @@
 apply plugin: "dev.architectury.loom"
 
 architectury {
+    injectInjectables = false
     common(project.enabled_platforms.split(","))
-    
-    transformProductionForge {
-        from sourceSets.shadowCommon.output
-
-    }
 }
 
 dependencies {
-    shadowCommon implementation(project(path: ':common', configuration: 'shadow'))
+    compileOnly project(path: ':common', configuration: 'shadow')
 
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    mappings loom.officialMojangMappings()
+    //mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     compileOnly "io.netty:netty-buffer:${project.netty_version}"
     compileOnly "io.netty:netty-transport:${project.netty_version}"
     compileOnly "io.netty:netty-handler:${project.netty_version}"
     compileOnly "io.netty:netty-codec-http:${project.netty_version}"
-    shadowCommon implementation("io.netty:netty-codec-http2:${project.netty_version}")
-    shadowCommon implementation("org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}")
-}
-
-shadowJar {
-    minimize {
-        exclude(dependency("org.bouncycastle:bcpkix-jdk18on:.*"))
-    }
+    compileOnly "io.netty:netty-codec-http2:${project.netty_version}"
+    compileOnly "org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}"
 }

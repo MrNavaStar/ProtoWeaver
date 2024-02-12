@@ -1,0 +1,14 @@
+modLoader = "javafml"
+loaderVersion = "[36,)"
+license = "CC0-1.0"
+issueTrackerURL="https://github.com/MrNavaStar/ProtoWeaver/issues"
+
+[[mods]]
+modId = "protoweaver"
+version = "0.debug-build"
+displayName = "ProtoWeaver"
+displayURL="https://github.com/MrNavaStar/ProtoWeaver"
+authors="MrNavaStar"
+description = ""
+
+displayTest="IGNORE_ALL_VERSION"

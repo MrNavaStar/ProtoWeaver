@@ -1,5 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 plugins {
     id "com.github.johnrengelman.shadow" version "8.1.1"
     id "io.freefair.lombok" version "8.4"
@@ -13,10 +11,14 @@ allprojects {
     apply plugin: "io.freefair.lombok"
     apply plugin: "architectury-plugin"
 
+    architectury {
+        compileOnly()
+    }
+
     repositories {
         mavenCentral()
-        maven { url = 'https://maven.minecraftforge.net' }                      // Forge
-        maven { url = "https://repo.papermc.io/repository/maven-public/" }	    // Paper + Velocity
+        maven { url "https://maven.minecraftforge.net" }                      // Forge
+        maven { url "https://repo.papermc.io/repository/maven-public/" }	    // Paper + Velocity
         maven { url "https://api.modrinth.com/maven" }                          // Modrinth
     }
 }
@@ -52,11 +54,7 @@ subprojects {
         dependencies {
             mergeServiceFiles()
         }
-
-        minimize()
     }
-
-    jar.finalizedBy(shadowJar)
 
     java {
         javadoc.options.addStringOption('Xdoclint:none', '-quiet')
