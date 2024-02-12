@@ -6,28 +6,19 @@ plugins {
 def targetJavaVersion = project.javaVersion as Integer
 
 dependencies {
-    shadow implementation(project(path: ':client', configuration: 'shadow'))
+    shadowCommon api(project(path: ':client', configuration: 'shadow'))
 
-    compileOnly 'io.github.waterfallmc:waterfall-api:1.20-R0.2-SNAPSHOT'
-    compileOnly "com.velocitypowered:velocity-api:3.2.0-SNAPSHOT"
-    annotationProcessor "com.velocitypowered:velocity-api:3.2.0-SNAPSHOT"
+    compileOnly "io.github.waterfallmc:waterfall-api:${project.waterfall_version}"
+    compileOnly "com.velocitypowered:velocity-api:${project.velocity_version}"
+    annotationProcessor "com.velocitypowered:velocity-api:${project.velocity_version}"
 }
 
-/*shadowJar {
-    archiveBaseName.set('proxy')
-    configurations = [project.configurations.shadow]
-
-    dependencies {
-        mergeServiceFiles()
-    }
-}
-
-jar.finalizedBy(shadowJar)*/
+jar.finalizedBy(shadowJar)
 
 
 tasks {
     runVelocity {
-        velocityVersion("3.2.0-SNAPSHOT")
+        velocityVersion(project.velocity_version)
     }
     runWaterfall {
         waterfallVersion("1.20")

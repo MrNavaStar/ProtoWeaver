@@ -6,7 +6,7 @@ plugins {
 def targetJavaVersion = project.javaVersion as Integer
 
 dependencies {
-    shadowCommon(implementation(project(path: ":loader-common", configuration: "shadow"))) { transitive false }
+    shadowCommon(api(project(path: ":loader-common", configuration: "shadow"))) { transitive false }
     paperweight.paperDevBundle(project.paper_version)
 }
 
