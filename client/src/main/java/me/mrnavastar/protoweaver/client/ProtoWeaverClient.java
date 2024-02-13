@@ -14,21 +14,28 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
+import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.client.netty.ProtoTrustManager;
-import me.mrnavastar.protoweaver.core.netty.ProtoConnection;
+import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.core.protocol.protoweaver.ClientConnectionHandler;
 import me.mrnavastar.protoweaver.core.protocol.protoweaver.InternalConnectionHandler;
 
 import javax.net.ssl.SSLException;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 
 public class ProtoWeaverClient {
 
     @FunctionalInterface
+    public interface ConnectionEstablishedHandler {
+        void handle(ProtoConnection connection) throws Exception;
+    }
+
+    @FunctionalInterface
     public interface ConnectionLostHandler {
-        void handle(ProtoConnection connection);
+        void handle(ProtoConnection connection) throws Exception;
     }
 
     @Getter
@@ -36,9 +43,10 @@ public class ProtoWeaverClient {
     private EventLoopGroup workerGroup = null;
     private ProtoConnection connection = null;
     private final SslContext sslContext;
-    private ConnectionLostHandler connectionLostHandler;
+    private final ArrayList<ConnectionEstablishedHandler> connectionEstablishedHandlers = new ArrayList<>();
+    private final ArrayList<ConnectionLostHandler> connectionLostHandlers = new ArrayList<>();
 
-    public ProtoWeaverClient(InetSocketAddress address, String hostsFile) {
+    public ProtoWeaverClient(@NonNull InetSocketAddress address, @NonNull String hostsFile) {
         try {
             this.address = address;
             ProtoTrustManager trustManager = new ProtoTrustManager(address.getHostName(), address.getPort(), hostsFile);
@@ -48,19 +56,21 @@ public class ProtoWeaverClient {
         }
     }
 
-    public ProtoWeaverClient(InetSocketAddress address) {
+    public ProtoWeaverClient(@NonNull InetSocketAddress address) {
         this(address, "./protoweaver_hosts");
     }
 
-    public ProtoWeaverClient(String host, int port, String hostsFile) {
+    public ProtoWeaverClient(@NonNull String host, int port, @NonNull String hostsFile) {
         this(new InetSocketAddress(host, port), hostsFile);
     }
 
-    public ProtoWeaverClient(String host, int port) {
+    public ProtoWeaverClient(@NonNull String host, int port) {
         this(host, port, "./protoweaver_hosts");
     }
 
-    public ChannelFuture connect(Protocol protocol) {
+    public ProtoWeaverClient connect(@NonNull Protocol protocol) {
+        ProtoWeaver.load(protocol);
+
         Bootstrap b = new Bootstrap();
         workerGroup = new NioEventLoopGroup();
         b.group(workerGroup);
@@ -84,19 +94,33 @@ public class ProtoWeaverClient {
                 ((ClientConnectionHandler) connection.getHandler()).start(connection, protocol.getName());
 
                 // Wait for protocol to switch to passed in one
-                while (connection == null || connection.isOpen() && !connection.getProtocol().getName().equals(protocol.getName())) {
+                while (connection == null || !connection.isOpen() || !connection.getProtocol().getName().equals(protocol.getName())) {
                     Thread.onSpinWait();
                 }
 
+                if (f.isSuccess()) connectionEstablishedHandlers.forEach(handler -> {
+                    try {
+                        handler.handle(connection);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
                 f.channel().closeFuture().sync();
-                connectionLostHandler.handle(connection);
+                connectionLostHandlers.forEach(handler -> {
+                    try {
+                        handler.handle(connection);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             } finally {
                 disconnect();
             }
         }).start();
-        return f;
+        return this;
     }
 
     public boolean isConnected() {
@@ -108,15 +132,19 @@ public class ProtoWeaverClient {
             connection.disconnect();
             connection = null;
         }
-        if (workerGroup != null) workerGroup.shutdownGracefully();
+        if (workerGroup != null && !workerGroup.isShutdown()) workerGroup.shutdownGracefully();
     }
 
-    public void onConnectionLost(ConnectionLostHandler handler) {
-        this.connectionLostHandler = handler;
+    public void onConnectionEstablished(@NonNull ConnectionEstablishedHandler handler) {
+        connectionEstablishedHandlers.add(handler);
+    }
+
+    public void onConnectionLost(@NonNull ConnectionLostHandler handler) {
+        this.connectionLostHandlers.add(handler);
     }
 
     @SneakyThrows
-    public void send(ProtoPacket packet) {
+    public void send(@NonNull ProtoPacket packet) {
         if (connection != null) connection.send(packet);
     }
 

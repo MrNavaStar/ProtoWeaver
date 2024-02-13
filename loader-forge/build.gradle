@@ -14,7 +14,7 @@ loom {
 }
 
 dependencies {
-    shadowCommon(api(project(path: ":common", configuration: "default"))) { transitive false }
+    shadowCommon(api(project(path: ":loader-common", configuration: "shadow")))
     shadowCommon(api(project(path: ":loader-common", configuration: "transformProductionForge"))) { transitive false }
 
     minecraft "com.mojang:minecraft:${project.minecraft_version}"

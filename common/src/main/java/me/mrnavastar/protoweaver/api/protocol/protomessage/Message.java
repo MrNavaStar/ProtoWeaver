@@ -1,6 +1,7 @@
 package me.mrnavastar.protoweaver.api.protocol.protomessage;
 
 import io.netty.buffer.ByteBuf;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
@@ -10,10 +11,12 @@ import java.util.Date;
 
 @Getter
 @NoArgsConstructor
+@EqualsAndHashCode
 public class Message implements ProtoPacket {
 
     private String channel;
     private String message;
+    @EqualsAndHashCode.Exclude
     private Date time;
 
     public Message(String channel, String message) {

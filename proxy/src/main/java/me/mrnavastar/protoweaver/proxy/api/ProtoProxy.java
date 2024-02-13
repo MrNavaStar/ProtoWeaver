@@ -1,13 +1,15 @@
 package me.mrnavastar.protoweaver.proxy.api;
 
-import io.netty.channel.ChannelFutureListener;
 import lombok.NonNull;
 import lombok.Setter;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
+import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.client.ProtoWeaverClient;
+import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 import me.mrnavastar.protoweaver.proxy.ServerSupplier;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ public class ProtoProxy {
      * This is used internally to provide multiplatform support. Only use this function if you are 100% sure you know what
      * you are doing, as it can easily break other plugins if miss-used.
      */
+    @ApiStatus.Internal
     public static void setServerSupplier(ServerSupplier serverSupplier) {
         closeAll();
         serverSupplier.getServers().forEach(serverInfo -> {
@@ -49,15 +52,13 @@ public class ProtoProxy {
 
     private static void connectClient(Protocol protocol, InetSocketAddress address, ArrayList<ProtoWeaverClient> clients) {
         ProtoWeaverClient client = new ProtoWeaverClient(address);
-        client.connect(protocol).addListener((ChannelFutureListener) future -> {
-            if (future.isSuccess()) return;
+        client.connect(protocol).onConnectionLost(connection -> {
+            if (connection.getDisconnecter().equals(Side.CLIENT)) return;
 
             clients.remove(client);
             Thread.sleep(serverPollRate);
             connectClient(protocol, address, clients);
         });
-        client.onConnectionLost(connection -> connectClient(protocol, address, clients));
-
         clients.add(client);
     }
 

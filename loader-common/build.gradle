@@ -6,7 +6,7 @@ architectury {
 }
 
 dependencies {
-    shadowCommon api(project(path: ':common', configuration: 'shadow'))
+    shadowCommon api(project(path: ':common', configuration: 'default'))
 
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
@@ -15,9 +15,14 @@ dependencies {
     compileOnly "io.netty:netty-buffer:${project.netty_version}"
     compileOnly "io.netty:netty-transport:${project.netty_version}"
     compileOnly "io.netty:netty-handler:${project.netty_version}"
-    compileOnly "io.netty:netty-codec-http:${project.netty_version}"
-    compileOnly "io.netty:netty-codec-http2:${project.netty_version}"
-    compileOnly "org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}"
+
+    compileOnly("io.netty:netty-codec-http:${project.netty_version}")
+    compileOnly("io.netty:netty-codec-http2:${project.netty_version}")
+    compileOnly("org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}")
+}
+
+shadowJar {
+    exclude "*.json"
 }
 
 jar.finalizedBy(shadowJar)

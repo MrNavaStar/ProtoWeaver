@@ -1,9 +1,10 @@
-package me.mrnavastar.protoweaver.api;
+package me.mrnavastar.protoweaver.api.protocol;
 
+import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
+import me.mrnavastar.protoweaver.api.ProtoPacket;
+import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
 import me.mrnavastar.protoweaver.api.auth.ServerAuthHandler;
-import me.mrnavastar.protoweaver.api.protocol.CompressionType;
-import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 

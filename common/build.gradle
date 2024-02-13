@@ -1,5 +1,19 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+configurations {
+    publish
+}
+
 dependencies {
-    compileOnly("io.netty:netty-buffer:${project.netty_version}")
+    publish compileOnly("io.netty:netty-buffer:${project.netty_version}")
     compileOnly("io.netty:netty-transport:${project.netty_version}")
     compileOnly("io.netty:netty-codec:${project.netty_version}")
 }
+
+task depJar(type: ShadowJar) {
+    archiveClassifier.set("publish")
+    from sourceSets.main.output
+    configurations = [project.configurations.publish]
+}
+
+jar.finalizedBy(depJar)

@@ -15,14 +15,17 @@ public class ProtoLogger {
     private static IProtoLogger logger;
 
     public static void info(String message) {
-        logger.info(message);
+        if (logger != null) logger.info(message);
+        else System.out.println("INFO: " + message);
     }
 
     public static void warn(String message) {
-       logger.warn(message);
+        if (logger != null) logger.warn(message);
+        else System.out.println("WARN: " + message);
     }
 
     public static void error(String message) {
-        logger.error(message);
+        if (logger != null) logger.error(message);
+        else System.out.println("ERR: " + message);
     }
 }

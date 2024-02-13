@@ -1,9 +1,6 @@
 package me.mrnavastar.protoweaver.api.protocol;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.SneakyThrows;
+import lombok.*;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
@@ -13,8 +10,9 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
+@EqualsAndHashCode
 public class Protocol {
-    
+
     private final String name;
     private final List<Class<? extends ProtoPacket>> packets;
     private final Class<? extends ProtoConnectionHandler> serverHandler;

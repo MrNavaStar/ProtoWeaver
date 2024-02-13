@@ -2,7 +2,7 @@ package me.mrnavastar.protoweaver.api.protocol.protomessage;
 
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import lombok.Getter;
-import me.mrnavastar.protoweaver.api.ProtoBuilder;
+import me.mrnavastar.protoweaver.api.protocol.ProtoBuilder;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;

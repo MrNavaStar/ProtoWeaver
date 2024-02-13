@@ -5,7 +5,8 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
-import me.mrnavastar.protoweaver.api.Sender;
+import me.mrnavastar.protoweaver.api.netty.Sender;
+import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
@@ -42,7 +43,7 @@ public class ProtoPacketSender extends SimpleChannelInboundHandler<ProtoPacket> 
         } catch (Exception e) {
             ProtoLogger.error("Failed to encode packet: " + packet.getClass().getName());
             ProtoLogger.error(e.getMessage());
-            return new Sender(ctx.newSucceededFuture());
+            return new Sender(connection, ctx.newSucceededFuture());
         }
 
         int packetId = connection.getProtocol().getPacketId(packet);
@@ -52,7 +53,7 @@ public class ProtoPacketSender extends SimpleChannelInboundHandler<ProtoPacket> 
         buf.writeInt(packetId);
         buf.writeBytes(packetBuf); // Combine bufs
 
-        Sender sender = new Sender(ctx.writeAndFlush(buf));
+        Sender sender = new Sender(connection, ctx.writeAndFlush(buf));
         buf = Unpooled.buffer();
         return sender;
     }

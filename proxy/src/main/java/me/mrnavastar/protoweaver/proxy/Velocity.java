@@ -7,6 +7,8 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
+import me.mrnavastar.protoweaver.api.ProtoWeaver;
+import me.mrnavastar.protoweaver.api.protocol.protomessage.ProtoMessage;
 import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 import me.mrnavastar.protoweaver.proxy.api.ProtoProxy;
@@ -33,11 +35,11 @@ public class Velocity implements ServerSupplier, ProtoLogger.IProtoLogger {
         this.dir = dir;
         this.logger = logger;
         ProtoLogger.setLogger(this);
-        ProtoProxy.setServerSupplier(this);
     }
 
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
+        ProtoProxy.setServerSupplier(this);
         ProtoProxy.startAll();
     }
 
