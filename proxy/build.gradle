@@ -6,7 +6,7 @@ plugins {
 def targetJavaVersion = project.javaVersion as Integer
 
 dependencies {
-    shadowCommon api(project(path: ':client', configuration: 'shadow'))
+    shadow api(project(path: ':client', configuration: 'shadow'))
 
     compileOnly "io.github.waterfallmc:waterfall-api:${project.waterfall_version}"
     compileOnly "com.velocitypowered:velocity-api:${project.velocity_version}"

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 @Plugin(
         id = ProtoConstants.PROTOWEAVER_ID,
         name = ProtoConstants.PROTOWEAVER_NAME,
-        version = "debug-build",
+        version = ProtoConstants.PROTOWEAVER_VERSION,
         authors = "MrNavaStar"
 )
 public class Velocity implements ServerSupplier, ProtoLogger.IProtoLogger {

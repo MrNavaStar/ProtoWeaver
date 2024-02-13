@@ -24,43 +24,47 @@ allprojects {
 }
 
 subprojects {
-    version = "debug"
+    version = project.project_version
     group = project.maven_group
 
-    configurations {
+    /*configurations {
         common
         shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
         compileClasspath.extendsFrom common
         runtimeClasspath.extendsFrom common
         developmentForge.extendsFrom common
-    }
+    }*/
 
     dependencies {
         compileOnly "org.projectlombok:lombok:${project.lombok_version}"
 	    annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"
     }
 
-    /*sourcesJar {
+    task jarSources(type:Jar){
+        archiveBaseName.set("protoweaver")
+        archiveClassifier.set(project.name + "-sources")
         exclude {
             sourceSets.main.allSource.contains it.file
         }
         from delombok
-    }*/
+    }
 
     shadowJar {
-        archiveClassifier.set("shadow")
-        configurations = [project.configurations.shadowCommon]
+        archiveBaseName.set("protoweaver")
+        archiveClassifier.set(project.name)
+        configurations = [project.configurations.shadow]
 
         dependencies {
             mergeServiceFiles()
         }
     }
 
-    java {
-        javadoc.options.addStringOption('Xdoclint:none', '-quiet')
-        withSourcesJar()
-        withJavadocJar()
+    jar {
+        archiveBaseName.set("protoweaver")
+        archiveClassifier.set(project.name)
     }
+
+    jar.finalizedBy(jarSources)
 }
 
 

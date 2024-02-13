@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 apply plugin: "dev.architectury.loom"
 
 architectury {
@@ -5,14 +7,19 @@ architectury {
     common(project.enabled_platforms.split(","))
 }
 
+configurations {
+    publish
+}
+
 dependencies {
-    shadowCommon api(project(path: ':common', configuration: 'default'))
+    shadow api(project(path: ':common', configuration: 'default'))
+    publish api(project(path: ':common', configuration: 'default'))
 
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-    compileOnly "io.netty:netty-buffer:${project.netty_version}"
+    publish compileOnly("io.netty:netty-buffer:${project.netty_version}")
     compileOnly "io.netty:netty-transport:${project.netty_version}"
     compileOnly "io.netty:netty-handler:${project.netty_version}"
 
@@ -22,7 +29,16 @@ dependencies {
 }
 
 shadowJar {
+    archiveClassifier.set(project.name + "-dev")
     exclude "*.json"
 }
 
+task depJar(type: ShadowJar) {
+    archiveBaseName.set("protoweaver")
+    archiveClassifier.set(project.name)
+    from sourceSets.main.output
+    configurations = [project.configurations.publish]
+}
+
 jar.finalizedBy(shadowJar)
+jar.finalizedBy(depJar)

@@ -1,8 +1,8 @@
 dependencies {
-    shadowCommon api(project(path: ':common', configuration: 'default'))
-    shadowCommon implementation("io.netty:netty-buffer:${project.netty_version}")
-    shadowCommon implementation("io.netty:netty-transport:${project.netty_version}")
-    shadowCommon implementation("io.netty:netty-handler:${project.netty_version}")
+    shadow api(project(path: ':common', configuration: 'default'))
+    shadow implementation("io.netty:netty-buffer:${project.netty_version}")
+    shadow implementation("io.netty:netty-transport:${project.netty_version}")
+    shadow implementation("io.netty:netty-handler:${project.netty_version}")
 }
 
 shadowJar {
