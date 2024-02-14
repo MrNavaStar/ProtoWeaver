@@ -1,27 +1,39 @@
 package me.mrnavastar.protoweaver.core.netty;
 
-import com.esotericsoftware.kryo.kryo5.Kryo;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import lombok.Setter;
-import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
+import me.mrnavastar.protoweaver.api.netty.Sender;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
+import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.core.util.DrunkenBishop;
+import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
-import java.io.IOException;
 import java.util.List;
 
-public class ProtoPacketDecoder extends ByteToMessageDecoder {
+public class ProtoPacketHandler extends ByteToMessageDecoder {
 
     private final ProtoConnection connection;
     @Setter
     private ProtoConnectionHandler handler;
+    private ChannelHandlerContext ctx;
+    private ByteBuf buf = Unpooled.buffer();
 
-    public ProtoPacketDecoder(ProtoConnection connection) {
+    public ProtoPacketHandler(ProtoConnection connection) {
         this.connection = connection;
+        if (connection.getSide().equals(Side.CLIENT)) {
+            buf.writeByte(0); // Fake out minecraft packet len
+            buf.writeByte(ProtoConstants.PROTOWEAVER_MAGIC_BYTE);
+        }
+    }
+
+    @Override
+    public void handlerAdded(ChannelHandlerContext ctx) {
+        this.ctx = ctx;
     }
 
     @Override
@@ -35,17 +47,40 @@ public class ProtoPacketDecoder extends ByteToMessageDecoder {
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) throws IOException {
+    protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) {
         if (byteBuf.readableBytes() == 0) return;
 
-        int packetLen = byteBuf.readInt();
-        ProtoPacket packet = connection.getProtocol().deserialize(byteBuf.readBytes(packetLen));
+        byte[] bytes = new byte[byteBuf.readInt()];
+        byteBuf.readBytes(bytes);
+        Object packet = connection.getProtocol().deserialize(bytes);
         if (packet == null) {
-            ProtoLogger.error("Protocol: " + connection.getProtocol().getName() + " received an unknown packet!");
+            ProtoLogger.error("Protocol: " + connection.getProtocol().getName() + " received an unknown object!");
             return;
         }
 
-        handler.handlePacket(connection, packet);
+        try {
+            handler.handlePacket(connection, packet);
+        } catch (Exception e) {
+            ProtoLogger.error("Protocol: " + connection.getProtocol().getName() + " threw an error on when trying to handle: " + packet.getClass() + "!");
+            e.printStackTrace();
+        }
+    }
+
+    // Done with two bufs to prevent the user from messing with the internal data
+    public Sender send(Object packet) {
+        try {
+            byte[] packetBuf = connection.getProtocol().serialize(packet);
+            buf.writeInt(packetBuf.length); // Packet Len
+            buf.writeBytes(packetBuf);
+        } catch (Exception e) {
+            ProtoLogger.error("Failed to encode object: " + packet.getClass().getName());
+            e.printStackTrace();
+            return new Sender(connection, ctx.newSucceededFuture());
+        }
+
+        Sender sender = new Sender(connection, ctx.writeAndFlush(buf));
+        buf = Unpooled.buffer();
+        return sender;
     }
 
     @Override

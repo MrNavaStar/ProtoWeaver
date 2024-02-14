@@ -1,18 +1,19 @@
 package me.mrnavastar.protoweaver.core.protocol.protoweaver;
 
-import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
+import java.lang.reflect.InvocationTargetException;
+
 public class ClientConnectionHandler extends InternalConnectionHandler implements ProtoConnectionHandler {
 
     private boolean authenticated = false;
     private ClientAuthHandler authHandler = null;
 
-    public void start(ProtoConnection connection, String nextProtocolName) {
+    public void start(ProtoConnection connection, String nextProtocolName) throws Exception {
         Protocol nextProtocol = loadedProtocols.get(nextProtocolName);
         if (nextProtocol == null) {
             protocolNotLoaded(connection, nextProtocolName);
@@ -20,12 +21,12 @@ public class ClientConnectionHandler extends InternalConnectionHandler implement
         }
 
         authenticated = false;
-        if (nextProtocol.getClientAuthHandler() != null) authHandler = nextProtocol.newClientAuthHandler();
+        if (nextProtocol.getClientAuthHandler() != null) authHandler = nextProtocol.getClientAuthHandler().getDeclaredConstructor().newInstance();
         connection.send(new ProtocolStatus(connection.getProtocol().getName(), nextProtocol.getName(), ProtocolStatus.Status.START));
     }
 
     @Override
-    public void handlePacket(ProtoConnection connection, ProtoPacket packet) {
+    public void handlePacket(ProtoConnection connection, Object packet) {
         if (packet instanceof ProtocolStatus status) {
             switch (status.getStatus()) {
                 case MISSING -> {
@@ -45,7 +46,7 @@ public class ClientConnectionHandler extends InternalConnectionHandler implement
             }
         }
         else if (packet instanceof AuthStatus auth) {
-            switch (auth.getStatus()) {
+            switch (auth) {
                 case OK -> authenticated = true;
                 case REQUIRED -> {
                     if (authHandler == null) {
@@ -53,7 +54,7 @@ public class ClientConnectionHandler extends InternalConnectionHandler implement
                         connection.disconnect();
                         return;
                     }
-                    connection.send(new ClientSecret(authHandler.getSecret()));
+                    connection.send(authHandler.getSecret());
                 }
                 case DENIED -> {
                     ProtoLogger.error("Client was denied access by the server.");

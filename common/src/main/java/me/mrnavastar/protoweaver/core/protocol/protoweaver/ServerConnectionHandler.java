@@ -1,10 +1,10 @@
 package me.mrnavastar.protoweaver.core.protocol.protoweaver;
 
-import me.mrnavastar.protoweaver.api.ProtoPacket;
+import lombok.SneakyThrows;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
-import me.mrnavastar.protoweaver.api.netty.Sender;
 import me.mrnavastar.protoweaver.api.auth.ServerAuthHandler;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
+import me.mrnavastar.protoweaver.api.netty.Sender;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
@@ -14,8 +14,9 @@ public class ServerConnectionHandler extends InternalConnectionHandler implement
     private Protocol nextProtocol = null;
     private ServerAuthHandler authHandler = null;
 
+    @SneakyThrows
     @Override
-    public void handlePacket(ProtoConnection connection, ProtoPacket packet) {
+    public void handlePacket(ProtoConnection connection, Object packet) {
         if (packet instanceof ProtocolStatus status) {
             switch (status.getStatus()) {
                 case START -> {
@@ -28,8 +29,8 @@ public class ServerConnectionHandler extends InternalConnectionHandler implement
 
                     // Check if protocol needs authentication
                     if (nextProtocol.getServerAuthHandler() != null) {
-                        authHandler = nextProtocol.newServerAuthHandler();
-                        connection.send(new AuthStatus(AuthStatus.Status.REQUIRED));
+                        authHandler = nextProtocol.getServerAuthHandler().getDeclaredConstructor().newInstance();
+                        connection.send(AuthStatus.REQUIRED);
                         return;
                     }
 
@@ -43,18 +44,18 @@ public class ServerConnectionHandler extends InternalConnectionHandler implement
         }
 
         // Authenticate client
-        if (nextProtocol != null && packet instanceof ClientSecret auth) {
-            authenticated = authHandler.handleAuth(connection, auth.getSecret());
+        if (nextProtocol != null && packet instanceof String secret) {
+            authenticated = authHandler.handleAuth(connection, secret);
         }
 
         if (!authenticated) {
-            Sender sender = connection.send(new AuthStatus(AuthStatus.Status.DENIED));
+            Sender sender = connection.send(AuthStatus.DENIED);
             disconnectIfNeverUpgraded(connection, sender);
             return;
         }
 
         // Upgrade protocol
-        connection.send(new AuthStatus(AuthStatus.Status.OK));
+        connection.send(AuthStatus.OK);
         connection.send(new ProtocolStatus(connection.getProtocol().getName(), nextProtocol.getName(), ProtocolStatus.Status.UPGRADE));
         connection.upgradeProtocol(nextProtocol);
     }

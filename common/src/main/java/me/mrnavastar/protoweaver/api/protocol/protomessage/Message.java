@@ -1,41 +1,22 @@
 package me.mrnavastar.protoweaver.api.protocol.protomessage;
 
-import io.netty.buffer.ByteBuf;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import me.mrnavastar.protoweaver.api.ProtoPacket;
-import me.mrnavastar.protoweaver.api.util.BufUtils;
 
 import java.util.Date;
 
 @Getter
-@NoArgsConstructor
 @EqualsAndHashCode
-public class Message implements ProtoPacket {
+public class Message {
 
-    private String channel;
-    private String message;
+    private final String channel;
+    private final String message;
     @EqualsAndHashCode.Exclude
-    private Date time;
+    private final Date time;
 
     public Message(String channel, String message) {
         this.channel = channel;
         this.message = message;
         this.time = new Date();
-    }
-
-    @Override
-    public void encode(ByteBuf buf) {
-        BufUtils.writeString(buf, channel);
-        BufUtils.writeString(buf, message);
-        buf.writeLong(time.getTime());
-    }
-
-    @Override
-    public void decode(ByteBuf buf) {
-        channel = BufUtils.readString(buf);
-        message = BufUtils.readString(buf);
-        time = new Date(buf.readLong());
     }
 }

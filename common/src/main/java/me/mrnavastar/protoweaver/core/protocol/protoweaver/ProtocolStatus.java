@@ -1,18 +1,13 @@
 package me.mrnavastar.protoweaver.core.protocol.protoweaver;
 
-import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import me.mrnavastar.protoweaver.api.ProtoPacket;
-import me.mrnavastar.protoweaver.api.util.BufUtils;
 
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
 @EqualsAndHashCode
-public class ProtocolStatus implements ProtoPacket {
+public class ProtocolStatus {
 
     public enum Status {
         MISSING,
@@ -23,18 +18,4 @@ public class ProtocolStatus implements ProtoPacket {
     private String currentProtocol;
     private String nextProtocol;
     private Status status;
-
-    @Override
-    public void encode(ByteBuf buf) {
-        BufUtils.writeString(buf, currentProtocol);
-        BufUtils.writeString(buf, nextProtocol);
-        buf.writeInt(status.ordinal());
-    }
-
-    @Override
-    public void decode(ByteBuf buf) {
-        currentProtocol = BufUtils.readString(buf);
-        nextProtocol = BufUtils.readString(buf);
-        status = Status.values()[buf.readInt()];
-    }
 }

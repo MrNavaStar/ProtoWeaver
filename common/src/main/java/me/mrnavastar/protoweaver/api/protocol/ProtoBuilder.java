@@ -1,18 +1,16 @@
 package me.mrnavastar.protoweaver.api.protocol;
 
 import com.esotericsoftware.kryo.kryo5.Kryo;
-import com.esotericsoftware.kryo.kryo5.Serializer;
+import com.esotericsoftware.kryo.kryo5.objenesis.strategy.StdInstantiatorStrategy;
+import com.esotericsoftware.kryo.kryo5.util.DefaultInstantiatorStrategy;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
-import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
 import me.mrnavastar.protoweaver.api.auth.ServerAuthHandler;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.lang.reflect.Field;
 
 /**
  * A simple builder class for constructing {@link Protocol}'s
@@ -21,7 +19,6 @@ import java.util.List;
 public class ProtoBuilder {
 
     private final String name;
-    private List<Class<? extends ProtoPacket>> packets = new ArrayList<>();
     private final Kryo kryo = new Kryo();
     private Class<? extends ProtoConnectionHandler> serverHandler = null;
     private Class<? extends ProtoConnectionHandler> clientHandler = null;
@@ -29,6 +26,7 @@ public class ProtoBuilder {
     private Class<? extends ClientAuthHandler> clientAuthHandler = null;
     private CompressionType compression = CompressionType.NONE;
     private int compressionLevel = -37;
+    private int maxPacketSize = 16384; // 16kb
 
     /**
      * <p>Creates a new protocol builder. A good rule of thumb for naming that ensures maximum compatibility is to use your
@@ -40,23 +38,6 @@ public class ProtoBuilder {
      */
     public static ProtoBuilder protocol(@NonNull String namespace, @NonNull String name) {
         return new ProtoBuilder(namespace + ":" + name);
-    }
-
-    /**
-     * This function can be used to modify an existing protocol object.
-     * @param protocol The protocol to be modified.
-     * @return {@link ProtoBuilder}
-     */
-    public static ProtoBuilder protocol(@NonNull Protocol protocol) {
-        ProtoBuilder builder = new ProtoBuilder(protocol.getName());
-        builder.packets = protocol.getPackets();
-        builder.serverHandler = protocol.getServerHandler();
-        builder.clientHandler = protocol.getClientHandler();
-        builder.serverAuthHandler = protocol.getServerAuthHandler();
-        builder.clientAuthHandler = protocol.getClientAuthHandler();
-        builder.compression = protocol.getCompression();
-        builder.compressionLevel = protocol.getCompressionLevel();
-        return builder;
     }
 
     /**
@@ -104,9 +85,12 @@ public class ProtoBuilder {
      * @param packet The packet to register.
      * @return {@link ProtoBuilder}
      */
-    public <T extends ProtoPacket> ProtoBuilder addPacket(@NonNull Class<T> packet) {
-        //packets.add(packet);
+    public ProtoBuilder addPacket(@NonNull Class<?> packet) {
+        if (packet.equals(Enum.EnumDesc.class)) return this;
+
         kryo.register(packet);
+        for (Field field : packet.getDeclaredFields()) addPacket(field.getType());
+        for (Class<?> inner : packet.getClasses()) addPacket(inner);
         return this;
     }
 
@@ -131,11 +115,23 @@ public class ProtoBuilder {
     }
 
     /**
+     * Set the maximum packet size this protocol can handle. The higher the value, the more ram will be allocated when sending and receiving packets.
+     * The maximum packet size defaults to 16kb
+     * @param maxPacketSize The maximum size a packet can be in bytes
+     * @return {@link ProtoBuilder}
+     */
+    public ProtoBuilder setMaxPacketSize(int maxPacketSize) {
+        this.maxPacketSize = maxPacketSize;
+        return this;
+    }
+
+    /**
      * Build the protocol.
      * @return A finished protocol that can be loaded using {@link ProtoWeaver#load(Protocol)}.
      */
     public Protocol build() {
+        kryo.setInstantiatorStrategy(new DefaultInstantiatorStrategy(new StdInstantiatorStrategy()));
         if (compression != CompressionType.NONE && compressionLevel == -37) compressionLevel = compression.getDefaultLevel();
-        return new Protocol(name, Collections.unmodifiableList(packets), serverHandler, clientHandler, serverAuthHandler, clientAuthHandler, compression, compressionLevel, kryo);
+        return new Protocol(name, kryo, compression, compressionLevel, maxPacketSize, serverHandler, clientHandler, serverAuthHandler, clientAuthHandler);
     }
 }

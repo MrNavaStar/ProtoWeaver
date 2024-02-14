@@ -1,5 +1,7 @@
 package me.mrnavastar.protoweaver.fabric;
 
+import me.mrnavastar.protoweaver.api.ProtoWeaver;
+import me.mrnavastar.protoweaver.api.protocol.protomessage.ProtoMessage;
 import me.mrnavastar.protoweaver.api.protocol.velocity.VelocityAuth;
 import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
@@ -25,6 +27,11 @@ public class Fabric implements DedicatedServerModInitializer, ProtoLogger.IProto
         FabricLoader.getInstance().getModContainer("fabricproxy-lite").ifPresent(modContainer -> {
             // FabricProxyLites config is initialized as a mixin plugin, so it's guaranteed to be loaded before protoweaver
             VelocityAuth.setSecret(FabricProxyLite.config.getSecret());
+        });
+
+        ProtoWeaver.load(ProtoMessage.getProtocol());
+        ProtoMessage.MESSAGE_RECEIVED.register((connection, channel, message) -> {
+            System.out.println(message);
         });
     }
 

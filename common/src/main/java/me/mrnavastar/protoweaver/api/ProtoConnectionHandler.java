@@ -21,7 +21,7 @@ public interface ProtoConnectionHandler {
     /**
      * This function is called everytime a packet is received on your protocol.
      * @param connection The current connection.
-     * @param packet The received packet. use "instanceof" to check which one of your packets it is.
+     * @param packet The received object. use "instanceof" to check which one of your packets it is.
      */
-    default void handlePacket(ProtoConnection connection, ProtoPacket packet) {};
+    default void handlePacket(ProtoConnection connection, Object packet) {};
 }

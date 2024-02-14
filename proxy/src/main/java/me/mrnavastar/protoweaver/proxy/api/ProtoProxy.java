@@ -2,7 +2,6 @@ package me.mrnavastar.protoweaver.proxy.api;
 
 import lombok.NonNull;
 import lombok.Setter;
-import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
@@ -89,7 +88,7 @@ public class ProtoProxy {
     /**
      * Sends a packet to every server running protoweaver with the correct protocol.
      */
-    public static void sendAll(@NonNull ProtoPacket packet) {
+    public static void sendAll(@NonNull Object packet) {
         backendServers.values().forEach(clients -> clients.forEach(client -> {
             try {
                 client.send(packet);
@@ -100,7 +99,7 @@ public class ProtoProxy {
     /**
      * Sends a packet to a specific server. Does nothing if the server doesn't have the relevant protocol loaded.
      */
-    public static void send(@NonNull InetSocketAddress address, @NonNull ProtoPacket packet) {
+    public static void send(@NonNull InetSocketAddress address, @NonNull Object packet) {
         backendServers.get(address).forEach(client -> {
             try {
                 client.send(packet);
@@ -112,7 +111,7 @@ public class ProtoProxy {
      * Sends a packet to a specific server. Does nothing if the server doesn't have the relevant protocol loaded.
      * @return True if name is valid, false if invalid
      */
-    public static boolean send(@NonNull String serverName, @NonNull ProtoPacket packet) {
+    public static boolean send(@NonNull String serverName, @NonNull Object packet) {
         InetSocketAddress address = backendServerLookup.get(serverName);
         if (address == null) return false;
         send(address, packet);

@@ -13,12 +13,11 @@ import io.netty.handler.ssl.SslContextBuilder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.SneakyThrows;
-import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
+import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.client.netty.ProtoTrustManager;
-import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.core.protocol.protoweaver.ClientConnectionHandler;
 import me.mrnavastar.protoweaver.core.protocol.protoweaver.InternalConnectionHandler;
 
@@ -79,7 +78,7 @@ public class ProtoWeaverClient {
         b.option(ChannelOption.TCP_NODELAY, true);
         b.handler(new ChannelInitializer<SocketChannel>() {
             @Override
-            public void initChannel(@NonNull SocketChannel ch) throws NoSuchMethodException {
+            public void initChannel(@NonNull SocketChannel ch) throws Exception {
                 ch.pipeline().addLast("ssl", sslContext.newHandler(ch.alloc(), address.getHostName(), address.getPort()));
                 connection = new ProtoConnection(InternalConnectionHandler.getProtocol(), Side.CLIENT, ch);
             }
@@ -89,22 +88,20 @@ public class ProtoWeaverClient {
         new Thread(() -> {
             try {
                 f.awaitUninterruptibly();
-                if (!f.isSuccess()) return;
+                if (f.isSuccess()) {
+                    ((ClientConnectionHandler) connection.getHandler()).start(connection, protocol.getName());
+                    // Wait for protocol to switch to passed in one
+                    while (connection == null || !connection.isOpen() || !connection.getProtocol().getName().equals(protocol.getName()))
+                        Thread.onSpinWait();
 
-                ((ClientConnectionHandler) connection.getHandler()).start(connection, protocol.getName());
-
-                // Wait for protocol to switch to passed in one
-                while (connection == null || !connection.isOpen() || !connection.getProtocol().getName().equals(protocol.getName())) {
-                    Thread.onSpinWait();
+                    connectionEstablishedHandlers.forEach(handler -> {
+                        try {
+                            handler.handle(connection);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
                 }
-
-                if (f.isSuccess()) connectionEstablishedHandlers.forEach(handler -> {
-                    try {
-                        handler.handle(connection);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                });
 
                 f.channel().closeFuture().sync();
                 connectionLostHandlers.forEach(handler -> {
@@ -114,7 +111,7 @@ public class ProtoWeaverClient {
                         throw new RuntimeException(e);
                     }
                 });
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             } finally {
                 disconnect();
@@ -144,7 +141,7 @@ public class ProtoWeaverClient {
     }
 
     @SneakyThrows
-    public void send(@NonNull ProtoPacket packet) {
+    public void send(@NonNull Object packet) {
         if (connection != null) connection.send(packet);
     }
 

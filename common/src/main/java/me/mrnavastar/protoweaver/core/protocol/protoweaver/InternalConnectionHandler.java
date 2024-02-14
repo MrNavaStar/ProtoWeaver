@@ -15,7 +15,6 @@ public class InternalConnectionHandler extends ProtoWeaver {
     protected static final Protocol protocol = ProtoBuilder.protocol("protoweaver", "internal")
             .setServerHandler(ServerConnectionHandler.class)
             .setClientHandler(ClientConnectionHandler.class)
-            .addPacket(ClientSecret.class)
             .addPacket(AuthStatus.class)
             .addPacket(ProtocolStatus.class)
             .build();

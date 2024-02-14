@@ -6,13 +6,11 @@ import io.netty.handler.codec.compression.*;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.SneakyThrows;
-import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.protocol.CompressionType;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
-import me.mrnavastar.protoweaver.core.netty.ProtoPacketDecoder;
-import me.mrnavastar.protoweaver.core.netty.ProtoPacketSender;
+import me.mrnavastar.protoweaver.core.netty.ProtoPacketHandler;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
 import java.net.InetSocketAddress;
@@ -22,8 +20,7 @@ import java.net.InetSocketAddress;
  */
 public class ProtoConnection {
 
-    private final ProtoPacketSender packetSender;
-    private final ProtoPacketDecoder packetDecoder;
+    private final ProtoPacketHandler packetHandler;
     private final Channel channel;
     private final ChannelPipeline pipeline;
     @Getter
@@ -47,20 +44,25 @@ public class ProtoConnection {
     @Getter
     private Side disconnecter;
 
-    public ProtoConnection(@NonNull Protocol protocol, @NonNull Side side, @NonNull Channel channel) throws NoSuchMethodException {
+    public ProtoConnection(@NonNull Protocol protocol, @NonNull Side side, @NonNull Channel channel) throws Exception {
         this.side = side;
         this.disconnecter = Side.SERVER == side ? Side.CLIENT : Side.SERVER;
         this.protocol = protocol;
-        this.handler = protocol.newHandler(side);
-        this.packetSender = new ProtoPacketSender(this);
-        this.packetDecoder = new ProtoPacketDecoder(this);
-        packetDecoder.setHandler(handler);
+        this.handler = createHandler(protocol, side);
+        this.packetHandler = new ProtoPacketHandler(this);
+        packetHandler.setHandler(handler);
         this.channel = channel;
         this.pipeline = channel.pipeline();
 
-        pipeline.addLast("protoDecoder", packetDecoder);
-        pipeline.addLast("protoSender", packetSender);
+        pipeline.addLast("packetHandler", packetHandler);
         setCompression(protocol);
+    }
+
+    private static ProtoConnectionHandler createHandler(@NonNull Protocol protocol, @NonNull Side side) throws Exception {
+        return switch (side) {
+            case CLIENT -> protocol.getClientHandler().getDeclaredConstructor().newInstance();
+            case SERVER -> protocol.getServerHandler().getDeclaredConstructor().newInstance();
+        };
     }
 
     private void setCompression(@NonNull Protocol protocol) {
@@ -75,15 +77,15 @@ public class ProtoConnection {
         int level = protocol.getCompressionLevel();
         switch (protocol.getCompression()) {
             case GZIP -> {
-                pipeline.addBefore("protoDecoder", "compressionEncoder", ZlibCodecFactory.newZlibEncoder(ZlibWrapper.GZIP, level));
+                pipeline.addBefore("packetHandler", "compressionEncoder", ZlibCodecFactory.newZlibEncoder(ZlibWrapper.GZIP, level));
                 pipeline.addAfter("compressionEncoder", "compressionDecoder", ZlibCodecFactory.newZlibDecoder(ZlibWrapper.GZIP));
             }
             case SNAPPY -> {
-                pipeline.addBefore("protoDecoder", "compressionEncoder", new SnappyFrameEncoder());
+                pipeline.addBefore("packetHandler", "compressionEncoder", new SnappyFrameEncoder());
                 pipeline.addAfter("compressionEncoder", "compressionDecoder", new SnappyFrameDecoder());
             }
             case FAST_LZ -> {
-                pipeline.addBefore("protoDecoder", "compressionEncoder", new FastLzFrameEncoder(level));
+                pipeline.addBefore("packetHandler", "compressionEncoder", new FastLzFrameEncoder(level));
                 pipeline.addAfter("compressionEncoder", "compressionDecoder", new FastLzFrameDecoder());
             }
         }
@@ -99,16 +101,16 @@ public class ProtoConnection {
         this.protocol = protocol;
 
         try {
-            this.handler = protocol.newHandler(side);
-        } catch (NoSuchMethodException e) {
+            this.handler = createHandler(protocol, side);
+        } catch (Exception e) {
             ProtoLogger.error("Failed to upgrade to protocol: " + protocol.getName());
-            Class<?> handler = side.equals(Side.CLIENT) ? protocol.getClientHandler() : protocol.getServerHandler();
+            Class<?> handler = side.equals(Side.SERVER) ? protocol.getServerHandler() : protocol.getClientHandler();
             ProtoLogger.error(protocol.getName() + "'s connection handler doesn't have a zero arg constructor.");
             ProtoLogger.error("The mod author must add one to: " + handler.getName());
             disconnect();
         }
 
-        packetDecoder.setHandler(handler);
+        packetHandler.setHandler(handler);
 
         try {
             this.handler.onReady(this);
@@ -135,12 +137,12 @@ public class ProtoConnection {
     }
 
     /**
-     * Sends a {@link ProtoPacket} to the connected peer.
+     * Sends a {@link Object} to the connected peer.
      * @return A {@link Sender} that can be used to close the connection after the packet is sent.
      */
     @SneakyThrows
-    public Sender send(@NonNull ProtoPacket packet) {
-        return packetSender.send(packet);
+    public Sender send(@NonNull Object packet) {
+        return packetHandler.send(packet);
     }
 
     /**
