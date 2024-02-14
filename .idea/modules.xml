@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/client/protoweaver.client.main.iml" filepath="$PROJECT_DIR$/.idea/modules/client/protoweaver.client.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/protoweaver.common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/common/protoweaver.common.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/loader-common/protoweaver.loader-common.iml" filepath="$PROJECT_DIR$/.idea/modules/loader-common/protoweaver.loader-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/loader-common/protoweaver.loader-common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/loader-common/protoweaver.loader-common.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/loader-common/protoweaver.loader-common.test.iml" filepath="$PROJECT_DIR$/.idea/modules/loader-common/protoweaver.loader-common.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/loader-fabric/protoweaver.loader-fabric.main.iml" filepath="$PROJECT_DIR$/.idea/modules/loader-fabric/protoweaver.loader-fabric.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/loader-fabric/protoweaver.loader-fabric.test.iml" filepath="$PROJECT_DIR$/.idea/modules/loader-fabric/protoweaver.loader-fabric.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/loader-forge/protoweaver.loader-forge.main.iml" filepath="$PROJECT_DIR$/.idea/modules/loader-forge/protoweaver.loader-forge.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/loader-forge/protoweaver.loader-forge.test.iml" filepath="$PROJECT_DIR$/.idea/modules/loader-forge/protoweaver.loader-forge.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/loader-plugin/protoweaver.loader-plugin.main.iml" filepath="$PROJECT_DIR$/.idea/modules/loader-plugin/protoweaver.loader-plugin.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/loader-plugin/protoweaver.loader-plugin.test.iml" filepath="$PROJECT_DIR$/.idea/modules/loader-plugin/protoweaver.loader-plugin.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/proxy/protoweaver.proxy.main.iml" filepath="$PROJECT_DIR$/.idea/modules/proxy/protoweaver.proxy.main.iml" />
+    </modules>
+  </component>
+</project>

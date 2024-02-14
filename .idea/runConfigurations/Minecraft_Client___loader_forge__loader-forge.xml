@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" factoryName="Application" name="Minecraft Client (:loader-forge)" type="Application">
+    <option name="MAIN_CLASS_NAME" value="net.fabricmc.devlaunchinjector.Main"/>
+    <module name="protoweaver.loader-forge.main"/>
+    <option name="PROGRAM_PARAMETERS" value=""/>
+    <option name="VM_PARAMETERS" value="-Dfabric.dli.config=/home/ethan/Documents/Programming/GameDev/McModding/ProtoWeaver/loader-forge/.gradle/loom-cache/launch.cfg -Dfabric.dli.env=client -Djava.net.preferIPv6Addresses=system -DunionRelauncher.mainClass=net.minecraftforge.bootstrap.ForgeBootstrap -Dfabric.dli.main=juuxel.unionrelauncher.UnionRelauncher"/>
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/loader-forge/run/"/>
+    <method v="2">
+      <option enabled="true" name="Make"/>
+    </method>
+    <envs>
+      <env name="MOD_CLASSES" value="main%%/home/ethan/Documents/Programming/GameDev/McModding/ProtoWeaver/loader-forge/build/resources/main:main%%/home/ethan/Documents/Programming/GameDev/McModding/ProtoWeaver/loader-forge/build/classes/java/main"/><env name="MCP_MAPPINGS" value="loom.stub"/>
+    </envs>
+    <shortenClasspath name="ARGS_FILE"/>
+  <classpathModifications/></configuration>
+</component>
