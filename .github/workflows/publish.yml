@@ -23,7 +23,7 @@ jobs:
           sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' proxy/src/main/resources/bungee.yml
 
       - name: Build
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         run: ./gradlew build
 
       - name: Move Files
