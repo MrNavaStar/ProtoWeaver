@@ -90,7 +90,7 @@ public class ProtoBuilder {
 
         kryo.register(packet);
         for (Field field : packet.getDeclaredFields()) addPacket(field.getType());
-        for (Class<?> inner : packet.getClasses()) addPacket(inner);
+        for (Class<?> inner : packet.getDeclaredClasses()) addPacket(inner);
         return this;
     }
 
