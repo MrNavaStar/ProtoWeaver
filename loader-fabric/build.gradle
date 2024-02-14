@@ -60,7 +60,6 @@ shadowJar {
     minimize {
         exclude(dependency("org.bouncycastle:bcpkix-jdk18on:.*"))
     }
-    minimize()
 }
 
 jar.finalizedBy(shadowJar)

@@ -17,23 +17,15 @@ allprojects {
 
     repositories {
         mavenCentral()
-        maven { url "https://maven.minecraftforge.net" }                      // Forge
-        maven { url "https://repo.papermc.io/repository/maven-public/" }	    // Paper + Velocity
-        maven { url "https://api.modrinth.com/maven" }                          // Modrinth
+        maven { url "https://maven.minecraftforge.net" }                    // Forge
+        maven { url "https://repo.papermc.io/repository/maven-public/" }    // Paper + Velocity
+        maven { url "https://api.modrinth.com/maven" }                      // Modrinth
     }
 }
 
 subprojects {
     version = project.project_version
     group = project.maven_group
-
-    /*configurations {
-        common
-        shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-        compileClasspath.extendsFrom common
-        runtimeClasspath.extendsFrom common
-        developmentForge.extendsFrom common
-    }*/
 
     dependencies {
         compileOnly "org.projectlombok:lombok:${project.lombok_version}"

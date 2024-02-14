@@ -36,22 +36,16 @@ public class ProtoPacketSender extends SimpleChannelInboundHandler<ProtoPacket> 
     }
 
     // Done with two bufs to prevent the user from messing with the internal data
-    public Sender send(ProtoPacket packet) throws Exception {
-        ByteBuf packetBuf = Unpooled.buffer();
+    public Sender send(ProtoPacket packet) {
         try {
-            packet.encode(packetBuf);
+            ByteBuf packetBuf = connection.getProtocol().serialize(packet);
+            buf.writeInt(packetBuf.readableBytes()); // Packet Len
+            buf.writeBytes(packetBuf);
         } catch (Exception e) {
             ProtoLogger.error("Failed to encode packet: " + packet.getClass().getName());
-            ProtoLogger.error(e.getMessage());
+            for (StackTraceElement element : e.getStackTrace()) ProtoLogger.error(element.);
             return new Sender(connection, ctx.newSucceededFuture());
         }
-
-        int packetId = connection.getProtocol().getPacketId(packet);
-        if (packetId == -1) throw new Exception("Tried to send packet that is not loaded on this protocol");
-
-        buf.writeInt(packetBuf.readableBytes()); // Packet Len
-        buf.writeInt(packetId);
-        buf.writeBytes(packetBuf); // Combine bufs
 
         Sender sender = new Sender(connection, ctx.writeAndFlush(buf));
         buf = Unpooled.buffer();

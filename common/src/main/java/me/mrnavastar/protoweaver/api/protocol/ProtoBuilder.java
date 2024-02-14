@@ -1,5 +1,7 @@
 package me.mrnavastar.protoweaver.api.protocol;
 
+import com.esotericsoftware.kryo.kryo5.Kryo;
+import com.esotericsoftware.kryo.kryo5.Serializer;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
@@ -20,6 +22,7 @@ public class ProtoBuilder {
 
     private final String name;
     private List<Class<? extends ProtoPacket>> packets = new ArrayList<>();
+    private final Kryo kryo = new Kryo();
     private Class<? extends ProtoConnectionHandler> serverHandler = null;
     private Class<? extends ProtoConnectionHandler> clientHandler = null;
     private Class<? extends ServerAuthHandler> serverAuthHandler = null;
@@ -102,7 +105,8 @@ public class ProtoBuilder {
      * @return {@link ProtoBuilder}
      */
     public <T extends ProtoPacket> ProtoBuilder addPacket(@NonNull Class<T> packet) {
-        packets.add(packet);
+        //packets.add(packet);
+        kryo.register(packet);
         return this;
     }
 
@@ -132,6 +136,6 @@ public class ProtoBuilder {
      */
     public Protocol build() {
         if (compression != CompressionType.NONE && compressionLevel == -37) compressionLevel = compression.getDefaultLevel();
-        return new Protocol(name, Collections.unmodifiableList(packets), serverHandler, clientHandler, serverAuthHandler, clientAuthHandler, compression, compressionLevel);
+        return new Protocol(name, Collections.unmodifiableList(packets), serverHandler, clientHandler, serverAuthHandler, clientAuthHandler, compression, compressionLevel, kryo);
     }
 }

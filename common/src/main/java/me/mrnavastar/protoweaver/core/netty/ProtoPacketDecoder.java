@@ -1,5 +1,6 @@
 package me.mrnavastar.protoweaver.core.netty;
 
+import com.esotericsoftware.kryo.kryo5.Kryo;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -10,6 +11,7 @@ import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.core.util.DrunkenBishop;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
+import java.io.IOException;
 import java.util.List;
 
 public class ProtoPacketDecoder extends ByteToMessageDecoder {
@@ -33,23 +35,13 @@ public class ProtoPacketDecoder extends ByteToMessageDecoder {
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) {
+    protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) throws IOException {
         if (byteBuf.readableBytes() == 0) return;
 
         int packetLen = byteBuf.readInt();
-        int packetID = byteBuf.readInt();
-
-        ProtoPacket packet = connection.getProtocol().getPacket(packetID);
+        ProtoPacket packet = connection.getProtocol().deserialize(byteBuf.readBytes(packetLen));
         if (packet == null) {
-            ProtoLogger.error("Got unknown packet with id: " + packetID + " on protocol: " + connection.getProtocol().getName());
-            return;
-        }
-
-        try {
-            packet.decode(byteBuf.readBytes(packetLen));
-        } catch (Exception e) {
-            ProtoLogger.error("Failed to decode packet: " + packet.getClass().getName() + " on protocol: " + connection.getProtocol().getName());
-            ProtoLogger.error(e.getMessage());
+            ProtoLogger.error("Protocol: " + connection.getProtocol().getName() + " received an unknown packet!");
             return;
         }
 

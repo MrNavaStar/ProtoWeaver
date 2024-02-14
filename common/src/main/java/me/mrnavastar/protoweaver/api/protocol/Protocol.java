@@ -1,11 +1,19 @@
 package me.mrnavastar.protoweaver.api.protocol;
 
+import com.esotericsoftware.kryo.kryo5.Kryo;
+import com.esotericsoftware.kryo.kryo5.io.Input;
+import com.esotericsoftware.kryo.kryo5.io.Output;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.Unpooled;
 import lombok.*;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.ProtoPacket;
 import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
 import me.mrnavastar.protoweaver.api.auth.ServerAuthHandler;
 
+import java.io.IOException;
 import java.util.List;
 
 @Getter
@@ -21,6 +29,7 @@ public class Protocol {
     private final Class<? extends ClientAuthHandler> clientAuthHandler;
     private final CompressionType compression;
     private final int compressionLevel;
+    private final Kryo kryo;
 
     @SneakyThrows
     public ProtoConnectionHandler newHandler(@NonNull Side side) throws NoSuchMethodException {
@@ -40,14 +49,17 @@ public class Protocol {
         return clientAuthHandler.getDeclaredConstructor().newInstance();
     }
 
-    @SneakyThrows
-    public ProtoPacket getPacket(int packetID) {
-        if (packetID < 0 || packetID >= packets.size()) return null;
-        return packets.get(packetID).getDeclaredConstructor().newInstance();
+    public ByteBuf serialize(ProtoPacket packet) throws Exception {
+        try (ByteBufOutputStream out = new ByteBufOutputStream(Unpooled.buffer())) {
+            kryo.writeObject(new Output(out), packet);
+            return out.buffer();
+        }
     }
 
-    public int getPacketId(@NonNull ProtoPacket packet) {
-        return packets.indexOf(packet.getClass());
+    public ProtoPacket deserialize(ByteBuf buf) throws IOException {
+        try (ByteBufInputStream in = new ByteBufInputStream(buf)) {
+            return (ProtoPacket) kryo.readClassAndObject(new Input(in));
+        }
     }
 
     @Override
