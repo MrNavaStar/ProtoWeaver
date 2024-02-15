@@ -11,6 +11,7 @@ import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
 import me.mrnavastar.protoweaver.api.auth.ServerAuthHandler;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InaccessibleObjectException;
 
 /**
  * A simple builder class for constructing {@link Protocol}'s
@@ -86,11 +87,12 @@ public class ProtoBuilder {
      * @return {@link ProtoBuilder}
      */
     public ProtoBuilder addPacket(@NonNull Class<?> packet) {
-        if (packet.equals(Enum.EnumDesc.class)) return this;
+        if (kryo.getClassResolver().getRegistration(packet) != null) return this;
 
-        kryo.register(packet);
-        for (Field field : packet.getDeclaredFields()) addPacket(field.getType());
-        for (Class<?> inner : packet.getDeclaredClasses()) addPacket(inner);
+        try {
+            kryo.register(packet);
+            for (Field field : packet.getDeclaredFields()) addPacket(field.getType());
+        } catch (InaccessibleObjectException ignore) {}
         return this;
     }
 
