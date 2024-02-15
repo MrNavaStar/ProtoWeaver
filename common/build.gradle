@@ -1,25 +1,8 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
-configurations {
-    publish
-}
-
 dependencies {
     implementation("com.esotericsoftware:kryo5:${project.kyro_version}")
-    publish compileOnly("io.netty:netty-buffer:${project.netty_version}")
+    compileOnly("io.netty:netty-buffer:${project.netty_version}")
     compileOnly("io.netty:netty-transport:${project.netty_version}")
     compileOnly("io.netty:netty-codec:${project.netty_version}")
 }
 
-task depJar(type: ShadowJar) {
-    archiveBaseName.set("protoweaver")
-    archiveClassifier.set(project.name)
-    from sourceSets.main.output
-    configurations = [project.configurations.publish]
-}
-
-jar {
-    archiveClassifier.set(project.name + "-dev")
-}
-
-jar.finalizedBy(depJar)
+jar.finalizedBy(shadowJar)

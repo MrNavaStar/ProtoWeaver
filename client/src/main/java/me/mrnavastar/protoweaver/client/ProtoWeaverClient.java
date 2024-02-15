@@ -89,12 +89,12 @@ public class ProtoWeaverClient {
             try {
                 f.awaitUninterruptibly();
                 if (f.isSuccess()) {
-                    ((ClientConnectionHandler) connection.getHandler()).start(connection, protocol.getName());
+                    ((ClientConnectionHandler) connection.getHandler()).start(connection, protocol.toString());
                     // Wait for protocol to switch to passed in one
-                    while (connection == null || !connection.isOpen() || !connection.getProtocol().getName().equals(protocol.getName()))
+                    while (connection == null || connection.isOpen() && !connection.getProtocol().toString().equals(protocol.toString()))
                         Thread.onSpinWait();
 
-                    connectionEstablishedHandlers.forEach(handler -> {
+                    if (connection.isOpen()) connectionEstablishedHandlers.forEach(handler -> {
                         try {
                             handler.handle(connection);
                         } catch (Exception e) {

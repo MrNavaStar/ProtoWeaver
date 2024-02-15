@@ -1,18 +1,16 @@
 package me.mrnavastar.protoweaver.core.protocol.protoweaver;
 
-import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import lombok.Getter;
-import me.mrnavastar.protoweaver.api.protocol.ProtoBuilder;
-import me.mrnavastar.protoweaver.api.netty.Sender;
+import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
+import me.mrnavastar.protoweaver.api.netty.Sender;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
-
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
-public class InternalConnectionHandler extends ProtoWeaver {
+public class InternalConnectionHandler {
 
     @Getter
-    protected static final Protocol protocol = ProtoBuilder.protocol("protoweaver", "internal")
+    protected static final Protocol protocol = Protocol.create("protoweaver", "internal")
             .setServerHandler(ServerConnectionHandler.class)
             .setClientHandler(ClientConnectionHandler.class)
             .addPacket(AuthStatus.class)
@@ -20,11 +18,11 @@ public class InternalConnectionHandler extends ProtoWeaver {
             .build();
 
     static {
-        load(protocol);
+        ProtoWeaver.load(protocol);
     }
 
     protected void disconnectIfNeverUpgraded(ProtoConnection connection, Sender sender) {
-        if (!connection.getProtocol().getName().equals(protocol.getName())) return;
+        if (!connection.getProtocol().toString().equals(protocol.toString())) return;
         if (sender != null) {
             sender.disconnect();
             return;
@@ -38,7 +36,7 @@ public class InternalConnectionHandler extends ProtoWeaver {
 
     protected void protocolNotLoaded(ProtoConnection connection, String name) {
         ProtoLogger.warn("Protocol: " + name + " is not loaded! Closing connection!");
-        Sender sender = connection.send(new ProtocolStatus(connection.getProtocol().getName(), name, ProtocolStatus.Status.MISSING));
+        Sender sender = connection.send(new ProtocolStatus(connection.getProtocol().toString(), name, 0, ProtocolStatus.Status.MISSING));
         disconnectIfNeverUpgraded(connection, sender);
     }
 }

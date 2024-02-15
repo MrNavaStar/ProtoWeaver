@@ -1,12 +1,11 @@
 package me.mrnavastar.protoweaver.core.protocol.protoweaver;
 
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
+import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
-
-import java.lang.reflect.InvocationTargetException;
 
 public class ClientConnectionHandler extends InternalConnectionHandler implements ProtoConnectionHandler {
 
@@ -14,7 +13,7 @@ public class ClientConnectionHandler extends InternalConnectionHandler implement
     private ClientAuthHandler authHandler = null;
 
     public void start(ProtoConnection connection, String nextProtocolName) throws Exception {
-        Protocol nextProtocol = loadedProtocols.get(nextProtocolName);
+        Protocol nextProtocol = ProtoWeaver.getLoadedProtocol(nextProtocolName);
         if (nextProtocol == null) {
             protocolNotLoaded(connection, nextProtocolName);
             return;
@@ -22,7 +21,7 @@ public class ClientConnectionHandler extends InternalConnectionHandler implement
 
         authenticated = false;
         if (nextProtocol.getClientAuthHandler() != null) authHandler = nextProtocol.getClientAuthHandler().getDeclaredConstructor().newInstance();
-        connection.send(new ProtocolStatus(connection.getProtocol().getName(), nextProtocol.getName(), ProtocolStatus.Status.START));
+        connection.send(new ProtocolStatus(connection.getProtocol().toString(), nextProtocol.toString(), nextProtocol.hashCode(), ProtocolStatus.Status.START));
     }
 
     @Override
@@ -33,9 +32,14 @@ public class ClientConnectionHandler extends InternalConnectionHandler implement
                     ProtoLogger.error("Protocol: \"" + status.getNextProtocol() + "\" is not loaded on server.");
                     disconnectIfNeverUpgraded(connection);
                 }
+                case MISMATCH -> {
+                    ProtoLogger.error("Protocol: \"" + status.getNextProtocol() + "\" has a mismatch with the version on the server!");
+                    ProtoLogger.error("Double check that all packets are registered in the same order and all settings are the same.");
+                    disconnectIfNeverUpgraded(connection);
+                }
                 case UPGRADE -> {
                     if (!authenticated) return;
-                    Protocol nextProtocol = loadedProtocols.get(status.getNextProtocol());
+                    Protocol nextProtocol = ProtoWeaver.getLoadedProtocol(status.getNextProtocol());
                     if (nextProtocol == null) {
                         protocolNotLoaded(connection, status.getNextProtocol());
                         return;

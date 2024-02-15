@@ -2,6 +2,7 @@ package me.mrnavastar.protoweaver.core.protocol.protoweaver;
 
 import lombok.SneakyThrows;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
+import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.auth.ServerAuthHandler;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.netty.Sender;
@@ -21,9 +22,17 @@ public class ServerConnectionHandler extends InternalConnectionHandler implement
             switch (status.getStatus()) {
                 case START -> {
                     // Check if protocol loaded
-                    nextProtocol = loadedProtocols.get(status.getNextProtocol());
+                    nextProtocol = ProtoWeaver.getLoadedProtocol(status.getNextProtocol());
                     if (nextProtocol == null) {
                         protocolNotLoaded(connection, status.getNextProtocol());
+                        return;
+                    }
+
+                    if (nextProtocol.hashCode() != status.getNextProtocolHash()) {
+                        ProtoLogger.error("Protocol: \"" + nextProtocol + "\" has a mismatch with the version on the client!");
+                        ProtoLogger.error("Double check that all packets are registered in the same order and all settings are the same.");
+                        Sender sender = connection.send(new ProtocolStatus(connection.getProtocol().toString(), nextProtocol.toString(), nextProtocol.hashCode(), ProtocolStatus.Status.MISMATCH));
+                        disconnectIfNeverUpgraded(connection, sender);
                         return;
                     }
 
@@ -37,7 +46,7 @@ public class ServerConnectionHandler extends InternalConnectionHandler implement
                     authenticated = true;
                 }
                 case MISSING -> {
-                    ProtoLogger.error("Protocol: \"" + status.getNextProtocol() + "\" is not loaded on client.");
+                    ProtoLogger.error("Protocol: \"" + status.getNextProtocol() + "\" is not loaded on client!");
                     disconnectIfNeverUpgraded(connection);
                 }
             }
@@ -56,7 +65,7 @@ public class ServerConnectionHandler extends InternalConnectionHandler implement
 
         // Upgrade protocol
         connection.send(AuthStatus.OK);
-        connection.send(new ProtocolStatus(connection.getProtocol().getName(), nextProtocol.getName(), ProtocolStatus.Status.UPGRADE));
+        connection.send(new ProtocolStatus(connection.getProtocol().toString(), nextProtocol.toString(), nextProtocol.hashCode(), ProtocolStatus.Status.UPGRADE));
         connection.upgradeProtocol(nextProtocol);
     }
 }

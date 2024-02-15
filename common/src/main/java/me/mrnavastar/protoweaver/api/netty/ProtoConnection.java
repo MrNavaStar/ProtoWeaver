@@ -60,7 +60,10 @@ public class ProtoConnection {
 
     private static ProtoConnectionHandler createHandler(@NonNull Protocol protocol, @NonNull Side side) throws Exception {
         return switch (side) {
-            case CLIENT -> protocol.getClientHandler().getDeclaredConstructor().newInstance();
+            case CLIENT -> {
+                if (protocol.getClientHandler() == null) throw new RuntimeException("Failed to create client handler for protocol: " + protocol);
+                yield protocol.getClientHandler().getDeclaredConstructor().newInstance();
+            }
             case SERVER -> protocol.getServerHandler().getDeclaredConstructor().newInstance();
         };
     }
@@ -103,9 +106,9 @@ public class ProtoConnection {
         try {
             this.handler = createHandler(protocol, side);
         } catch (Exception e) {
-            ProtoLogger.error("Failed to upgrade to protocol: " + protocol.getName());
+            ProtoLogger.error("Failed to upgrade to protocol: " + protocol);
             Class<?> handler = side.equals(Side.SERVER) ? protocol.getServerHandler() : protocol.getClientHandler();
-            ProtoLogger.error(protocol.getName() + "'s connection handler doesn't have a zero arg constructor.");
+            ProtoLogger.error(protocol + "'s connection handler doesn't have a zero arg constructor.");
             ProtoLogger.error("The mod author must add one to: " + handler.getName());
             disconnect();
         }
@@ -115,7 +118,7 @@ public class ProtoConnection {
         try {
             this.handler.onReady(this);
         } catch (Exception e) {
-            ProtoLogger.error("Protocol: " + protocol.getName() + " threw an error on initialization!");
+            ProtoLogger.error("Protocol: " + protocol + " threw an error on initialization!");
             e.printStackTrace();
         }
     }

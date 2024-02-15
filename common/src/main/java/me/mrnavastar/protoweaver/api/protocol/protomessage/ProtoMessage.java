@@ -2,10 +2,10 @@ package me.mrnavastar.protoweaver.api.protocol.protomessage;
 
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import lombok.Getter;
-import me.mrnavastar.protoweaver.api.protocol.ProtoBuilder;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.protocol.CompressionType;
+import me.mrnavastar.protoweaver.api.protocol.velocity.VelocityAuth;
 
 import java.util.ArrayList;
 import java.util.function.Function;
@@ -16,7 +16,7 @@ import java.util.function.Function;
 public class ProtoMessage implements ProtoConnectionHandler {
 
     @Getter
-    private static final Protocol protocol = ProtoBuilder.protocol("protoweaver", "proto-message")
+    private static final Protocol protocol = Protocol.create("protoweaver", "proto-message")
             .enableCompression(CompressionType.SNAPPY)
             .setServerHandler(ProtoMessage.class)
             .setClientHandler(ProtoMessage.class)

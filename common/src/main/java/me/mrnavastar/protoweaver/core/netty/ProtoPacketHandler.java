@@ -6,8 +6,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import lombok.Setter;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
-import me.mrnavastar.protoweaver.api.netty.Sender;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
+import me.mrnavastar.protoweaver.api.netty.Sender;
 import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.core.util.DrunkenBishop;
 import me.mrnavastar.protoweaver.core.util.ProtoConstants;
@@ -41,7 +41,7 @@ public class ProtoPacketHandler extends ByteToMessageDecoder {
         try {
             this.handler.onDisconnect(connection);
         } catch (Exception e) {
-            ProtoLogger.error("Protocol: " + connection.getProtocol().getName() + " threw an error on disconnect!");
+            ProtoLogger.error("Protocol: " + connection.getProtocol() + " threw an error on disconnect!");
             e.printStackTrace();
         }
     }
@@ -54,14 +54,14 @@ public class ProtoPacketHandler extends ByteToMessageDecoder {
         byteBuf.readBytes(bytes);
         Object packet = connection.getProtocol().deserialize(bytes);
         if (packet == null) {
-            ProtoLogger.error("Protocol: " + connection.getProtocol().getName() + " received an unknown object!");
+            ProtoLogger.error("Protocol: " + connection.getProtocol() + " received an unknown object!");
             return;
         }
 
         try {
             handler.handlePacket(connection, packet);
         } catch (Exception e) {
-            ProtoLogger.error("Protocol: " + connection.getProtocol().getName() + " threw an error on when trying to handle: " + packet.getClass() + "!");
+            ProtoLogger.error("Protocol: " + connection.getProtocol() + " threw an error on when trying to handle: " + packet.getClass() + "!");
             e.printStackTrace();
         }
     }

@@ -11,11 +11,13 @@ public class ProtocolStatus {
 
     public enum Status {
         MISSING,
+        MISMATCH,
         START,
         UPGRADE
     }
 
     private String currentProtocol;
     private String nextProtocol;
+    private int nextProtocolHash;
     private Status status;
 }
