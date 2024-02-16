@@ -6,39 +6,25 @@ architectury {
 }
 
 dependencies {
-    shadow implementation(project(path: ':common', configuration: 'shadow'))
+    implementation project(path: ':common', configuration: 'default')
 
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modCompileOnly "net.fabricmc:fabric-loader:${project.loader_version}"
 
     compileOnly("io.netty:netty-buffer:${project.netty_version}")
     compileOnly "io.netty:netty-transport:${project.netty_version}"
     compileOnly "io.netty:netty-handler:${project.netty_version}"
 
-    shadow api("io.netty:netty-codec-http:${project.netty_version}") {
+    implementation("io.netty:netty-codec-http:${project.netty_version}") {
         exclude group: "io.netty", module: "netty-buffer"
         exclude group: "io.netty", module: "netty-transport"
         exclude group: "io.netty", module: "netty-handler"
     }
-    shadow api("io.netty:netty-codec-http2:${project.netty_version}") {
+    implementation("io.netty:netty-codec-http2:${project.netty_version}") {
         exclude group: "io.netty", module: "netty-buffer"
         exclude group: "io.netty", module: "netty-transport"
         exclude group: "io.netty", module: "netty-handler"
     }
-    shadow api("org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}")
+    implementation "org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}"
 }
-
-shadowJar {
-    exclude "*.json"
-
-    relocate('io.netty', 'me.mrnavastar.protoweaver.libs.netty') {
-        exclude 'io.netty.channel.*'
-        exclude 'io.netty.buffer.*'
-        exclude 'io.netty.handler.ssl.*'
-    }
-    relocate "org.bouncycastle", "me.mrnavastar.protoweaver.libs.bouncycastle"
-    relocate "com.esotericsoftware.kryo.kryo5", "me.mrnavastar.protoweaver.libs.kryo5"
-}
-
-jar.finalizedBy(shadowJar)

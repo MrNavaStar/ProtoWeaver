@@ -1,4 +1,4 @@
-package me.mrnavastar.protoweaver.paper;
+package me.mrnavastar.protoweaver.loader;
 
 import io.netty.channel.Channel;
 import io.papermc.paper.configuration.GlobalConfiguration;

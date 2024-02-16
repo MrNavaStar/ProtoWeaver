@@ -1,8 +1,7 @@
 dependencies {
-    implementation("com.esotericsoftware:kryo5:${project.kyro_version}")
-    compileOnly("io.netty:netty-buffer:${project.netty_version}")
-    compileOnly("io.netty:netty-transport:${project.netty_version}")
-    compileOnly("io.netty:netty-codec:${project.netty_version}")
+    implementation "com.esotericsoftware:kryo5:${project.kyro_version}"
+    implementation "com.cedarsoftware:java-util:2.4.0"
+    compileOnly "io.netty:netty-buffer:${project.netty_version}"
+    compileOnly "io.netty:netty-transport:${project.netty_version}"
+    compileOnly "io.netty:netty-codec:${project.netty_version}"
 }
-
-jar.finalizedBy(shadowJar)

@@ -6,8 +6,27 @@ plugins {
 def targetJavaVersion = project.javaVersion as Integer
 
 dependencies {
-    shadow api(project(path: ":loader-common", configuration: "shadow")) { transitive false }
+    shadow api(project(path: ':loader-common', configuration: 'default'))
     paperweight.paperDevBundle(project.paper_version)
+}
+
+shadowJar {
+    relocate('io.netty', 'me.mrnavastar.protoweaver.libs.netty') {
+        exclude 'io.netty.channel.*'
+        exclude 'io.netty.buffer.*'
+        exclude 'io.netty.handler.ssl.*'
+    }
+    relocate "org.bouncycastle", "me.mrnavastar.protoweaver.libs.bouncycastle"
+    relocate "com.esotericsoftware", "me.mrnavastar.protoweaver.libs.esotericsoftware"
+    relocate "com.cedarsoftware", "me.mrnavastar.protoweaver.libs.cedarsoftware"
+
+    exclude "META-INF/maven/**"
+    exclude "META-INF/native-image/**"
+
+    minimize {
+        exclude(dependency("org.bouncycastle:bcpkix-jdk18on:.*"))
+    }
+    minimize()
 }
 
 jar.finalizedBy(shadowJar)

@@ -12,7 +12,7 @@
   "environment": "*",
   "entrypoints": {
     "server": [
-      "me.mrnavastar.protoweaver.fabric.Fabric"
+      "me.mrnavastar.protoweaver.loader.Fabric"
     ]
   },
   "mixins": [

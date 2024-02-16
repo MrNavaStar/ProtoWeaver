@@ -15,7 +15,6 @@ dependencies {
 
 jar.finalizedBy(shadowJar)
 
-
 tasks {
     runVelocity {
         velocityVersion(project.velocity_version)

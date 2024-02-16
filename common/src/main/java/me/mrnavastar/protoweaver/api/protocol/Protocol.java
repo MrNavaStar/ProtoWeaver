@@ -1,11 +1,15 @@
 package me.mrnavastar.protoweaver.api.protocol;
 
+import com.cedarsoftware.util.DeepEquals;
 import com.esotericsoftware.kryo.kryo5.Kryo;
 import com.esotericsoftware.kryo.kryo5.io.Input;
 import com.esotericsoftware.kryo.kryo5.io.Output;
 import com.esotericsoftware.kryo.kryo5.objenesis.strategy.StdInstantiatorStrategy;
 import com.esotericsoftware.kryo.kryo5.util.DefaultInstantiatorStrategy;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NonNull;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
@@ -13,6 +17,7 @@ import me.mrnavastar.protoweaver.api.auth.ServerAuthHandler;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InaccessibleObjectException;
+import java.lang.reflect.Modifier;
 import java.util.Objects;
 
 /**
@@ -32,6 +37,8 @@ public class Protocol {
     @Getter private Class<? extends ServerAuthHandler> serverAuthHandler;
     @Getter private Class<? extends ClientAuthHandler> clientAuthHandler;
 
+    private int packetHash = 1;
+
     private Protocol(String namespace, String name) {
         this.namespace = namespace;
         this.name = name;
@@ -50,9 +57,9 @@ public class Protocol {
     }
 
     /**
-     * Allows you to create modify an existing protocol. The {@link Protocol} object returned from {@link Builder#build()} will
-     * be the same object as the one that this method was called on (not a copy). In practice, this means you can modify
-     * a protocol without reloading it with {@link ProtoWeaver#load(Protocol)}
+     * Allows you to create modify an existing {@link Protocol}. The {@link Protocol} object returned from {@link Builder#build()} will
+     * be the same object as the one that this method was called on (not a copy). In theory this means you can modify
+     * a protocol without reloading it, or while its currently active. Here be dragons, so use with caution.
      */
     public Builder modify() {
         return new Builder(this);
@@ -73,10 +80,11 @@ public class Protocol {
 
     @Override
     public int hashCode() {
+
+
         return Objects.hash(
                 namespace, name,
-                // TODO: Make packet order effect the hashcode
-                kryo.getContext(), kryo.isRegistrationRequired(), kryo.getNextRegistrationId(),
+                packetHash,
                 compression.ordinal(), compressionLevel,
                 maxPacketSize
         );
@@ -129,7 +137,7 @@ public class Protocol {
         }
 
         /**
-         * Register a packet to the protocol.
+         * Register a class to the {@link Protocol}. Does nothing if the class has already been registered.
          * @param packet The packet to register.
          */
         public Builder addPacket(@NonNull Class<?> packet) {
@@ -137,14 +145,17 @@ public class Protocol {
 
             try {
                 protocol.kryo.register(packet);
-                for (Field field : packet.getDeclaredFields()) addPacket(field.getType());
+                protocol.packetHash = 31 * protocol.packetHash + DeepEquals.deepHashCode(packet);
+
+                for (Field field : packet.getDeclaredFields())
+                    if (((Modifier.STATIC | Modifier.TRANSIENT) & field.getModifiers()) == 0) addPacket(field.getType());
             } catch (InaccessibleObjectException ignore) {}
             return this;
         }
 
         /**
-         * Enables compression on the protocol.
-         * @param type The type of compression to enable. Defaults to NONE.
+         * Enables compression on the {@link Protocol}. The compression type by defaults is set to {@link CompressionType#NONE}.
+         * @param type The type of compression to enable.
          */
         public Builder enableCompression(@NonNull CompressionType type) {
             protocol.compression = type;
@@ -152,7 +163,7 @@ public class Protocol {
         }
 
         /**
-         * Set the compression level if compression is enabled. Be sure to check the supported level for each protocol online.
+         * Set the compression level if compression is enabled. Be sure to check the supported level for each type of compression online.
          * @param level The compression level to set.
          */
         public Builder setCompressionLevel(int level) {
@@ -161,8 +172,8 @@ public class Protocol {
         }
 
         /**
-         * Set the maximum packet size this protocol can handle. The higher the value, the more ram will be allocated when sending and receiving packets.
-         * The maximum packet size defaults to 16kb
+         * Set the maximum packet size this {@link Protocol} can handle. The higher the value, the more ram will be allocated when sending and receiving packets.
+         * The maximum packet size defaults to 16kb.
          * @param maxPacketSize The maximum size a packet can be in bytes
          */
         public Builder setMaxPacketSize(int maxPacketSize) {
@@ -171,7 +182,7 @@ public class Protocol {
         }
 
         /**
-         * Build the protocol.
+         * Build the {@link Protocol}.
          * @return A finished protocol that can be loaded using {@link ProtoWeaver#load(Protocol)}.
          */
         public Protocol build() {

@@ -19,25 +19,12 @@ configurations {
 }
 
 dependencies {
-    shadowCommon(api(project(path: ":loader-common", configuration: "shadow")))
+    shadowCommon(api(project(path: ":loader-common", configuration: "default")))
     shadowCommon(api(project(path: ":loader-common", configuration: "transformProductionFabric"))) { transitive false }
 
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-    // Include
-    /*shadowCommon api("io.netty:netty-codec-http:${project.netty_version}") {
-        exclude group: "io.netty", module: "netty-buffer"
-        exclude group: "io.netty", module: "netty-transport"
-        exclude group: "io.netty", module: "netty-handler"
-    }
-    shadowCommon api("io.netty:netty-codec-http2:${project.netty_version}") {
-        exclude group: "io.netty", module: "netty-buffer"
-        exclude group: "io.netty", module: "netty-transport"
-        exclude group: "io.netty", module: "netty-handler"
-    }
-    shadowCommon api("org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}")*/
 
     // Mod Compat
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
@@ -50,16 +37,22 @@ dependencies {
 
 shadowJar {
     configurations = [project.configurations.shadowCommon]
-    /*relocate('io.netty', 'me.mrnavastar.protoweaver.libs.netty') {
+    relocate('io.netty', 'me.mrnavastar.protoweaver.libs.netty') {
         exclude 'io.netty.channel.*'
         exclude 'io.netty.buffer.*'
         exclude 'io.netty.handler.ssl.*'
     }
     relocate "org.bouncycastle", "me.mrnavastar.protoweaver.libs.bouncycastle"
+    relocate "com.esotericsoftware", "me.mrnavastar.protoweaver.libs.esotericsoftware"
+    relocate "com.cedarsoftware", "me.mrnavastar.protoweaver.libs.cedarsoftware"
+
+    exclude "META-INF/maven/**"
+    exclude "META-INF/native-image/**"
 
     minimize {
         exclude(dependency("org.bouncycastle:bcpkix-jdk18on:.*"))
-    }*/
+    }
+    minimize()
 }
 
 jar.finalizedBy(shadowJar)
