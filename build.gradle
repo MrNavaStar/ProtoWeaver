@@ -3,6 +3,7 @@ plugins {
     id "io.freefair.lombok" version "8.6"
     id "architectury-plugin" version "3.4-SNAPSHOT"
     id "dev.architectury.loom" version "1.5-SNAPSHOT" apply false
+    id "maven-publish"
 }
 
 allprojects {
@@ -10,6 +11,7 @@ allprojects {
     apply plugin: "com.github.johnrengelman.shadow"
     apply plugin: "io.freefair.lombok"
     apply plugin: "architectury-plugin"
+    apply plugin: "maven-publish"
 
     architectury {
         compileOnly()
@@ -58,7 +60,3 @@ subprojects {
 
     jar.finalizedBy(jarSources)
 }
-
-
-
-

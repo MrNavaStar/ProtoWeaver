@@ -1,7 +1,6 @@
 package me.mrnavastar.protoweaver.loader;
 
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
-import me.mrnavastar.protoweaver.api.protocol.protomessage.ProtoMessage;
 import me.mrnavastar.protoweaver.api.protocol.velocity.VelocityAuth;
 import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
@@ -15,23 +14,24 @@ import org.apache.logging.log4j.Logger;
 public class Fabric implements DedicatedServerModInitializer, ProtoLogger.IProtoLogger {
 
     private final Logger logger = LogManager.getLogger();
+    private boolean setup = false;
 
     @Override
     public void onInitializeServer() {
         ProtoLogger.setLogger(this);
-        SSLContext.initKeystore(FabricLoader.getInstance().getConfigDir() + "/protoweaver");
-        SSLContext.genKeys();
-        SSLContext.initContext();
 
-        // Fabric Proxy Lite support
-        FabricLoader.getInstance().getModContainer("fabricproxy-lite").ifPresent(modContainer -> {
-            // FabricProxyLites config is initialized as a mixin plugin, so it's guaranteed to be loaded before protoweaver
-            VelocityAuth.setSecret(FabricProxyLite.config.getSecret());
-        });
+        ProtoWeaver.PROTOCOL_LOADED.register(protocol -> {
+            if (setup) return;
+            SSLContext.initKeystore(FabricLoader.getInstance().getConfigDir() + "/protoweaver");
+            SSLContext.genKeys();
+            SSLContext.initContext();
 
-        ProtoWeaver.load(ProtoMessage.getProtocol());
-        ProtoMessage.MESSAGE_RECEIVED.register((connection, channel, message) -> {
-            System.out.println(message);
+            // Fabric Proxy Lite support
+            FabricLoader.getInstance().getModContainer("fabricproxy-lite").ifPresent(modContainer -> {
+                // FabricProxyLites config is initialized as a mixin plugin, so it's guaranteed to be loaded before protoweaver
+                VelocityAuth.setSecret(FabricProxyLite.config.getSecret());
+            });
+            setup = true;
         });
     }
 

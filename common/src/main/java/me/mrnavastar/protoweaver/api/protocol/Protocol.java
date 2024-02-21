@@ -1,6 +1,5 @@
 package me.mrnavastar.protoweaver.api.protocol;
 
-import com.cedarsoftware.util.DeepEquals;
 import com.esotericsoftware.kryo.kryo5.Kryo;
 import com.esotericsoftware.kryo.kryo5.io.Input;
 import com.esotericsoftware.kryo.kryo5.io.Output;
@@ -67,7 +66,9 @@ public class Protocol {
 
     public byte[] serialize(Object packet) {
         try (Output output = new Output(maxPacketSize)) {
-            kryo.writeClassAndObject(output, packet);
+            try {
+                kryo.writeClassAndObject(output, packet);
+            } catch (IllegalArgumentException ignore) {}
             return output.toBytes();
         }
     }
@@ -80,8 +81,6 @@ public class Protocol {
 
     @Override
     public int hashCode() {
-
-
         return Objects.hash(
                 namespace, name,
                 packetHash,
@@ -145,7 +144,7 @@ public class Protocol {
 
             try {
                 protocol.kryo.register(packet);
-                protocol.packetHash = 31 * protocol.packetHash + DeepEquals.deepHashCode(packet);
+                protocol.packetHash = 31 * protocol.packetHash + packet.getName().hashCode();
 
                 for (Field field : packet.getDeclaredFields())
                     if (((Modifier.STATIC | Modifier.TRANSIENT) & field.getModifiers()) == 0) addPacket(field.getType());

@@ -143,7 +143,6 @@ public class ProtoConnection {
      * Sends a {@link Object} to the connected peer.
      * @return A {@link Sender} that can be used to close the connection after the packet is sent.
      */
-    @SneakyThrows
     public Sender send(@NonNull Object packet) {
         return packetHandler.send(packet);
     }

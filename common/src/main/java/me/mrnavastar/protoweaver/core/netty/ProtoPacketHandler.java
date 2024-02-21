@@ -70,17 +70,19 @@ public class ProtoPacketHandler extends ByteToMessageDecoder {
     public Sender send(Object packet) {
         try {
             byte[] packetBuf = connection.getProtocol().serialize(packet);
+            if (packetBuf.length == 0) return new Sender(connection, ctx.newSucceededFuture(), false);
+
             buf.writeInt(packetBuf.length); // Packet Len
             buf.writeBytes(packetBuf);
+
+            Sender sender = new Sender(connection, ctx.writeAndFlush(buf), true);
+            buf = Unpooled.buffer();
+            return sender;
         } catch (Exception e) {
             ProtoLogger.error("Failed to encode object: " + packet.getClass().getName());
             e.printStackTrace();
-            return new Sender(connection, ctx.newSucceededFuture());
+            return new Sender(connection, ctx.newSucceededFuture(), false);
         }
-
-        Sender sender = new Sender(connection, ctx.writeAndFlush(buf));
-        buf = Unpooled.buffer();
-        return sender;
     }
 
     @Override

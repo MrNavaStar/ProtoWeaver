@@ -1,6 +1,5 @@
 dependencies {
     implementation "com.esotericsoftware:kryo5:${project.kyro_version}"
-    implementation "com.cedarsoftware:java-util:${project.java_util_version}"
     compileOnly "io.netty:netty-buffer:${project.netty_version}"
     compileOnly "io.netty:netty-transport:${project.netty_version}"
     compileOnly "io.netty:netty-codec:${project.netty_version}"

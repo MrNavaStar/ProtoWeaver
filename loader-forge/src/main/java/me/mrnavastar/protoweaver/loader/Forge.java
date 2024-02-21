@@ -1,5 +1,6 @@
 package me.mrnavastar.protoweaver.loader;
 
+import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 import me.mrnavastar.protoweaver.loader.netty.SSLContext;
@@ -13,12 +14,18 @@ import org.apache.logging.log4j.Logger;
 public class Forge implements ProtoLogger.IProtoLogger {
 
     private final Logger logger = LogManager.getLogger();
+    private boolean setup = false;
 
     public Forge() {
         ProtoLogger.setLogger(this);
-        SSLContext.initKeystore(FMLConfig.defaultConfigPath() + "/protoweaver");
-        SSLContext.genKeys();
-        SSLContext.initContext();
+
+        ProtoWeaver.PROTOCOL_LOADED.register(protocol -> {
+            if (setup) return;
+            SSLContext.initKeystore(FMLConfig.defaultConfigPath() + "/protoweaver");
+            SSLContext.genKeys();
+            SSLContext.initContext();
+            setup = true;
+        });
     }
 
     @Override

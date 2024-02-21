@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 public class Waterfall extends Plugin implements ServerSupplier, ProtoLogger.IProtoLogger {
 
     private final Logger logger = getLogger();
+    private ProtoProxy protoProxy;
 
     @Override
     public void onLoad() {
@@ -19,13 +20,13 @@ public class Waterfall extends Plugin implements ServerSupplier, ProtoLogger.IPr
 
     @Override
     public void onEnable() {
-        ProtoProxy.setServerSupplier(this);
-        ProtoProxy.startAll();
+        protoProxy = new ProtoProxy(this);
+        protoProxy.startAll();
     }
 
     @Override
     public void onDisable() {
-        ProtoProxy.closeAll();
+        protoProxy.closeAll();
     }
 
     @Override

@@ -3,6 +3,7 @@ package me.mrnavastar.protoweaver.proxy.api;
 import lombok.NonNull;
 import lombok.Setter;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
+import me.mrnavastar.protoweaver.api.netty.Sender;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.client.ProtoWeaverClient;
@@ -24,18 +25,14 @@ public class ProtoProxy {
     @Setter
     private static int serverPollRate = 5000;
 
-    /**
-     * Sets the supplier that will be used to get info about the backend minecraft servers (their ip addresses and names)
-     * This is used internally to provide multiplatform support. Only use this function if you are 100% sure you know what
-     * you are doing, as it can easily break other plugins if miss-used.
-     */
-    @ApiStatus.Internal
-    public static void setServerSupplier(ServerSupplier serverSupplier) {
+    public ProtoProxy(ServerSupplier serverSupplier) {
         closeAll();
         serverSupplier.getServers().forEach(serverInfo -> {
             backendServers.put(serverInfo.getAddress(), new ArrayList<>());
             backendServerLookup.put(serverInfo.getName(), serverInfo.getAddress());
         });
+
+        ProtoWeaver.PROTOCOL_LOADED.register(ProtoProxy::startProtocol);
     }
 
     private static void startProtocol(Protocol protocol) {
@@ -60,28 +57,13 @@ public class ProtoProxy {
         clients.add(client);
     }
 
-    /**
-     * Loads the given protocol and opens connections to every backend server that support the protocol.
-     */
-    public static void load(Protocol protocol) {
-        ProtoWeaver.load(protocol);
-        startProtocol(protocol);
-    }
-
-    /**
-     * Closes all connections to the backend servers, including ones opened by other plugins.
-     * Internally this only called when the proxy shuts down.
-     * Calling {@link ProtoProxy#startAll()} will reopen the connections.
-     */
-    public static void closeAll() {
+    @ApiStatus.Internal
+    public void closeAll() {
         backendServers.values().forEach(clients -> clients.forEach(ProtoWeaverClient::disconnect));
     }
 
-    /**
-     * Opens all connections to the backend servers for every protocol loaded in the current jvm instance.
-     * Calling {@link ProtoProxy#closeAll()} will close the connections.
-     */
-    public static void startAll() {
+    @ApiStatus.Internal
+    public void startAll() {
         ProtoWeaver.getLoadedProtocols().forEach(ProtoProxy::startProtocol);
     }
 
@@ -89,22 +71,18 @@ public class ProtoProxy {
      * Sends a packet to every server running protoweaver with the correct protocol.
      */
     public static void sendAll(@NonNull Object packet) {
-        backendServers.values().forEach(clients -> clients.forEach(client -> {
-            try {
-                client.send(packet);
-            } catch (Exception ignore) {}
-        }));
+        backendServers.values().forEach(clients -> clients.forEach(client -> client.send(packet)));
     }
 
     /**
      * Sends a packet to a specific server. Does nothing if the server doesn't have the relevant protocol loaded.
      */
-    public static void send(@NonNull InetSocketAddress address, @NonNull Object packet) {
-        backendServers.get(address).forEach(client -> {
-            try {
-                client.send(packet);
-            } catch (Exception ignore) {}
-        });
+    public static Sender send(@NonNull InetSocketAddress address, @NonNull Object packet) {
+        for (ProtoWeaverClient client : backendServers.get(address)) {
+            Sender s = client.send(packet);
+            if (s.isSuccess()) return s;
+        }
+        return Sender.NULL;
     }
 
     /**

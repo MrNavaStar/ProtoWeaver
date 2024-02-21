@@ -15,6 +15,7 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
+import me.mrnavastar.protoweaver.api.netty.Sender;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.client.netty.ProtoTrustManager;
@@ -132,17 +133,19 @@ public class ProtoWeaverClient {
         if (workerGroup != null && !workerGroup.isShutdown()) workerGroup.shutdownGracefully();
     }
 
-    public void onConnectionEstablished(@NonNull ConnectionEstablishedHandler handler) {
+    public ProtoWeaverClient onConnectionEstablished(@NonNull ConnectionEstablishedHandler handler) {
         connectionEstablishedHandlers.add(handler);
+        return this;
     }
 
-    public void onConnectionLost(@NonNull ConnectionLostHandler handler) {
+    public ProtoWeaverClient onConnectionLost(@NonNull ConnectionLostHandler handler) {
         this.connectionLostHandlers.add(handler);
+        return this;
     }
 
-    @SneakyThrows
-    public void send(@NonNull Object packet) {
-        if (connection != null) connection.send(packet);
+    public Sender send(@NonNull Object packet) {
+        if (connection != null) return connection.send(packet);
+        return Sender.NULL;
     }
 
     public Protocol getCurrentProtocol() {

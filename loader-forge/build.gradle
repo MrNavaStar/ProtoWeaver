@@ -39,7 +39,6 @@ shadowJar {
     }
     relocate "org.bouncycastle", "me.mrnavastar.protoweaver.libs.bouncycastle"
     relocate "com.esotericsoftware", "me.mrnavastar.protoweaver.libs.esotericsoftware"
-    relocate "com.cedarsoftware", "me.mrnavastar.protoweaver.libs.cedarsoftware"
 
     exclude "META-INF/maven/**"
     exclude "META-INF/native-image/**"

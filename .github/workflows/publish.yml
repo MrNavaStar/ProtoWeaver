@@ -31,31 +31,8 @@ jobs:
           mv ${{ github.workspace }}/build/libs/sqlib.jar ${{ github.workspace }}/sqlib-${{ github.event.release.tag_name }}.jar; 
           mv ${{ github.workspace }}/build/libs/sqlib-javadoc.jar ${{ github.workspace }}/sqlib-${{ github.event.release.tag_name }}-javadoc.jar;
           mv ${{ github.workspace }}/build/libs/sqlib-sources.jar ${{ github.workspace }}/sqlib-${{ github.event.release.tag_name }}-sources.jar;
+          
+                  ${{ github.workspace }}/loader-forge/build/libs/protoweaver-${{ github.event.release.tag_name }}-forge.jar
+            ${{ github.workspace }}/loader-plugin/build/libs/protoweaver-${{ github.event.release.tag_name }}-plugin.jar
+            ${{ github.workspace }}/proxy/build/libs/protoweaver-${{ github.event.release.tag_name }}-proxy.jar
 
-      - name: Publish Release
-        uses: Kir-Antipov/mc-publish@v3.3.0
-        with:
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          modrinth-featured: true
-          files: |
-            ${{ github.workspace }}/sqlib-${{ github.event.release.tag_name }}.jar
-            ${{ github.workspace }}/sqlib-${{ github.event.release.tag_name }}-javadoc.jar
-            ${{ github.workspace }}/sqlib-${{ github.event.release.tag_name }}-sources.jar
-          java: 17
-          game-versions: |
-            1.20.4
-            1.20.3
-            1.20.2
-            1.20.1
-            1.20
-            1.19.4
-            1.19.3
-            1.19.2
-            1.19.1
-            1.19
-            1.18.2
-            1.18.1
-            1.18
-            1.17.1
-            1.17
-            1.16.5

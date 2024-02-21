@@ -6,6 +6,7 @@ import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.protocol.CompressionType;
 import me.mrnavastar.protoweaver.api.protocol.velocity.VelocityAuth;
+import me.mrnavastar.protoweaver.api.util.Event;
 
 import java.util.ArrayList;
 import java.util.function.Function;
@@ -39,22 +40,5 @@ public class ProtoMessage implements ProtoConnectionHandler {
     @FunctionalInterface
     public interface MessageReceived {
         void trigger(ProtoConnection connection, String channel, String message);
-    }
-
-    public static class Event<T> {
-        private final ArrayList<T> handlers = new ArrayList<>();
-        private final Function<ArrayList<T>, T> invokerFactory;
-
-        public Event(Function<ArrayList<T>, T> invokerFactory) {
-            this.invokerFactory = invokerFactory;
-        }
-
-        public void register(T handler) {
-            handlers.add(handler);
-        }
-
-        public T getInvoker() {
-            return invokerFactory.apply(handlers);
-        }
     }
 }

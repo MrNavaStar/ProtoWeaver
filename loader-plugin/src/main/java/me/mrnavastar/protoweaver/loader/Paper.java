@@ -4,6 +4,7 @@ import io.netty.channel.Channel;
 import io.papermc.paper.configuration.GlobalConfiguration;
 import io.papermc.paper.network.ChannelInitializeListener;
 import io.papermc.paper.network.ChannelInitializeListenerHolder;
+import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.protocol.velocity.VelocityAuth;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 import me.mrnavastar.protoweaver.loader.netty.ProtoDeterminer;
@@ -17,16 +18,22 @@ import java.util.logging.Logger;
 public class Paper extends JavaPlugin implements ChannelInitializeListener, ProtoLogger.IProtoLogger {
 
     private final Logger logger = getLogger();
+    private boolean setup = false;
 
     @Override
     public void onEnable() {
         ProtoLogger.setLogger(this);
-        ChannelInitializeListenerHolder.addListener(new NamespacedKey("protoweaver", "internal"), this);
-        SSLContext.initKeystore(getDataFolder().getAbsolutePath());
-        SSLContext.genKeys();
-        SSLContext.initContext();
 
-        VelocityAuth.setSecret(GlobalConfiguration.get().proxies.velocity.secret);
+        ProtoWeaver.PROTOCOL_LOADED.register(protocol -> {
+            if (setup) return;
+            ChannelInitializeListenerHolder.addListener(new NamespacedKey("protoweaver", "internal"), this);
+            SSLContext.initKeystore(getDataFolder().getAbsolutePath());
+            SSLContext.genKeys();
+            SSLContext.initContext();
+
+            VelocityAuth.setSecret(GlobalConfiguration.get().proxies.velocity.secret);
+            setup = true;
+        });
     }
 
     @Override

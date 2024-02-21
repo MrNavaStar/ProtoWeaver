@@ -28,6 +28,7 @@ public class Velocity implements ServerSupplier, ProtoLogger.IProtoLogger {
     private final Path dir;
     private final ProxyServer proxy;
     private final Logger logger;
+    private ProtoProxy protoProxy;
 
     @Inject
     public Velocity(ProxyServer proxyServer, Logger logger, @DataDirectory Path dir) {
@@ -39,13 +40,13 @@ public class Velocity implements ServerSupplier, ProtoLogger.IProtoLogger {
 
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
-        ProtoProxy.setServerSupplier(this);
-        ProtoProxy.startAll();
+        protoProxy = new ProtoProxy(this);
+        protoProxy.startAll();
     }
 
     @Subscribe
     public void onProxyShutdown(ProxyShutdownEvent event) {
-        ProtoProxy.closeAll();
+        protoProxy.closeAll();
     }
 
     @Override
