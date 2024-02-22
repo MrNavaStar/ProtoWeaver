@@ -25,9 +25,9 @@ dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     // Mod Compat
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     modImplementation "maven.modrinth:fabricproxy-lite:${project.proxy_lite_version}"
     modLocalRuntime "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
 

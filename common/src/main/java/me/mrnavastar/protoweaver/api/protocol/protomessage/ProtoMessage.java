@@ -5,11 +5,7 @@ import lombok.Getter;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.protocol.CompressionType;
-import me.mrnavastar.protoweaver.api.protocol.velocity.VelocityAuth;
 import me.mrnavastar.protoweaver.api.util.Event;
-
-import java.util.ArrayList;
-import java.util.function.Function;
 
 /**
  * Serves mostly as an example protocol, however it can be used in your mod if your so desire.
@@ -18,7 +14,7 @@ public class ProtoMessage implements ProtoConnectionHandler {
 
     @Getter
     private static final Protocol protocol = Protocol.create("protoweaver", "proto-message")
-            .enableCompression(CompressionType.SNAPPY)
+            .setCompression(CompressionType.SNAPPY)
             .setServerHandler(ProtoMessage.class)
             .setClientHandler(ProtoMessage.class)
             .addPacket(Message.class)

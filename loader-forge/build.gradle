@@ -28,6 +28,8 @@ dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
     forge "net.minecraftforge:forge:${project.forge_version}"
+
+    modImplementation "maven.modrinth:proxy-compatible-forge:${project.proxy_forge_version}"
 }
 
 shadowJar {

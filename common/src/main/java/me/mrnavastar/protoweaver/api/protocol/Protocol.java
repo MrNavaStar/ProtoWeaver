@@ -45,8 +45,8 @@ public class Protocol {
     }
 
     /**
-     * <p>Creates a new protocol builder. A good rule of thumb for naming that ensures maximum compatibility is to use your
-     * mod id or project id for the namespace and to give the name something unique.</p>
+     * <p>Creates a new protocol builder. A good rule of thumb for naming that ensures maximum compatibility is to use
+     * your mod id or project id for the namespace and to give the name something unique.</p>
      * <br>For example: "protoweaver:proto-message"</br>
      * @param namespace Usually should be set to your mod id or project id
      * @param name The name of your protocol.
@@ -56,9 +56,10 @@ public class Protocol {
     }
 
     /**
-     * Allows you to create modify an existing {@link Protocol}. The {@link Protocol} object returned from {@link Builder#build()} will
-     * be the same object as the one that this method was called on (not a copy). In theory this means you can modify
-     * a protocol without reloading it, or while its currently active. Here be dragons, so use with caution.
+     * Allows you to create modify an existing {@link Protocol}. The {@link Protocol} object returned from
+     * {@link Builder#build()} will be the same object as the one that this method was called on (not a copy). In
+     * theory this means you can modify a protocol without reloading it, or while its currently active. Here be dragons,
+     * so use with caution.
      */
     public Builder modify() {
         return new Builder(this);
@@ -156,13 +157,14 @@ public class Protocol {
          * Enables compression on the {@link Protocol}. The compression type by defaults is set to {@link CompressionType#NONE}.
          * @param type The type of compression to enable.
          */
-        public Builder enableCompression(@NonNull CompressionType type) {
+        public Builder setCompression(@NonNull CompressionType type) {
             protocol.compression = type;
             return this;
         }
 
         /**
-         * Set the compression level if compression is enabled. Be sure to check the supported level for each type of compression online.
+         * Set the compression level if compression is enabled. Be sure to check the supported level for each type of
+         * compression online.
          * @param level The compression level to set.
          */
         public Builder setCompressionLevel(int level) {
@@ -171,8 +173,8 @@ public class Protocol {
         }
 
         /**
-         * Set the maximum packet size this {@link Protocol} can handle. The higher the value, the more ram will be allocated when sending and receiving packets.
-         * The maximum packet size defaults to 16kb.
+         * Set the maximum packet size this {@link Protocol} can handle. The higher the value, the more ram will be
+         * allocated when sending and receiving packets. The maximum packet size defaults to 16kb.
          * @param maxPacketSize The maximum size a packet can be in bytes
          */
         public Builder setMaxPacketSize(int maxPacketSize) {
