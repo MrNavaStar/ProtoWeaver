@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/client/protoweaver.client.main.iml" filepath="$PROJECT_DIR$/.idea/modules/client/protoweaver.client.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/protoweaver.common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/common/protoweaver.common.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/loader-common/protoweaver.loader-common.iml" filepath="$PROJECT_DIR$/.idea/modules/loader-common/protoweaver.loader-common.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/loader-common/protoweaver.loader-common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/loader-common/protoweaver.loader-common.main.iml" />

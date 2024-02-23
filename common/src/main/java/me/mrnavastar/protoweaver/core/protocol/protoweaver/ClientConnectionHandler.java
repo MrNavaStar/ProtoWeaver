@@ -37,6 +37,10 @@ public class ClientConnectionHandler extends InternalConnectionHandler implement
                     ProtoLogger.error("Double check that all packets are registered in the same order and all settings are the same.");
                     disconnectIfNeverUpgraded(connection);
                 }
+                case FULL -> {
+                    ProtoLogger.error("Protocol: \"" + status.getNextProtocol() + "\" has reached the maximum number of allowed connections on the server!");
+                    disconnectIfNeverUpgraded(connection);
+                }
                 case UPGRADE -> {
                     if (!authenticated) return;
                     Protocol nextProtocol = ProtoWeaver.getLoadedProtocol(status.getNextProtocol());
@@ -48,8 +52,10 @@ public class ClientConnectionHandler extends InternalConnectionHandler implement
                     connection.upgradeProtocol(nextProtocol);
                 }
             }
+            return;
         }
-        else if (packet instanceof AuthStatus auth) {
+
+        if (packet instanceof AuthStatus auth) {
             switch (auth) {
                 case OK -> authenticated = true;
                 case REQUIRED -> {

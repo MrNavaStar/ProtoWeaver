@@ -30,13 +30,14 @@ public class Protocol {
     @Getter private CompressionType compression = CompressionType.NONE;
     @Getter private int compressionLevel = -37;
     @Getter private int maxPacketSize = 16384;
+    @Getter private int maxConnections = -1;
 
     @Getter private Class<? extends ProtoConnectionHandler> serverHandler;
     @Getter private Class<? extends ProtoConnectionHandler> clientHandler;
     @Getter private Class<? extends ServerAuthHandler> serverAuthHandler;
     @Getter private Class<? extends ClientAuthHandler> clientAuthHandler;
 
-    private int packetHash = 1;
+    private int packetHash = 0;
 
     private Protocol(String namespace, String name) {
         this.namespace = namespace;
@@ -175,10 +176,20 @@ public class Protocol {
         /**
          * Set the maximum packet size this {@link Protocol} can handle. The higher the value, the more ram will be
          * allocated when sending and receiving packets. The maximum packet size defaults to 16kb.
-         * @param maxPacketSize The maximum size a packet can be in bytes
+         * @param maxPacketSize The maximum size a packet can be in bytes.
          */
         public Builder setMaxPacketSize(int maxPacketSize) {
             protocol.maxPacketSize = maxPacketSize;
+            return this;
+        }
+
+        /**
+         * Set the number of maximum concurrent connections this {@link Protocol} will allow. Any connections over this limit
+         * will be disconnected. The maximum connections defaults to -1 and allows any number of connections.
+         * @param maxConnections The maximum concurrent connections.
+         */
+        public Builder setMaxConnections(int maxConnections) {
+            protocol.maxConnections = maxConnections;
             return this;
         }
 
