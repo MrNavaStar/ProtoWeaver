@@ -11,25 +11,9 @@
 # ProtoWeaver
 A minecraft networking library for creating custom protocols that run on the internal netty server. 
 
-# Dev Setup
-```gradle
-repositories {
-    maven { url "https://api.modrinth.com/maven" }
-}
-
-dependencies {
-    // Main api - dont include this to improve mod compat
-    implementation "maven.modrinth:protoweaver:1.0.0:api"
-    // Client side implementation - always include it
-    implementation "maven.modrinth:protoweaver:1.0.0:client"
-    // Add this to your server dev environment to load - dont include this to improve mod compat
-    modImplementation "maven.modrinth:protoweaver:1.0.0:loader"
-}
-```
-
 # Creating a Protocol
 ```java
-Protocol protocol = ProtoBuilder.protocol("protoweaver", "proto-message")
+Protocol protocol = Protocol.create("protoweaver", "proto-message")
     .enableCompression(CompressionType.GZIP)
     .setServerHandler(ProtoMessage.class)
     .setClientHandler(ProtoMessage.class)
