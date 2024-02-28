@@ -20,54 +20,6 @@
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
         <option name="defaultObfuscationEnv" value="named:intermediary" />
-        <option name="inMapFileNamedIntermediary" value="$USER_HOME$/.gradle/caches/fabric-loom/1.20.4/loom.mappings.1_20_4.layered+hash.40545-v2/mappings-srg.tiny" />
-        <option name="outMapFileNamedIntermediary" value="$PROJECT_DIR$/loader-common/build/loom-cache/mixin-map-loom.mappings.1_20_4.layered+hash.40545-v2.main.tiny" />
-        <option name="outRefMapFile" value="$PROJECT_DIR$/loader-common/build/classes/java/main/loader-common-loader-common-refmap.json" />
-        <option name="quiet" value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.30/f195ee86e6c896ea47a1d39defbe20eb59cd149d/lombok-1.18.30.jar" />
-        </processorPath>
-        <module name="protoweaver.loader-common.main" />
-      </profile>
-      <profile name="Gradle Imported" enabled="true">
-        <outputRelativeToContentRoot value="true" />
-        <option name="defaultObfuscationEnv" value="named:intermediary" />
-        <option name="inMapFileNamedIntermediary" value="$USER_HOME$/.gradle/caches/fabric-loom/1.20.4/loom.mappings.1_20_4.layered+hash.40545-v2/mappings-srg.tiny" />
-        <option name="outMapFileNamedIntermediary" value="$PROJECT_DIR$/loader-common/build/loom-cache/mixin-map-loom.mappings.1_20_4.layered+hash.40545-v2.test.tiny" />
-        <option name="outRefMapFile" value="$PROJECT_DIR$/loader-common/build/classes/java/test/test-loader-common-loader-common-refmap.json" />
-        <option name="quiet" value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.30/f195ee86e6c896ea47a1d39defbe20eb59cd149d/lombok-1.18.30.jar" />
-        </processorPath>
-        <module name="protoweaver.loader-common.test" />
-      </profile>
-      <profile name="Gradle Imported" enabled="true">
-        <outputRelativeToContentRoot value="true" />
-        <option name="defaultObfuscationEnv" value="named:intermediary" />
-        <option name="inMapFileNamedIntermediary" value="$USER_HOME$/.gradle/caches/fabric-loom/1.20.4/loom.mappings.1_20_4.layered+hash.40359-v2/mappings.tiny" />
-        <option name="outMapFileNamedIntermediary" value="$PROJECT_DIR$/loader-fabric/build/loom-cache/mixin-map-loom.mappings.1_20_4.layered+hash.40359-v2.main.tiny" />
-        <option name="outRefMapFile" value="$PROJECT_DIR$/loader-fabric/build/classes/java/main/loader-fabric-loader-fabric-refmap.json" />
-        <option name="quiet" value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.30/f195ee86e6c896ea47a1d39defbe20eb59cd149d/lombok-1.18.30.jar" />
-        </processorPath>
-        <module name="protoweaver.loader-fabric.main" />
-      </profile>
-      <profile name="Gradle Imported" enabled="true">
-        <outputRelativeToContentRoot value="true" />
-        <option name="defaultObfuscationEnv" value="named:intermediary" />
-        <option name="inMapFileNamedIntermediary" value="$USER_HOME$/.gradle/caches/fabric-loom/1.20.4/loom.mappings.1_20_4.layered+hash.40359-v2/mappings.tiny" />
-        <option name="outMapFileNamedIntermediary" value="$PROJECT_DIR$/loader-fabric/build/loom-cache/mixin-map-loom.mappings.1_20_4.layered+hash.40359-v2.test.tiny" />
-        <option name="outRefMapFile" value="$PROJECT_DIR$/loader-fabric/build/classes/java/test/test-loader-fabric-loader-fabric-refmap.json" />
-        <option name="quiet" value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.30/f195ee86e6c896ea47a1d39defbe20eb59cd149d/lombok-1.18.30.jar" />
-        </processorPath>
-        <module name="protoweaver.loader-fabric.test" />
-      </profile>
-      <profile name="Gradle Imported" enabled="true">
-        <outputRelativeToContentRoot value="true" />
-        <option name="defaultObfuscationEnv" value="named:intermediary" />
         <option name="inMapFileNamedIntermediary" value="$USER_HOME$/.gradle/caches/fabric-loom/1.20.4/loom.mappings.1_20_4.layered+hash.40359-v2-forge-1.20.4-49.0.14/mappings-mixin-srg.tiny" />
         <option name="outMapFileNamedIntermediary" value="$PROJECT_DIR$/loader-forge/build/loom-cache/mixin-map-loom.mappings.1_20_4.layered+hash.40359-v2-forge-1.20.4-49.0.14.main.tiny" />
         <option name="outRefMapFile" value="$PROJECT_DIR$/loader-forge/build/classes/java/main/loader-forge-loader-forge-refmap.json" />
@@ -130,6 +82,54 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/b421526c5f297295adef1c886e5246c39d4ac629/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar" />
         </processorPath>
         <module name="protoweaver.proxy.main" />
+      </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <option name="defaultObfuscationEnv" value="named:intermediary" />
+        <option name="inMapFileNamedIntermediary" value="$USER_HOME$/.gradle/caches/fabric-loom/1.20.4/loom.mappings.1_20_4.layered+hash.40545-v2/mappings-srg.tiny" />
+        <option name="outMapFileNamedIntermediary" value="$PROJECT_DIR$/loader-common/build/loom-cache/mixin-map-loom.mappings.1_20_4.layered+hash.40545-v2.main.tiny" />
+        <option name="outRefMapFile" value="$PROJECT_DIR$/loader-common/build/classes/java/main/protoweaver.refmap.json" />
+        <option name="quiet" value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.30/f195ee86e6c896ea47a1d39defbe20eb59cd149d/lombok-1.18.30.jar" />
+        </processorPath>
+        <module name="protoweaver.loader-common.main" />
+      </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <option name="defaultObfuscationEnv" value="named:intermediary" />
+        <option name="inMapFileNamedIntermediary" value="$USER_HOME$/.gradle/caches/fabric-loom/1.20.4/loom.mappings.1_20_4.layered+hash.40545-v2/mappings-srg.tiny" />
+        <option name="outMapFileNamedIntermediary" value="$PROJECT_DIR$/loader-common/build/loom-cache/mixin-map-loom.mappings.1_20_4.layered+hash.40545-v2.test.tiny" />
+        <option name="outRefMapFile" value="$PROJECT_DIR$/loader-common/build/classes/java/test/test-protoweaver.refmap.json" />
+        <option name="quiet" value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.30/f195ee86e6c896ea47a1d39defbe20eb59cd149d/lombok-1.18.30.jar" />
+        </processorPath>
+        <module name="protoweaver.loader-common.test" />
+      </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <option name="defaultObfuscationEnv" value="named:intermediary" />
+        <option name="inMapFileNamedIntermediary" value="$USER_HOME$/.gradle/caches/fabric-loom/1.20.4/loom.mappings.1_20_4.layered+hash.40359-v2/mappings.tiny" />
+        <option name="outMapFileNamedIntermediary" value="$PROJECT_DIR$/loader-fabric/build/loom-cache/mixin-map-loom.mappings.1_20_4.layered+hash.40359-v2.main.tiny" />
+        <option name="outRefMapFile" value="$PROJECT_DIR$/loader-fabric/build/classes/java/main/loader-fabric-loader-fabric-refmap.json" />
+        <option name="quiet" value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.30/f195ee86e6c896ea47a1d39defbe20eb59cd149d/lombok-1.18.30.jar" />
+        </processorPath>
+        <module name="protoweaver.loader-fabric.main" />
+      </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <option name="defaultObfuscationEnv" value="named:intermediary" />
+        <option name="inMapFileNamedIntermediary" value="$USER_HOME$/.gradle/caches/fabric-loom/1.20.4/loom.mappings.1_20_4.layered+hash.40359-v2/mappings.tiny" />
+        <option name="outMapFileNamedIntermediary" value="$PROJECT_DIR$/loader-fabric/build/loom-cache/mixin-map-loom.mappings.1_20_4.layered+hash.40359-v2.test.tiny" />
+        <option name="outRefMapFile" value="$PROJECT_DIR$/loader-fabric/build/classes/java/test/test-loader-fabric-loader-fabric-refmap.json" />
+        <option name="quiet" value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.30/f195ee86e6c896ea47a1d39defbe20eb59cd149d/lombok-1.18.30.jar" />
+        </processorPath>
+        <module name="protoweaver.loader-fabric.test" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="17" />

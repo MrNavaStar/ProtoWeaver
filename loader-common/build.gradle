@@ -1,8 +1,13 @@
 apply plugin: "dev.architectury.loom"
 
 architectury {
-    injectInjectables = false
-    common(project.enabled_platforms.split(","))
+    common("fabric", "forge")
+}
+
+loom {
+    mixin {
+        defaultRefmapName = "protoweaver.refmap.json"
+    }
 }
 
 dependencies {

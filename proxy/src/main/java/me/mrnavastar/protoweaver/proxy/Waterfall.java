@@ -2,11 +2,13 @@ package me.mrnavastar.protoweaver.proxy;
 
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 import me.mrnavastar.protoweaver.proxy.api.ProtoProxy;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
 
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
+import java.net.SocketAddress;
+import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class Waterfall extends Plugin implements ServerSupplier, ProtoLogger.IProtoLogger {
 
@@ -20,22 +22,19 @@ public class Waterfall extends Plugin implements ServerSupplier, ProtoLogger.IPr
 
     @Override
     public void onEnable() {
-        protoProxy = new ProtoProxy(this);
-        protoProxy.startAll();
+        protoProxy = new ProtoProxy(this, getDataFolder().toPath());
     }
 
     @Override
     public void onDisable() {
-        protoProxy.closeAll();
+        protoProxy.shutdown();
     }
 
     @Override
-    public ArrayList<ServerInfo> getServers() {
-        ArrayList<ServerInfo> addresses = new ArrayList<>();
-        getProxy().getServersCopy().forEach((name, server) -> {
-            addresses.add(new ServerInfo(name, (InetSocketAddress) server.getSocketAddress()));
-        });
-        return addresses;
+    public List<SocketAddress> getServers() {
+        return getProxy().getServersCopy().values().stream()
+                .map(ServerInfo::getSocketAddress)
+                .collect(Collectors.toList());
     }
 
     @Override

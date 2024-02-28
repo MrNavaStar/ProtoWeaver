@@ -1,19 +1,9 @@
 package me.mrnavastar.protoweaver.proxy;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
+import java.net.SocketAddress;
+import java.util.List;
 
 public interface ServerSupplier {
 
-    @Getter
-    @RequiredArgsConstructor
-    class ServerInfo {
-        private final String name;
-        private final InetSocketAddress address;
-    }
-
-    ArrayList<ServerInfo> getServers();
+    List<SocketAddress> getServers();
 }

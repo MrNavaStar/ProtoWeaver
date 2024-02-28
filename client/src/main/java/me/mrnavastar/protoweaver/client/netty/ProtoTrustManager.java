@@ -3,7 +3,6 @@ package me.mrnavastar.protoweaver.client.netty;
 import io.netty.util.concurrent.FastThreadLocal;
 import io.netty.util.internal.EmptyArrays;
 import io.netty.util.internal.StringUtil;
-import lombok.Cleanup;
 import lombok.Getter;
 
 import javax.net.ssl.TrustManager;
@@ -11,7 +10,6 @@ import javax.net.ssl.X509TrustManager;
 import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -55,28 +53,22 @@ public class ProtoTrustManager {
         }
 
         private void checkTrusted(X509Certificate[] chain) throws CertificateException {
-            X509Certificate cert = chain[0];
-            byte[] fingerprint = fingerprint(cert);
-            if (trusted == null) {
-                trusted = fingerprint;
+            MessageDigest md = tlmd.get();
+            md.reset();
+            byte[] fingerprint = md.digest(chain[0].getEncoded());
 
-                try {
-                    @Cleanup BufferedWriter writer = new BufferedWriter(new FileWriter(hostsFile));
-                    writer.append("\n").append(hostId).append("=").append(StringUtil.toHexString(fingerprint));
+            if (trusted == null) {
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(hostsFile))) {
+                    writer.append(hostId).append("=").append(StringUtil.toHexString(fingerprint)).append("\n");
+                    trusted = fingerprint;
+                    return;
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
-                return;
             }
 
             if (Arrays.equals(trusted, fingerprint)) return;
             throw new CertificateException("protoweaver-client-cert-error:" + hostId + ":" + StringUtil.toHexString(trusted) + "!=" + StringUtil.toHexString(fingerprint));
-        }
-
-        private byte[] fingerprint(X509Certificate cert) throws CertificateEncodingException {
-            MessageDigest md = tlmd.get();
-            md.reset();
-            return md.digest(cert.getEncoded());
         }
 
         @Override
@@ -90,18 +82,11 @@ public class ProtoTrustManager {
         this.hostId = host + ":" + port;
         if (!hostsFile.exists()) return;
 
-        try {
-            @Cleanup BufferedReader reader = new BufferedReader(new FileReader(hostsFile));
-            for (String line : reader.lines().toArray(String[]::new)) {
-                line = line.replace(" ", "");
-
-                if (line.startsWith(hostId)) {
-                    trusted = StringUtil.decodeHexDump(line.split("=")[1]);
-                    break;
-                }
-            }
+        try (BufferedReader reader = new BufferedReader(new FileReader(hostsFile))) {
+            reader.lines().filter(l -> l.startsWith(host)).findFirst()
+                    .ifPresent(l -> trusted = StringUtil.decodeHexDump(l.split("=")[1]));
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }

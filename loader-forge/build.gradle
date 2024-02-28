@@ -1,7 +1,6 @@
 apply plugin: "dev.architectury.loom"
 
 architectury {
-    injectInjectables = false
     platformSetupLoomIde()
     forge()
 }

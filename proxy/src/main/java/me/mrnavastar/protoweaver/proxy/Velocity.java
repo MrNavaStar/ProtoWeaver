@@ -7,15 +7,15 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
-import me.mrnavastar.protoweaver.api.ProtoWeaver;
-import me.mrnavastar.protoweaver.api.protocol.protomessage.ProtoMessage;
 import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 import me.mrnavastar.protoweaver.proxy.api.ProtoProxy;
 import org.slf4j.Logger;
 
+import java.net.SocketAddress;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Plugin(
         id = ProtoConstants.PROTOWEAVER_ID,
@@ -26,13 +26,13 @@ import java.util.ArrayList;
 public class Velocity implements ServerSupplier, ProtoLogger.IProtoLogger {
 
     private final Path dir;
-    private final ProxyServer proxy;
+    private final ProxyServer velocity;
     private final Logger logger;
     private ProtoProxy protoProxy;
 
     @Inject
     public Velocity(ProxyServer proxyServer, Logger logger, @DataDirectory Path dir) {
-        this.proxy = proxyServer;
+        this.velocity = proxyServer;
         this.dir = dir;
         this.logger = logger;
         ProtoLogger.setLogger(this);
@@ -40,22 +40,19 @@ public class Velocity implements ServerSupplier, ProtoLogger.IProtoLogger {
 
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
-        protoProxy = new ProtoProxy(this);
-        protoProxy.startAll();
+        protoProxy = new ProtoProxy(this, dir);
     }
 
     @Subscribe
     public void onProxyShutdown(ProxyShutdownEvent event) {
-        protoProxy.closeAll();
+        protoProxy.shutdown();
     }
 
     @Override
-    public ArrayList<ServerInfo> getServers() {
-        ArrayList<ServerInfo> addresses = new ArrayList<>();
-        proxy.getAllServers().forEach(sever -> {
-            addresses.add(new ServerInfo(sever.getServerInfo().getName(), sever.getServerInfo().getAddress()));
-        });
-        return addresses;
+    public List<SocketAddress> getServers() {
+        return velocity.getAllServers().stream()
+                .map(server -> server.getServerInfo().getAddress())
+                .collect(Collectors.toList());
     }
 
     @Override
