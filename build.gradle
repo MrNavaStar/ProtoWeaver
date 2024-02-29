@@ -1,7 +1,7 @@
 plugins {
     id "com.github.johnrengelman.shadow" version "8.1.1"
     id "io.freefair.lombok" version "8.6"
-    id "architectury-plugin" version "3.4-SNAPSHOT"
+    id "architectury-plugin" version "3.4.154"
     id "dev.architectury.loom" version "1.5-SNAPSHOT" apply false
     id "maven-publish"
 }
