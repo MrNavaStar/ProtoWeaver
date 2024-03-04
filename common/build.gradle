@@ -1,6 +1,16 @@
 dependencies {
-    implementation "com.esotericsoftware:kryo5:${project.kyro_version}"
+    shadow implementation("com.esotericsoftware:kryo5:${project.kyro_version}")
     compileOnly "io.netty:netty-buffer:${project.netty_version}"
     compileOnly "io.netty:netty-transport:${project.netty_version}"
     compileOnly "io.netty:netty-codec:${project.netty_version}"
 }
+
+shadowJar {
+    relocate "com.esotericsoftware", "me.mrnavastar.protoweaver.libs.esotericsoftware"
+
+    exclude "META-INF/maven/**"
+    exclude "META-INF/native-image/**"
+    minimize()
+}
+
+jar.finalizedBy(shadowJar)

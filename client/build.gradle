@@ -1,5 +1,5 @@
 dependencies {
-    shadow api(project(path: ':common', configuration: 'default'))
+    shadow api(project(path: ':common', configuration: 'shadow'))
     shadow implementation("io.netty:netty-buffer:${project.netty_version}")
     shadow implementation("io.netty:netty-transport:${project.netty_version}")
     shadow implementation("io.netty:netty-handler:${project.netty_version}")
@@ -7,8 +7,6 @@ dependencies {
 
 shadowJar {
     relocate 'io.netty', 'me.mrnavastar.protoweaver.libs.netty'
-    relocate "com.esotericsoftware", "me.mrnavastar.protoweaver.libs.esotericsoftware"
-    relocate "com.cedarsoftware", "me.mrnavastar.protoweaver.libs.cedarsoftware"
 
     exclude "META-INF/maven/**"
     exclude "META-INF/native-image/**"

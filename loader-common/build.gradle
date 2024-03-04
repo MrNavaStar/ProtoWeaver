@@ -11,7 +11,7 @@ loom {
 }
 
 dependencies {
-    implementation project(path: ':common', configuration: 'default')
+    implementation project(path: ':common', configuration: 'shadow')
 
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
