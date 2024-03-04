@@ -54,6 +54,8 @@ shadowJar {
 jar.finalizedBy(shadowJar)
 
 remapJar {
+    archiveBaseName.set("protoweaver")
+    archiveClassifier.set(project.name)
     input.set shadowJar.archiveFile
     dependsOn shadowJar
 }

@@ -25,14 +25,14 @@ allprojects {
     
     tasks.withType(JavaCompile) {
         options.encoding = "UTF-8"
-        options.release = 17
+        options.release = project.javaVersion as Integer
     }
 }
 
 subprojects {
     dependencies {
         compileOnly "org.projectlombok:lombok:${project.lombok_version}"
-	annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"
+	    annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"
     }
 
     task jarSources(type:Jar){
@@ -75,8 +75,9 @@ subprojects {
             maven(MavenPublication) {
                 groupId = "me.mrnavastar"
                 artifactId = "protoweaver"
-                version = "1.0.0"
+                version = project.project_version
                 from components.java
+                artifact tasks.jarSources
             }
         }
     }

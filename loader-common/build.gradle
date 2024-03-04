@@ -8,6 +8,7 @@ loom {
     mixin {
         defaultRefmapName = "protoweaver.refmap.json"
     }
+    silentMojangMappingsLicense()
 }
 
 dependencies {

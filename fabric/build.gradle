@@ -55,6 +55,8 @@ shadowJar {
 jar.finalizedBy(shadowJar)
 
 remapJar {
+    archiveBaseName.set("protoweaver")
+    archiveClassifier.set(project.name)
     injectAccessWidener = true
     input.set shadowJar.archiveFile
     dependsOn shadowJar

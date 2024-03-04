@@ -1,5 +1,6 @@
 /.gradle/
 /build/
+/.architectury-transformer
 
 /client/build/
 /common/build/
@@ -9,20 +10,20 @@ protoweaver_hosts
 /loader-common/.architectury-transformer/
 /loader-common/.gradle/
 
-/loader-fabric/build/
-/loader-fabric/.architectury-transformer/
-/loader-fabric/.gradle/
-/loader-fabric/run/
+/fabric/build/
+/fabric/.architectury-transformer/
+/fabric/.gradle/
+/fabric/run/
 
-/loader-forge/build/
-/loader-forge/.architectury-transformer/
-/loader-forge/.gradle/
-/loader-forge/run/
+/forge/build/
+/forge/.architectury-transformer/
+/forge/.gradle/
+/forge/run/
 
-/loader-plugin/build/
-/loader-plugin/.architectury-transformer/
-/loader-plugin/.gradle/
-/loader-plugin/run/
+/paper/build/
+/paper/.architectury-transformer/
+/paper/.gradle/
+/paper/run/
 
 /proxy/build/
 /proxy/.gradle/

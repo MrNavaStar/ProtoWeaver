@@ -3,14 +3,19 @@ plugins {
     id "xyz.jpenilla.run-waterfall" version "2.2.3"
 }
 
-def targetJavaVersion = project.javaVersion as Integer
-
 dependencies {
     shadow api(project(path: ':client', configuration: 'shadow'))
 
     compileOnly "io.github.waterfallmc:waterfall-api:${project.waterfall_version}"
     compileOnly "com.velocitypowered:velocity-api:${project.velocity_version}"
     annotationProcessor "com.velocitypowered:velocity-api:${project.velocity_version}"
+}
+
+shadowJar {
+    dependencies {
+        exclude(dependency("io.netty:.*:.*"))
+        exclude(dependency("com.esotericsoftware:kryo5:.*"))
+    }
 }
 
 jar.finalizedBy(shadowJar)
@@ -22,19 +27,4 @@ tasks {
     runWaterfall {
         waterfallVersion("1.20")
     }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    it.options.encoding = "UTF-8"
-    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-        it.options.release = targetJavaVersion
-    }
-}
-
-java {
-    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-    }
-    archivesBaseName = project.archives_base_name
 }

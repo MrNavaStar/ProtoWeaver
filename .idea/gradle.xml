@@ -11,10 +11,10 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/client" />
             <option value="$PROJECT_DIR$/common" />
+            <option value="$PROJECT_DIR$/fabric" />
+            <option value="$PROJECT_DIR$/forge" />
             <option value="$PROJECT_DIR$/loader-common" />
-            <option value="$PROJECT_DIR$/loader-fabric" />
-            <option value="$PROJECT_DIR$/loader-forge" />
-            <option value="$PROJECT_DIR$/loader-plugin" />
+            <option value="$PROJECT_DIR$/paper" />
             <option value="$PROJECT_DIR$/proxy" />
           </set>
         </option>
