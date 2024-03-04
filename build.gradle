@@ -13,9 +13,8 @@ allprojects {
     apply plugin: "architectury-plugin"
     apply plugin: "maven-publish"
 
-    architectury {
-        compileOnly()
-    }
+    version = project.project_version
+    group = project.maven_group
 
     repositories {
         mavenCentral()
@@ -23,15 +22,17 @@ allprojects {
         maven { url "https://repo.papermc.io/repository/maven-public/" }    // Paper + Velocity
         maven { url "https://api.modrinth.com/maven" }                      // Modrinth
     }
+    
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+        options.release = 17
+    }
 }
 
 subprojects {
-    version = project.project_version
-    group = project.maven_group
-
     dependencies {
         compileOnly "org.projectlombok:lombok:${project.lombok_version}"
-	    annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"
+	annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"
     }
 
     task jarSources(type:Jar){
@@ -59,4 +60,25 @@ subprojects {
     }
 
     jar.finalizedBy(jarSources)
+
+    publishing {
+        repositories {
+            maven {
+                name = "myDomainRepository"
+                url = "https://maven.mrnavastar.rocks/snapshots"
+                credentials(PasswordCredentials)
+                authentication {
+                    basic(BasicAuthentication)
+                }
+            }
+        }
+        publications {
+            maven(MavenPublication) {
+                groupId = "me.mrnavastar"
+                artifactId = "protoweaver"
+                version = "1.0.0"
+                from components.java
+            }
+        }
+    }
 }

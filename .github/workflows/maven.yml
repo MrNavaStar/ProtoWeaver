@@ -1,7 +1,7 @@
 name: Release New Version
 on:
-  release:
-    types: [published]
+  push:
+    branches: [ main ]
 
 jobs:
   build:
@@ -24,15 +24,7 @@ jobs:
 
       - name: Build
         uses: gradle/gradle-build-action@v3
-        run: ./gradlew build
-
-      - name: Move Files
-        run: |
-          mv ${{ github.workspace }}/build/libs/sqlib.jar ${{ github.workspace }}/sqlib-${{ github.event.release.tag_name }}.jar; 
-          mv ${{ github.workspace }}/build/libs/sqlib-javadoc.jar ${{ github.workspace }}/sqlib-${{ github.event.release.tag_name }}-javadoc.jar;
-          mv ${{ github.workspace }}/build/libs/sqlib-sources.jar ${{ github.workspace }}/sqlib-${{ github.event.release.tag_name }}-sources.jar;
-          
-                  ${{ github.workspace }}/loader-forge/build/libs/protoweaver-${{ github.event.release.tag_name }}-forge.jar
-            ${{ github.workspace }}/loader-plugin/build/libs/protoweaver-${{ github.event.release.tag_name }}-plugin.jar
-            ${{ github.workspace }}/proxy/build/libs/protoweaver-${{ github.event.release.tag_name }}-proxy.jar
-
+        run: ./gradlew build publish
+        env:
+          MAVEN_NAME: ${{ secrets.MAVEN_NAME }}
+          MAVEN_SECRET: ${{ secrets.MAVEN_SECRET }}
