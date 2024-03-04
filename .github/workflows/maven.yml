@@ -1,4 +1,4 @@
-name: Release New Version
+name: Publish To Maven
 on:
   push:
     branches: [ master ]
@@ -17,9 +17,9 @@ jobs:
         run: |
           sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' gradle.properties
           sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' common/src/main/java/me/mrnavastar/protoweaver/core/util/ProtoConstants.java
-          sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' loader-fabric/src/main/resources/fabric.mod.json
-          sed -i 's/0.debug-build/${{ github.event.release.tag_name }}/g' loader-forge/src/main/resources/META-INF/mods.toml
-          sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' loader-plugin/src/main/resources/plugin.yml
+          sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' fabric/src/main/resources/fabric.mod.json
+          sed -i 's/0.debug-build/${{ github.event.release.tag_name }}/g' forge/src/main/resources/META-INF/mods.toml
+          sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' paper/src/main/resources/plugin.yml
           sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' proxy/src/main/resources/bungee.yml
 
       - name: Build
