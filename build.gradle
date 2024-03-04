@@ -6,6 +6,8 @@ plugins {
     id "maven-publish"
 }
 
+def project_version = project.project_version
+
 allprojects {
     apply plugin: "java-library"
     apply plugin: "com.github.johnrengelman.shadow"
@@ -73,9 +75,7 @@ subprojects {
         }
         publications {
             maven(MavenPublication) {
-                groupId = "me.mrnavastar"
                 artifactId = "protoweaver"
-                version = project.project_version
                 from components.java
                 artifact tasks.jarSources
             }
