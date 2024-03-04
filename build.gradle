@@ -64,11 +64,10 @@ subprojects {
     publishing {
         repositories {
             maven {
-                name = "protoweaver"
-                url = "https://maven.mrnavastar.rocks/snapshots"
-                credentials(PasswordCredentials)
-                authentication {
-                    basic(BasicAuthentication)
+                url "https://maven.mrnavastar.rocks/snapshots"
+                credentials {
+                    username = System.getenv("MAVEN_NAME")
+                    password = System.getenv("MAVEN_SECRET")
                 }
             }
         }
