@@ -1,7 +1,7 @@
 name: Release New Version
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build:
