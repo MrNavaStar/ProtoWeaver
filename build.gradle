@@ -6,9 +6,6 @@ plugins {
     id "maven-publish"
 }
 
-version = project.project_version
-group = project.maven_group
-
 allprojects {
     apply plugin: "java-library"
     apply plugin: "com.github.johnrengelman.shadow"
@@ -30,13 +27,6 @@ allprojects {
         options.encoding = "UTF-8"
         options.release = project.javaVersion as Integer
     }
-}
-
-subprojects {
-    dependencies {
-        compileOnly "org.projectlombok:lombok:${project.lombok_version}"
-	    annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"
-    }
 
     task jarSources(type:Jar){
         archiveBaseName.set("protoweaver")
@@ -46,23 +36,6 @@ subprojects {
         }
         from delombok
     }
-
-    shadowJar {
-        archiveBaseName.set("protoweaver")
-        archiveClassifier.set(project.name)
-        configurations = [project.configurations.shadow]
-
-        dependencies {
-            mergeServiceFiles()
-        }
-    }
-
-    jar {
-        archiveBaseName.set("protoweaver")
-        archiveClassifier.set(project.name)
-    }
-
-    jar.finalizedBy(jarSources)
 
     publishing {
         repositories {
@@ -82,4 +55,28 @@ subprojects {
             }
         }
     }
+}
+
+subprojects {
+    dependencies {
+        compileOnly "org.projectlombok:lombok:${project.lombok_version}"
+	    annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"
+    }
+
+    shadowJar {
+        archiveBaseName.set("protoweaver")
+        archiveClassifier.set(project.name)
+        configurations = [project.configurations.shadow]
+
+        dependencies {
+            mergeServiceFiles()
+        }
+    }
+
+    jar {
+        archiveBaseName.set("protoweaver")
+        archiveClassifier.set(project.name)
+    }
+
+    jar.finalizedBy(jarSources)
 }
