@@ -6,7 +6,8 @@ plugins {
     id "maven-publish"
 }
 
-def project_version = project.project_version
+version = project.project_version
+group = project.maven_group
 
 allprojects {
     apply plugin: "java-library"
