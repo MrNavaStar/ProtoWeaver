@@ -27,34 +27,6 @@ allprojects {
         options.encoding = "UTF-8"
         options.release = project.javaVersion as Integer
     }
-
-    task jarSources(type:Jar){
-        archiveBaseName.set("protoweaver")
-        archiveClassifier.set(project.name + "-sources")
-        exclude {
-            sourceSets.main.allSource.contains it.file
-        }
-        from delombok
-    }
-
-    publishing {
-        repositories {
-            maven {
-                url "https://maven.mrnavastar.rocks/snapshots"
-                credentials {
-                    username = System.getenv("MAVEN_NAME")
-                    password = System.getenv("MAVEN_SECRET")
-                }
-            }
-        }
-        publications {
-            maven(MavenPublication) {
-                artifactId = "protoweaver"
-                from components.java
-                artifact tasks.jarSources
-            }
-        }
-    }
 }
 
 subprojects {
@@ -78,5 +50,34 @@ subprojects {
         archiveClassifier.set(project.name)
     }
 
+    task jarSources(type:Jar){
+        archiveBaseName.set("protoweaver")
+        archiveClassifier.set(project.name + "-sources")
+        exclude {
+            sourceSets.main.allSource.contains it.file
+        }
+        from delombok
+    }
+
     jar.finalizedBy(jarSources)
+
+    publishing {
+        repositories {
+            maven {
+                url "https://maven.mrnavastar.rocks/snapshots"
+                credentials {
+                    username = System.getenv("MAVEN_NAME")
+                    password = System.getenv("MAVEN_SECRET")
+                }
+            }
+        }
+        publications {
+            maven(MavenPublication) {
+                artifactId = "protoweaver"
+                version = "debug-build"
+                from components.java
+                artifact tasks.jarSources
+            }
+        }
+    }
 }
