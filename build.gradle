@@ -81,7 +81,7 @@ subprojects {
                 artifactId = "protoweaver"
                 version = "debug-build"
                 from components.java
-                artifact tasks.jarSources
+                //artifact tasks.jarSources
             }
         }
     }
