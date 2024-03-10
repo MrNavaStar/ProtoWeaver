@@ -30,9 +30,6 @@ allprojects {
 }
 
 subprojects {
-    version = project.project_version
-    group = project.maven_group
-
     dependencies {
         compileOnly "org.projectlombok:lombok:${project.lombok_version}"
 	    annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"
@@ -72,6 +69,7 @@ subprojects {
                 credentials {
                     username = System.getenv("MAVEN_NAME")
                     password = System.getenv("MAVEN_SECRET")
+                    
                 }
             }
         }
@@ -79,7 +77,7 @@ subprojects {
             maven(MavenPublication) {
                 groupId = "me.mrnavastar"
                 artifactId = "protoweaver"
-                //version = "debug-build"
+                version = "debug-build"
                 from components.java
                 artifact tasks.jarSources
             }
