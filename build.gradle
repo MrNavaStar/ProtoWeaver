@@ -30,6 +30,8 @@ allprojects {
 }
 
 subprojects {
+    version = project.project_version
+    group = project.maven_group
 
     dependencies {
         compileOnly "org.projectlombok:lombok:${project.lombok_version}"
@@ -53,7 +55,6 @@ subprojects {
 
     task jarSources(type:Jar){
         archiveBaseName.set("protoweaver")
-        archiveVersion.set(project.project_version)
         archiveClassifier.set(project.name + "-sources")
         exclude {
             sourceSets.main.allSource.contains it.file
@@ -79,9 +80,9 @@ subprojects {
             maven(MavenPublication) {
                 groupId = "me.mrnavastar"
                 artifactId = "protoweaver"
-                version = "debug-build"
+                //version = "debug-build"
                 from components.java
-                //artifact tasks.jarSources
+                artifact tasks.jarSources
             }
         }
     }
