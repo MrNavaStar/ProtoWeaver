@@ -30,6 +30,9 @@ allprojects {
 }
 
 subprojects {
+    version = project.project_version
+    group = project.maven_group
+
     dependencies {
         compileOnly "org.projectlombok:lombok:${project.lombok_version}"
 	    annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"
