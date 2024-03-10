@@ -16,7 +16,6 @@ jobs:
       - name: Set Version
         run: |
           sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' gradle.properties
-          sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' build.gradle
           sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' common/src/main/java/me/mrnavastar/protoweaver/core/util/ProtoConstants.java
           sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' fabric/src/main/resources/fabric.mod.json
           sed -i 's/0.debug-build/${{ github.event.release.tag_name }}/g' forge/src/main/resources/META-INF/mods.toml

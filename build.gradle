@@ -79,7 +79,7 @@ subprojects {
             maven(MavenPublication) {
                 groupId = "me.mrnavastar"
                 artifactId = "protoweaver"
-                version = "debug-build"
+                //version = "debug-build"
                 from components.java
                 artifact tasks.jarSources
             }
