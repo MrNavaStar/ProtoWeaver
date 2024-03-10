@@ -30,6 +30,7 @@ allprojects {
 }
 
 subprojects {
+
     dependencies {
         compileOnly "org.projectlombok:lombok:${project.lombok_version}"
 	    annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"
@@ -52,6 +53,7 @@ subprojects {
 
     task jarSources(type:Jar){
         archiveBaseName.set("protoweaver")
+        archiveVersion.set(project.project_version)
         archiveClassifier.set(project.name + "-sources")
         exclude {
             sourceSets.main.allSource.contains it.file
@@ -69,7 +71,7 @@ subprojects {
                 credentials {
                     username = System.getenv("MAVEN_NAME")
                     password = System.getenv("MAVEN_SECRET")
-                    
+
                 }
             }
         }
