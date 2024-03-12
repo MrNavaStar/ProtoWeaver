@@ -7,7 +7,6 @@ plugins {
 }
 
 allprojects {
-    apply plugin: "java-library"
     apply plugin: "com.github.johnrengelman.shadow"
     apply plugin: "io.freefair.lombok"
     apply plugin: "architectury-plugin"
@@ -30,6 +29,8 @@ allprojects {
 }
 
 subprojects {
+    apply plugin: "java-library"
+
     version = project.project_version
     group = project.maven_group
 
