@@ -25,7 +25,15 @@ shadowJar {
     minimize()
 }
 
+reobfJar {
+    archives_base_name="protoweaver"
+}
+
 jar.finalizedBy(shadowJar)
+
+tasks.assemble {
+    dependsOn(reobfJar)
+}
 
 tasks {
     runServer {
