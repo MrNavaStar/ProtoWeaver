@@ -1,6 +1,6 @@
 plugins {
-    id "xyz.jpenilla.run-velocity" version "2.2.3"
-    id "xyz.jpenilla.run-waterfall" version "2.2.3"
+    id "xyz.jpenilla.run-velocity" version "2.3.0"
+    id "xyz.jpenilla.run-waterfall" version "2.3.0"
 }
 
 dependencies {

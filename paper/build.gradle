@@ -1,6 +1,6 @@
 plugins {
-    id "xyz.jpenilla.run-paper" version "2.2.3"
-    id "io.papermc.paperweight.userdev" version "1.5.11"
+    id "xyz.jpenilla.run-paper" version "2.3.0"
+    id "io.papermc.paperweight.userdev" version "1.7.0"
 }
 
 dependencies {
@@ -8,7 +8,17 @@ dependencies {
     paperweight.paperDevBundle(project.paper_version)
 }
 
+sourceSets {
+    main {
+        java {
+            exclude '**/-dev.jar/**'
+        }
+    }
+}
+
 shadowJar {
+    archiveFileName = "protoweaver-${version}-paper.jar"
+
     relocate('io.netty', 'me.mrnavastar.protoweaver.libs.netty') {
         exclude 'io.netty.channel.*'
         exclude 'io.netty.buffer.*'
@@ -25,15 +35,7 @@ shadowJar {
     minimize()
 }
 
-reobfJar {
-    archives_base_name="protoweaver"
-}
-
 jar.finalizedBy(shadowJar)
-
-tasks.assemble {
-    dependsOn(reobfJar)
-}
 
 tasks {
     runServer {

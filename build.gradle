@@ -1,13 +1,13 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "8.1.1"
+    id "io.github.goooler.shadow" version "8.1.7"
     id "io.freefair.lombok" version "8.6"
     id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.5-SNAPSHOT" apply false
+    id "dev.architectury.loom" version "1.6-SNAPSHOT" apply false
     id "maven-publish"
 }
 
 allprojects {
-    apply plugin: "com.github.johnrengelman.shadow"
+    apply plugin: "io.github.goooler.shadow"
     apply plugin: "io.freefair.lombok"
     apply plugin: "architectury-plugin"
     apply plugin: "maven-publish"
