@@ -26,7 +26,7 @@ tasks {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId = "protoweaver-${version}-paper.jar" as Publication
+            artifactId = "protoweaver-${version}-paper" as Publication
         }
     }
 }
