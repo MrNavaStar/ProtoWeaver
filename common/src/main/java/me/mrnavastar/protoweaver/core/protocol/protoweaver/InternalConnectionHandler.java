@@ -15,11 +15,7 @@ public class InternalConnectionHandler {
             .setClientHandler(ClientConnectionHandler.class)
             .addPacket(AuthStatus.class)
             .addPacket(ProtocolStatus.class)
-            .build();
-
-    static {
-        ProtoWeaver.load(protocol);
-    }
+            .load();
 
     protected void disconnectIfNeverUpgraded(ProtoConnection connection, Sender sender) {
         if (!connection.getProtocol().toString().equals(protocol.toString())) return;

@@ -202,5 +202,14 @@ public class Protocol {
                 protocol.compressionLevel = protocol.compression.getDefaultLevel();
             return protocol;
         }
+
+        /**
+         * Equivalent to calling {@link Builder#build()} and {@link ProtoWeaver#load(Protocol)}.
+         * @return The {@link Protocol} that was built and loaded.
+         */
+        public Protocol load() {
+            ProtoWeaver.load(build());
+            return protocol;
+        }
     }
 }

@@ -18,21 +18,23 @@ public class Fabric implements DedicatedServerModInitializer, ProtoLogger.IProto
 
     @Override
     public void onInitializeServer() {
+        if (!ProtoWeaver.getLoadedProtocols().isEmpty()) setup();
+        else ProtoWeaver.PROTOCOL_LOADED.register(protocol -> setup());
+    }
+
+    private void setup() {
+        if (setup) return;
         ProtoLogger.setLogger(this);
+        SSLContext.initKeystore(FabricLoader.getInstance().getConfigDir() + "/protoweaver");
+        SSLContext.genKeys();
+        SSLContext.initContext();
 
-        ProtoWeaver.PROTOCOL_LOADED.register(protocol -> {
-            if (setup) return;
-            SSLContext.initKeystore(FabricLoader.getInstance().getConfigDir() + "/protoweaver");
-            SSLContext.genKeys();
-            SSLContext.initContext();
-
-            // Fabric Proxy Lite support
-            FabricLoader.getInstance().getModContainer("fabricproxy-lite").ifPresent(modContainer -> {
-                // FabricProxyLites config is initialized as a mixin plugin, so it's guaranteed to be loaded before protoweaver
-                VelocityAuth.setSecret(FabricProxyLite.config.getSecret());
-            });
-            setup = true;
+        // Fabric Proxy Lite support
+        FabricLoader.getInstance().getModContainer("fabricproxy-lite").ifPresent(modContainer -> {
+            // FabricProxyLites config is initialized as a mixin plugin, so it's guaranteed to be loaded before protoweaver
+            VelocityAuth.setSecret(FabricProxyLite.config.getSecret());
         });
+        setup = true;
     }
 
     @Override

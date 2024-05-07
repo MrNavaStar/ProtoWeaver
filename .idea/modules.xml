@@ -8,6 +8,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/loader-common/me.mrnavastar.protoweaver.loader-common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/loader-common/me.mrnavastar.protoweaver.loader-common.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/loader-common/me.mrnavastar.protoweaver.loader-common.test.iml" filepath="$PROJECT_DIR$/.idea/modules/loader-common/me.mrnavastar.protoweaver.loader-common.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/paper/me.mrnavastar.protoweaver.paper.test.iml" filepath="$PROJECT_DIR$/.idea/modules/paper/me.mrnavastar.protoweaver.paper.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/client/protoweaver.client.main.iml" filepath="$PROJECT_DIR$/.idea/modules/client/protoweaver.client.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/protoweaver.common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/common/protoweaver.common.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/fabric/protoweaver.fabric.main.iml" filepath="$PROJECT_DIR$/.idea/modules/fabric/protoweaver.fabric.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/fabric/protoweaver.fabric.test.iml" filepath="$PROJECT_DIR$/.idea/modules/fabric/protoweaver.fabric.test.iml" />

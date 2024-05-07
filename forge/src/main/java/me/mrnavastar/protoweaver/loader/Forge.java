@@ -22,24 +22,27 @@ public class Forge implements ProtoLogger.IProtoLogger {
     private boolean setup = false;
 
     public Forge() {
-        ProtoLogger.setLogger(this);
         MinecraftForge.EVENT_BUS.addListener(this::serverStarted);
-
-        ProtoWeaver.PROTOCOL_LOADED.register(protocol -> {
-            if (setup) return;
-            SSLContext.initKeystore(FMLConfig.defaultConfigPath() + "/protoweaver");
-            SSLContext.genKeys();
-            SSLContext.initContext();
-            setup = true;
-        });
     }
 
     private void serverStarted(FMLDedicatedServerSetupEvent event) {
+        if (!ProtoWeaver.getLoadedProtocols().isEmpty()) setup();
+        else ProtoWeaver.PROTOCOL_LOADED.register(protocol -> setup());
+    }
+
+    private void setup() {
+        if (setup) return;
+        ProtoLogger.setLogger(this);
+        SSLContext.initKeystore(FMLConfig.defaultConfigPath() + "/protoweaver");
+        SSLContext.genKeys();
+        SSLContext.initContext();
+
         // Proxy Compatible Forge support
         if (FMLLoader.getLoadingModList().getModFileById("proxy-compatible-forge") != null) {
             // Proxy Compatible Forge's config becomes available after FMLServerAboutToStartEvent
             VelocityAuth.setSecret(Initializer.config.forwardingSecret.get());
         }
+        setup = true;
     }
 
     @Override

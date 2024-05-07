@@ -7,10 +7,12 @@ plugins {
 }
 
 allprojects {
-    apply plugin: "io.github.goooler.shadow"
     apply plugin: "io.freefair.lombok"
     apply plugin: "architectury-plugin"
-    apply plugin: "maven-publish"
+
+    architectury {
+        compileOnly()
+    }
 
     version = project.project_version
     group = project.maven_group
@@ -30,23 +32,22 @@ allprojects {
 
 subprojects {
     apply plugin: "java-library"
+    apply plugin: "maven-publish"
 
     version = project.project_version
     group = project.maven_group
 
     dependencies {
+        compileOnly "com.esotericsoftware:kryo5:${project.kyro_version}"
+        compileOnly "io.netty:netty-buffer:${project.netty_version}"
+        compileOnly "io.netty:netty-transport:${project.netty_version}"
+        compileOnly "io.netty:netty-handler:${project.netty_version}"
+        compileOnly "io.netty:netty-codec-http:${project.netty_version}"
+        compileOnly "io.netty:netty-codec-http2:${project.netty_version}"
+        compileOnly "org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}"
+
         compileOnly "org.projectlombok:lombok:${project.lombok_version}"
 	    annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"
-    }
-
-    shadowJar {
-        archiveBaseName.set("protoweaver")
-        archiveClassifier.set(project.name)
-        configurations = [project.configurations.shadow]
-
-        dependencies {
-            mergeServiceFiles()
-        }
     }
 
     jar {

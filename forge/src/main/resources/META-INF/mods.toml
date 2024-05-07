@@ -9,6 +9,6 @@ version = "0.debug-build"
 displayName = "ProtoWeaver"
 displayURL="https://github.com/MrNavaStar/ProtoWeaver"
 authors="MrNavaStar"
-description = ""
+description = "A networking library for creating custom protocols that run on the internal netty server."
 
 displayTest="IGNORE_ALL_VERSION"

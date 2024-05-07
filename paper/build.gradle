@@ -4,38 +4,18 @@ plugins {
 }
 
 dependencies {
-    shadow api(project(path: ':loader-common', configuration: 'default'))
+    implementation project(path: ':loader-common', configuration: 'default')
     paperweight.paperDevBundle(project.paper_version)
 }
 
-sourceSets {
-    main {
-        java {
-            exclude '**/-dev.jar/**'
-        }
-    }
-}
-
-shadowJar {
+jar {
     archiveFileName = "protoweaver-${version}-paper.jar"
-
-    relocate('io.netty', 'me.mrnavastar.protoweaver.libs.netty') {
-        exclude 'io.netty.channel.*'
-        exclude 'io.netty.buffer.*'
-        exclude 'io.netty.handler.ssl.*'
+    from {
+        exclude "architectury.common.marker"
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
-    relocate "org.bouncycastle", "me.mrnavastar.protoweaver.libs.bouncycastle"
-
-    exclude "META-INF/maven/**"
-    exclude "META-INF/native-image/**"
-
-    minimize {
-        exclude(dependency("org.bouncycastle:bcpkix-jdk18on:.*"))
-    }
-    minimize()
 }
-
-jar.finalizedBy(shadowJar)
 
 tasks {
     runServer {

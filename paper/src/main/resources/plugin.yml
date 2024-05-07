@@ -1,4 +1,9 @@
 name: ProtoWeaver
 version: 'debug-build'
-main: me.mrnavastar.protoweaver.paper.Paper
+main: me.mrnavastar.protoweaver.loader.Paper
 api-version: '1.13'
+libraries:
+  - com.esotericsoftware:kryo5:5.6.0
+  - io.netty:netty-codec-http:4.1.97.Final
+  - io.netty:netty-codec-http2:4.1.97.Final
+  - org.bouncycastle:bcpkix-jdk18on:1.78.1

@@ -4,21 +4,24 @@ plugins {
 }
 
 dependencies {
-    shadow api(project(path: ':client', configuration: 'shadow'))
+    implementation project(path: ':client', configuration: 'shadow')
 
     compileOnly "io.github.waterfallmc:waterfall-api:${project.waterfall_version}"
     compileOnly "com.velocitypowered:velocity-api:${project.velocity_version}"
     annotationProcessor "com.velocitypowered:velocity-api:${project.velocity_version}"
 }
 
-shadowJar {
-    dependencies {
-        exclude(dependency("io.netty:.*:.*"))
-        exclude(dependency("com.esotericsoftware:kryo5:.*"))
+jar {
+    from {
+        exclude "io/**"
+        exclude "com/**"
+        exclude "META-INF/maven/**"
+        exclude "META-INF/LICENSE"
+        exclude "META-INF/NOTICE"
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
-
-jar.finalizedBy(shadowJar)
 
 tasks {
     runVelocity {

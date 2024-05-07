@@ -4,6 +4,7 @@ import lombok.NonNull;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.util.Event;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -55,17 +56,17 @@ public class ProtoWeaver {
 
     /**
      * An event that is fired when {@link ProtoWeaver#load(Protocol)} is called. This event can be used to cancel the loading
-     * of a protocol by calling {@link Event.Cancelable#cancel()}.
+     * of a protocol by calling {@link Event.Cancelable#cancel()}. You can't cancel the internal protoweaver protocol.
      */
     public static final Event<PreLoadedProtocol> PRE_PROTOCOL_LOADED = new Event<>(callbacks -> (protocol, cancelable) -> {
         for (PreLoadedProtocol callback : callbacks) {
-            if (cancelable.isCanceled()) break;
+            if (cancelable.isCanceled() && !protocol.getNamespace().equals("protoweaver") && !protocol.getName().equals("internal")) break;
             callback.trigger(protocol, cancelable);
         }
     });
 
     /**
-     * An event that is fired when a {@link Protocol} has been fully loaded.
+     * An event that is fired once a {@link Protocol} has been fully loaded.
      */
     public static final Event<LoadedProtocol> PROTOCOL_LOADED = new Event<>(callbacks -> protocol -> {
         callbacks.forEach(callback -> callback.trigger(protocol));

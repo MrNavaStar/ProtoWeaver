@@ -12,25 +12,9 @@ loom {
 }
 
 dependencies {
-    implementation project(path: ':common', configuration: 'shadow')
+    implementation project(path: ':common', configuration: 'default')
 
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
     modCompileOnly "net.fabricmc:fabric-loader:${project.loader_version}"
-
-    compileOnly("io.netty:netty-buffer:${project.netty_version}")
-    compileOnly "io.netty:netty-transport:${project.netty_version}"
-    compileOnly "io.netty:netty-handler:${project.netty_version}"
-
-    implementation("io.netty:netty-codec-http:${project.netty_version}") {
-        exclude group: "io.netty", module: "netty-buffer"
-        exclude group: "io.netty", module: "netty-transport"
-        exclude group: "io.netty", module: "netty-handler"
-    }
-    implementation("io.netty:netty-codec-http2:${project.netty_version}") {
-        exclude group: "io.netty", module: "netty-buffer"
-        exclude group: "io.netty", module: "netty-transport"
-        exclude group: "io.netty", module: "netty-handler"
-    }
-    implementation "org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}"
 }

@@ -14,49 +14,45 @@ loom {
 
 configurations {
     common
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    shadowCommon
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentForge.extendsFrom common
 }
 
 dependencies {
-    shadowCommon(api(project(path: ":loader-common", configuration: "default")))
-    shadowCommon(api(project(path: ":loader-common", configuration: "transformProductionForge"))) { transitive false }
+    shadowCommon(implementation(project(path: ":loader-common", configuration: "default")))
+    shadowCommon(project(path: ":loader-common", configuration: "transformProductionForge")) { transitive false }
 
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
     forge "net.minecraftforge:forge:${project.forge_version}"
 
+    // Libs
+    include forgeRuntimeLibrary("com.esotericsoftware:kryo5:${project.kyro_version}")
+    include forgeRuntimeLibrary("org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}")
+    include forgeRuntimeLibrary("io.netty:netty-codec-http:${project.netty_version}")
+    include forgeRuntimeLibrary("io.netty:netty-codec-http2:${project.netty_version}")
+
+    // Mod Compat
     modImplementation "maven.modrinth:proxy-compatible-forge:${project.proxy_forge_version}"
 
+    //Dev
     modLocalRuntime "maven.modrinth:easy-eula:1.1.0-forge"
 }
 
-shadowJar {
-    archiveBaseName.set("shadow")
-    configurations = [project.configurations.shadowCommon]
-    relocate('io.netty', 'me.mrnavastar.protoweaver.libs.netty') {
-        exclude 'io.netty.channel.*'
-        exclude 'io.netty.buffer.*'
-        exclude 'io.netty.handler.ssl.*'
+jar {
+    dependsOn(':loader-common:transformProductionForge')
+    from {
+        exclude "architectury.common.marker"
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        configurations.shadowCommon.collect { it.isDirectory() ? it : zipTree(it) }
     }
-    relocate "org.bouncycastle", "me.mrnavastar.protoweaver.libs.bouncycastle"
-
-    exclude "META-INF/maven/**"
-    exclude "META-INF/native-image/**"
-
-    minimize {
-        exclude(dependency("org.bouncycastle:bcpkix-jdk18on:.*"))
-    }
-    minimize()
 }
-
-jar.finalizedBy(shadowJar)
 
 remapJar {
     archiveBaseName.set("protoweaver")
     archiveClassifier.set(project.name)
-    input.set shadowJar.archiveFile
-    dependsOn shadowJar
 }
+
+jar.finalizedBy(remapJar)

@@ -3,13 +3,14 @@
   "id": "protoweaver",
   "version": "debug-build",
   "name": "ProtoWeaver",
-  "description": "",
+  "description": "A networking library for creating custom protocols that run on the internal netty server.",
   "authors": ["MrNavaStar"],
   "contact": {
+    "repo": "https://github.com/MrNavaStar/ProtoWeaver"
   },
   "license": "CC0-1.0",
   "icon": "assets/protoweaver/icon.png",
-  "environment": "*",
+  "environment": "server",
   "entrypoints": {
     "server": [
       "me.mrnavastar.protoweaver.loader.Fabric"
