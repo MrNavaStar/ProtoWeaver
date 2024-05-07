@@ -66,24 +66,26 @@ subprojects {
 
     jar.finalizedBy(jarSources)
 
-    publishing {
-        repositories {
-            maven {
-                name "MrNavaStar"
-                url "https://maven.mrnavastar.rocks/snapshots"
-                credentials {
-                    username = System.getenv("MAVEN_NAME")
-                    password = System.getenv("MAVEN_SECRET")
+    if (project.path != ':loader-common') {
+        publishing {
+            repositories {
+                maven {
+                    name "MrNavaStar"
+                    url "https://maven.mrnavastar.rocks/snapshots"
+                    credentials {
+                        username = System.getenv("MAVEN_NAME")
+                        password = System.getenv("MAVEN_SECRET")
 
+                    }
                 }
             }
-        }
-        publications {
-            maven(MavenPublication) {
-                groupId = "me.mrnavastar"
-                artifactId = "protoweaver"
-                from components.java
-                artifact tasks.jarSources
+            publications {
+                maven(MavenPublication) {
+                    groupId = "me.mrnavastar"
+                    artifactId = "protoweaver"
+                    from components.java
+                    artifact tasks.jarSources
+                }
             }
         }
     }
