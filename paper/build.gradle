@@ -22,11 +22,3 @@ tasks {
         minecraftVersion(project.minecraft_version)
     }
 }
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifactId "protoweaver-${version}-paper"
-        }
-    }
-}
