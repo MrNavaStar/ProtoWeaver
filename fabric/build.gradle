@@ -27,10 +27,10 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     // Libs
-    include "com.esotericsoftware:kryo5:${project.kyro_version}"
-    include "org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}"
-    include "io.netty:netty-codec-http:${project.netty_version}"
-    include "io.netty:netty-codec-http2:${project.netty_version}"
+    include implementation("com.esotericsoftware:kryo5:${project.kyro_version}")
+    include implementation("org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}")
+    include implementation("io.netty:netty-codec-http:${project.netty_version}")
+    include implementation("io.netty:netty-codec-http2:${project.netty_version}")
 
     // Mod Compat
     modImplementation "maven.modrinth:fabricproxy-lite:${project.proxy_lite_version}"

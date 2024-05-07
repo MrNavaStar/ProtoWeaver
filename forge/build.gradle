@@ -29,10 +29,10 @@ dependencies {
     forge "net.minecraftforge:forge:${project.forge_version}"
 
     // Libs
-    include forgeRuntimeLibrary("com.esotericsoftware:kryo5:${project.kyro_version}")
-    include forgeRuntimeLibrary("org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}")
-    include forgeRuntimeLibrary("io.netty:netty-codec-http:${project.netty_version}")
-    include forgeRuntimeLibrary("io.netty:netty-codec-http2:${project.netty_version}")
+    include forgeRuntimeLibrary(implementation("com.esotericsoftware:kryo5:${project.kyro_version}"))
+    include forgeRuntimeLibrary(implementation("org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}"))
+    include forgeRuntimeLibrary(implementation("io.netty:netty-codec-http:${project.netty_version}"))
+    include forgeRuntimeLibrary(implementation("io.netty:netty-codec-http2:${project.netty_version}"))
 
     // Mod Compat
     modImplementation "maven.modrinth:proxy-compatible-forge:${project.proxy_forge_version}"

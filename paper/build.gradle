@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    implementation project(path: ':loader-common', configuration: 'default')
+    compileOnly project(path: ':loader-common', configuration: 'default')
     paperweight.paperDevBundle(project.paper_version)
 }
 

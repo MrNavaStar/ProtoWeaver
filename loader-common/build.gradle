@@ -12,7 +12,7 @@ loom {
 }
 
 dependencies {
-    implementation project(path: ':common', configuration: 'default')
+    compileOnly project(path: ':common', configuration: 'default')
 
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()

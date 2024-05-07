@@ -10,12 +10,12 @@ allprojects {
     apply plugin: "io.freefair.lombok"
     apply plugin: "architectury-plugin"
 
+    version = project.project_version
+    group = project.maven_group
+
     architectury {
         compileOnly()
     }
-
-    version = project.project_version
-    group = project.maven_group
 
     repositories {
         mavenCentral()

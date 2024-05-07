@@ -1,11 +1,11 @@
 apply plugin: "io.github.goooler.shadow"
 
 dependencies {
-    shadow implementation(project(path: ':common', configuration: 'default'))
-    shadow "com.esotericsoftware:kryo5:${project.kyro_version}"
-    shadow "io.netty:netty-buffer:${project.netty_version}"
-    shadow "io.netty:netty-transport:${project.netty_version}"
-    shadow "io.netty:netty-handler:${project.netty_version}"
+    shadow compileOnly(project(path: ':common', configuration: 'default'))
+    shadow compileOnly("com.esotericsoftware:kryo5:${project.kyro_version}")
+    shadow compileOnly("io.netty:netty-buffer:${project.netty_version}")
+    shadow compileOnly("io.netty:netty-transport:${project.netty_version}")
+    shadow compileOnly("io.netty:netty-handler:${project.netty_version}")
 }
 
 shadowJar {
@@ -21,8 +21,6 @@ shadowJar {
     relocate 'io.netty', 'me.mrnavastar.protoweaver.libs.netty'
 
     exclude "META-INF/maven/**"
-    exclude "META-INF/native-image/**"
-    exclude "org/bouncycastle/**"
     minimize()
 }
 
