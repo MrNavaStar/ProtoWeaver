@@ -2,20 +2,18 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/fabric/me.mrnavastar.protoweaver.fabric.test.iml" filepath="$PROJECT_DIR$/.idea/modules/fabric/me.mrnavastar.protoweaver.fabric.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/forge/me.mrnavastar.protoweaver.forge.test.iml" filepath="$PROJECT_DIR$/.idea/modules/forge/me.mrnavastar.protoweaver.forge.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/loader-common/me.mrnavastar.protoweaver.loader-common.iml" filepath="$PROJECT_DIR$/.idea/modules/loader-common/me.mrnavastar.protoweaver.loader-common.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/loader-common/me.mrnavastar.protoweaver.loader-common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/loader-common/me.mrnavastar.protoweaver.loader-common.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/loader-common/me.mrnavastar.protoweaver.loader-common.test.iml" filepath="$PROJECT_DIR$/.idea/modules/loader-common/me.mrnavastar.protoweaver.loader-common.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/paper/me.mrnavastar.protoweaver.paper.test.iml" filepath="$PROJECT_DIR$/.idea/modules/paper/me.mrnavastar.protoweaver.paper.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/client/protoweaver.client.main.iml" filepath="$PROJECT_DIR$/.idea/modules/client/protoweaver.client.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/protoweaver.common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/common/protoweaver.common.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/fabric/protoweaver.fabric.iml" filepath="$PROJECT_DIR$/.idea/modules/fabric/protoweaver.fabric.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/fabric/protoweaver.fabric.main.iml" filepath="$PROJECT_DIR$/.idea/modules/fabric/protoweaver.fabric.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/fabric/protoweaver.fabric.test.iml" filepath="$PROJECT_DIR$/.idea/modules/fabric/protoweaver.fabric.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/forge/protoweaver.forge.iml" filepath="$PROJECT_DIR$/.idea/modules/forge/protoweaver.forge.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/forge/protoweaver.forge.main.iml" filepath="$PROJECT_DIR$/.idea/modules/forge/protoweaver.forge.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/forge/protoweaver.forge.test.iml" filepath="$PROJECT_DIR$/.idea/modules/forge/protoweaver.forge.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/loader-common/protoweaver.loader-common.iml" filepath="$PROJECT_DIR$/.idea/modules/loader-common/protoweaver.loader-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/loader-common/protoweaver.loader-common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/loader-common/protoweaver.loader-common.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/loader-common/protoweaver.loader-common.test.iml" filepath="$PROJECT_DIR$/.idea/modules/loader-common/protoweaver.loader-common.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/paper/protoweaver.paper.iml" filepath="$PROJECT_DIR$/.idea/modules/paper/protoweaver.paper.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/paper/protoweaver.paper.main.iml" filepath="$PROJECT_DIR$/.idea/modules/paper/protoweaver.paper.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/paper/protoweaver.paper.test.iml" filepath="$PROJECT_DIR$/.idea/modules/paper/protoweaver.paper.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/proxy/protoweaver.proxy.main.iml" filepath="$PROJECT_DIR$/.idea/modules/proxy/protoweaver.proxy.main.iml" />

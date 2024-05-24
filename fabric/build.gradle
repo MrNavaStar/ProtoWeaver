@@ -18,12 +18,12 @@ configurations {
 }
 
 dependencies {
-    shadowCommon(implementation(project(path: ":loader-common", configuration: "default")))
+    shadowCommon(compileOnly(project(path: ":loader-common", configuration: "default")))
     shadowCommon(project(path: ":loader-common", configuration: "transformProductionFabric")) { transitive false }
 
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modCompileOnly "net.fabricmc:fabric-loader:${project.loader_version}"
 
     // Libs
     include implementation("com.esotericsoftware:kryo5:${project.kyro_version}")
@@ -32,7 +32,7 @@ dependencies {
     include implementation("io.netty:netty-codec-http2:${project.netty_version}")
 
     // Mod Compat
-    modImplementation "maven.modrinth:fabricproxy-lite:${project.proxy_lite_version}"
+    modCompileOnly "maven.modrinth:fabricproxy-lite:${project.proxy_lite_version}"
     modLocalRuntime "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
 
     // Dev
@@ -46,11 +46,6 @@ jar {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         configurations.shadowCommon.collect { it.isDirectory() ? it : zipTree(it) }
     }
-}
-
-remapJar {
-    archiveBaseName.set("protoweaver")
-    archiveClassifier.set(project.name)
 }
 
 jar.finalizedBy(remapJar)

@@ -7,7 +7,6 @@ plugins {
 }
 
 allprojects {
-    apply plugin: "io.freefair.lombok"
     apply plugin: "architectury-plugin"
 
     version = project.project_version
@@ -33,9 +32,7 @@ allprojects {
 subprojects {
     apply plugin: "java-library"
     apply plugin: "maven-publish"
-
-    version = project.project_version
-    group = project.maven_group
+    apply plugin: "io.freefair.lombok"
 
     dependencies {
         compileOnly "com.esotericsoftware:kryo5:${project.kyro_version}"
@@ -50,14 +47,8 @@ subprojects {
 	    annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"
     }
 
-    jar {
-        archiveBaseName.set("protoweaver")
-        archiveClassifier.set(project.name)
-    }
-
     task jarSources(type:Jar){
-        archiveBaseName.set("protoweaver")
-        archiveClassifier.set(project.name + "-sources")
+        archiveClassifier.set("sources")
         exclude {
             sourceSets.main.allSource.contains it.file
         }
@@ -71,7 +62,7 @@ subprojects {
             repositories {
                 maven {
                     name "MrNavaStar"
-                    url "https://maven.mrnavastar.rocks/snapshots"
+                    url "https://maven.mrnavastar.rocks/releases"
                     credentials {
                         username = System.getenv("MAVEN_NAME")
                         password = System.getenv("MAVEN_SECRET")
@@ -79,23 +70,11 @@ subprojects {
                 }
             }
             publications {
-                maven(MavenPublication) {
-                    groupId = "me.mrnavastar"
-                    artifactId = "protoweaver"
+                mavenJava(MavenPublication) {
+                    groupId = "me.mrnavastar.protoweaver"
+                    artifactId = project.name
                     from components.java
                     artifact tasks.jarSources
-
-                    pom.withXml {
-                        def dependenciesNode = asNode().appendNode('dependencies')
-
-                        //Iterate over the compile dependencies (we don't want the test ones), adding a <dependency> node for each
-                        configurations.compileOnly.allDependencies.each {
-                            def dependencyNode = dependenciesNode.appendNode('dependency')
-                            dependencyNode.appendNode('groupId', it.group)
-                            dependencyNode.appendNode('artifactId', it.name)
-                            dependencyNode.appendNode('version', it.version)
-                        }
-                    }
                 }
             }
         }

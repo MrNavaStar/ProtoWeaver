@@ -5,21 +5,21 @@
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.30/f195ee86e6c896ea47a1d39defbe20eb59cd149d/lombok-1.18.30.jar" />
-        </processorPath>
-        <module name="protoweaver.proxy.test" />
-        <module name="protoweaver.client.test" />
-        <module name="protoweaver.common.test" />
-        <module name="me.mrnavastar.protoweaver.paper.test" />
-      </profile>
-      <profile name="Gradle Imported" enabled="true">
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.32/17d46b3e205515e1e8efd3ee4d57ce8018914163/lombok-1.18.32.jar" />
         </processorPath>
         <module name="protoweaver.common.main" />
         <module name="protoweaver.client.main" />
         <module name="protoweaver.paper.main" />
+      </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.30/f195ee86e6c896ea47a1d39defbe20eb59cd149d/lombok-1.18.30.jar" />
+        </processorPath>
+        <module name="protoweaver.proxy.test" />
+        <module name="protoweaver.client.test" />
+        <module name="protoweaver.common.test" />
+        <module name="protoweaver.paper.test" />
       </profile>
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
@@ -43,31 +43,7 @@
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.30/f195ee86e6c896ea47a1d39defbe20eb59cd149d/lombok-1.18.30.jar" />
         </processorPath>
-        <module name="me.mrnavastar.protoweaver.fabric.test" />
-      </profile>
-      <profile name="Gradle Imported" enabled="true">
-        <outputRelativeToContentRoot value="true" />
-        <option name="defaultObfuscationEnv" value="named:intermediary" />
-        <option name="inMapFileNamedIntermediary" value="$USER_HOME$/.gradle/caches/fabric-loom/1.20.6/loom.mappings.1_20_6.layered+hash.40359-v2-forge-1.20.6-50.0.1/mappings-mixin-srg.tiny" />
-        <option name="outMapFileNamedIntermediary" value="$PROJECT_DIR$/forge/build/loom-cache/mixin-map-loom.mappings.1_20_6.layered+hash.40359-v2-forge-1.20.6-50.0.1.main.tiny" />
-        <option name="outRefMapFile" value="$PROJECT_DIR$/forge/build/classes/java/main/forge-forge-refmap.json" />
-        <option name="quiet" value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.32/17d46b3e205515e1e8efd3ee4d57ce8018914163/lombok-1.18.32.jar" />
-        </processorPath>
-        <module name="protoweaver.forge.main" />
-      </profile>
-      <profile name="Gradle Imported" enabled="true">
-        <outputRelativeToContentRoot value="true" />
-        <option name="defaultObfuscationEnv" value="named:intermediary" />
-        <option name="inMapFileNamedIntermediary" value="$USER_HOME$/.gradle/caches/fabric-loom/1.20.6/loom.mappings.1_20_6.layered+hash.40359-v2-forge-1.20.6-50.0.1/mappings-mixin-srg.tiny" />
-        <option name="outMapFileNamedIntermediary" value="$PROJECT_DIR$/forge/build/loom-cache/mixin-map-loom.mappings.1_20_6.layered+hash.40359-v2-forge-1.20.6-50.0.1.test.tiny" />
-        <option name="outRefMapFile" value="$PROJECT_DIR$/forge/build/classes/java/test/test-forge-forge-refmap.json" />
-        <option name="quiet" value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.30/f195ee86e6c896ea47a1d39defbe20eb59cd149d/lombok-1.18.30.jar" />
-        </processorPath>
-        <module name="me.mrnavastar.protoweaver.forge.test" />
+        <module name="protoweaver.fabric.test" />
       </profile>
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
@@ -79,7 +55,7 @@
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.32/17d46b3e205515e1e8efd3ee4d57ce8018914163/lombok-1.18.32.jar" />
         </processorPath>
-        <module name="me.mrnavastar.protoweaver.loader-common.main" />
+        <module name="protoweaver.loader-common.main" />
       </profile>
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
@@ -91,13 +67,13 @@
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.30/f195ee86e6c896ea47a1d39defbe20eb59cd149d/lombok-1.18.30.jar" />
         </processorPath>
-        <module name="me.mrnavastar.protoweaver.loader-common.test" />
+        <module name="protoweaver.loader-common.test" />
       </profile>
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.32/17d46b3e205515e1e8efd3ee4d57ce8018914163/lombok-1.18.32.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.velocitypowered/velocity-api/3.3.0-SNAPSHOT/3428aa67e0ae943a73cd7c6f853cfbc32461ee03/velocity-api-3.3.0-SNAPSHOT.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.velocitypowered/velocity-api/3.3.0-SNAPSHOT/d7b1a482ef47341ba89d29e6b7063567a5f3bf5e/velocity-api-3.3.0-SNAPSHOT.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.moandjiezana.toml/toml4j/0.7.2/a03337911d0bd2c40932aca3946edb30d0e7d0c/toml4j-0.7.2.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.spongepowered/configurate-gson/4.1.2/3e5c7a0ea73e95ce6139fa72f1b6d36eb531ab81/configurate-gson-4.1.2.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.kyori/adventure-text-logger-slf4j/4.16.0/a2e7eadb8d26481fb3da619a761cf3a47a1da43f/adventure-text-logger-slf4j-4.16.0.jar" />
@@ -137,7 +113,31 @@
         </processorPath>
         <module name="protoweaver.proxy.main" />
       </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <option name="defaultObfuscationEnv" value="named:intermediary" />
+        <option name="inMapFileNamedIntermediary" value="$USER_HOME$/.gradle/caches/fabric-loom/1.20.6/loom.mappings.1_20_6.layered+hash.40359-v2-forge-1.20.6-50.0.31/mappings-mixin-srg.tiny" />
+        <option name="outMapFileNamedIntermediary" value="$PROJECT_DIR$/forge/build/loom-cache/mixin-map-loom.mappings.1_20_6.layered+hash.40359-v2-forge-1.20.6-50.0.31.main.tiny" />
+        <option name="outRefMapFile" value="$PROJECT_DIR$/forge/build/classes/java/main/forge-forge-refmap.json" />
+        <option name="quiet" value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.32/17d46b3e205515e1e8efd3ee4d57ce8018914163/lombok-1.18.32.jar" />
+        </processorPath>
+        <module name="protoweaver.forge.main" />
+      </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <option name="defaultObfuscationEnv" value="named:intermediary" />
+        <option name="inMapFileNamedIntermediary" value="$USER_HOME$/.gradle/caches/fabric-loom/1.20.6/loom.mappings.1_20_6.layered+hash.40359-v2-forge-1.20.6-50.0.31/mappings-mixin-srg.tiny" />
+        <option name="outMapFileNamedIntermediary" value="$PROJECT_DIR$/forge/build/loom-cache/mixin-map-loom.mappings.1_20_6.layered+hash.40359-v2-forge-1.20.6-50.0.31.test.tiny" />
+        <option name="outRefMapFile" value="$PROJECT_DIR$/forge/build/classes/java/test/test-forge-forge-refmap.json" />
+        <option name="quiet" value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.30/f195ee86e6c896ea47a1d39defbe20eb59cd149d/lombok-1.18.30.jar" />
+        </processorPath>
+        <module name="protoweaver.forge.test" />
+      </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="17" />
+    <bytecodeTargetLevel target="21" />
   </component>
 </project>

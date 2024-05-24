@@ -1,10 +1,10 @@
 plugins {
     id "xyz.jpenilla.run-paper" version "2.3.0"
-    id "io.papermc.paperweight.userdev" version "1.7.0"
+    id "io.papermc.paperweight.userdev" version "1.7.1"
 }
 
 dependencies {
-    compileOnly project(path: ':loader-common', configuration: 'default')
+    api project(path: ':loader-common', configuration: 'default')
     paperweight.paperDevBundle(project.paper_version)
 }
 

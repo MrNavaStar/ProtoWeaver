@@ -9,8 +9,7 @@ dependencies {
 }
 
 shadowJar {
-    archiveBaseName.set("protoweaver")
-    archiveClassifier.set(project.name)
+    archiveClassifier = ""
     configurations = [project.configurations.shadow]
 
     dependencies {

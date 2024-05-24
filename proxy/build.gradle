@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    compileOnly project(path: ':client', configuration: 'shadow')
+    api project(path: ':client', configuration: 'shadow')
 
     compileOnly "io.github.waterfallmc:waterfall-api:${project.waterfall_version}"
     compileOnly "com.velocitypowered:velocity-api:${project.velocity_version}"

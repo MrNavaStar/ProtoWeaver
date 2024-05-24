@@ -21,7 +21,7 @@ configurations {
 }
 
 dependencies {
-    shadowCommon(implementation(project(path: ":loader-common", configuration: "default")))
+    shadowCommon(compileOnly(project(path: ":loader-common", configuration: "default")))
     shadowCommon(project(path: ":loader-common", configuration: "transformProductionForge")) { transitive false }
 
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -35,7 +35,7 @@ dependencies {
     include forgeRuntimeLibrary(implementation("io.netty:netty-codec-http2:${project.netty_version}"))
 
     // Mod Compat
-    modImplementation "maven.modrinth:proxy-compatible-forge:${project.proxy_forge_version}"
+    modCompileOnly "maven.modrinth:proxy-compatible-forge:${project.proxy_forge_version}"
 
     //Dev
     modLocalRuntime "maven.modrinth:easy-eula:1.1.0-forge"
@@ -48,11 +48,6 @@ jar {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         configurations.shadowCommon.collect { it.isDirectory() ? it : zipTree(it) }
     }
-}
-
-remapJar {
-    archiveBaseName.set("protoweaver")
-    archiveClassifier.set(project.name)
 }
 
 jar.finalizedBy(remapJar)

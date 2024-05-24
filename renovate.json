@@ -3,5 +3,5 @@
   "extends": [
     "config:base", ":disableDependencyDashboard"
   ],
-  "ignoreDeps": ["easy-eula", "netty"]
+  "ignoreDeps": ["easy-eula", "netty", "loom"]
 }
