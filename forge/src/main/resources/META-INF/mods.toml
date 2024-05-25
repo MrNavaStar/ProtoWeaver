@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[36,)"
+loaderVersion = "[26,)"
 license = "CC0-1.0"
 issueTrackerURL="https://github.com/MrNavaStar/ProtoWeaver/issues"
 
