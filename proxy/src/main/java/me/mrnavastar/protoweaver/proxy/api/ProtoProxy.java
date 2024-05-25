@@ -36,6 +36,8 @@ public class ProtoProxy {
     }
 
     private void startProtocol(Protocol protocol) {
+        if (protocol.toString().equals("protoweaver:internal")) return;
+
         servers.forEach((address, clients) -> {
             for (ProtoWeaverClient client : clients) {
                 // Don't start a new connection if one already exists for this protocol
