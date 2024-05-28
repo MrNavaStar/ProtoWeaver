@@ -13,6 +13,7 @@ import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.core.netty.ProtoPacketHandler;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
+import java.lang.reflect.Modifier;
 import java.net.InetSocketAddress;
 
 /**
@@ -106,10 +107,17 @@ public class ProtoConnection {
         try {
             this.handler = createHandler(protocol, side);
         } catch (Exception e) {
-            ProtoLogger.error("Failed to upgrade to protocol: " + protocol);
+            ProtoLogger.error("Failed to start protocol: " + protocol);
+
             Class<?> handler = side.equals(Side.SERVER) ? protocol.getServerHandler() : protocol.getClientHandler();
-            ProtoLogger.error(protocol + "'s connection handler doesn't have a zero arg constructor.");
-            ProtoLogger.error("The mod author must add one to: " + handler.getName());
+            if (Modifier.isAbstract(handler.getModifiers())) {
+                ProtoLogger.error(protocol + "'s connection handler is an abstract class, which is not allowed!");
+                ProtoLogger.error(protocol + "'s mod author must address this issue");
+            } else {
+                ProtoLogger.error(protocol + "'s connection handler doesn't have a zero arg constructor");
+                ProtoLogger.error(protocol + "'s mod author must add one to: " + handler.getName());
+            }
+
             disconnect();
         }
 
