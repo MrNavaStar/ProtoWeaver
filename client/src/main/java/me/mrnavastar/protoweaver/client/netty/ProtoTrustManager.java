@@ -4,6 +4,7 @@ import io.netty.util.concurrent.FastThreadLocal;
 import io.netty.util.internal.EmptyArrays;
 import io.netty.util.internal.StringUtil;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -43,27 +44,28 @@ public class ProtoTrustManager {
     private final TrustManager tm = new X509TrustManager() {
 
         @Override
-        public void checkClientTrusted(X509Certificate[] chain, String s) throws CertificateException {
+        public void checkClientTrusted(X509Certificate[] chain, String s) {
             checkTrusted(chain);
         }
 
         @Override
-        public void checkServerTrusted(X509Certificate[] chain, String s) throws CertificateException {
+        public void checkServerTrusted(X509Certificate[] chain, String s) {
             checkTrusted(chain);
         }
 
-        private void checkTrusted(X509Certificate[] chain) throws CertificateException {
+        @SneakyThrows
+        private void checkTrusted(X509Certificate[] chain) {
             MessageDigest md = tlmd.get();
             md.reset();
             byte[] fingerprint = md.digest(chain[0].getEncoded());
 
             if (trusted == null) {
+                hostsFile.getParentFile().mkdirs();
+                hostsFile.createNewFile();
                 try (BufferedWriter writer = new BufferedWriter(new FileWriter(hostsFile))) {
                     writer.append(hostId).append("=").append(StringUtil.toHexString(fingerprint)).append("\n");
                     trusted = fingerprint;
                     return;
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
                 }
             }
 
@@ -78,7 +80,7 @@ public class ProtoTrustManager {
     };
 
     public ProtoTrustManager(String host, int port, String file) {
-        hostsFile = new File(file);
+        hostsFile = new File(file + File.separator + "protoweaver.hosts");
         this.hostId = host + ":" + port;
         if (!hostsFile.exists()) return;
 

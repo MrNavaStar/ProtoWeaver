@@ -56,7 +56,7 @@ public class ProtoWeaverClient {
     }
 
     public ProtoWeaverClient(@NonNull InetSocketAddress address) {
-        this(address, "./protoweaver_hosts");
+        this(address.getHostName(), address.getPort());
     }
 
     public ProtoWeaverClient(@NonNull String host, int port, @NonNull String hostsFile) {
@@ -64,7 +64,7 @@ public class ProtoWeaverClient {
     }
 
     public ProtoWeaverClient(@NonNull String host, int port) {
-        this(host, port, "./protoweaver_hosts");
+        this(host, port, ".");
     }
 
     public ProtoWeaverClient connect(@NonNull Protocol protocol) {

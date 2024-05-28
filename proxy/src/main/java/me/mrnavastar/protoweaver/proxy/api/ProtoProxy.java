@@ -29,7 +29,7 @@ public class ProtoProxy {
 
     @ApiStatus.Internal
     public ProtoProxy(ServerSupplier serverSupplier, Path dir) {
-        this.hostsFile = dir + "/protoweaver_hosts";
+        this.hostsFile = dir.toAbsolutePath().toString();
         serverSupplier.getServers().forEach(server -> servers.put(server, new ArrayList<>()));
         ProtoWeaver.PROTOCOL_LOADED.register(this::startProtocol);
         ProtoWeaver.getLoadedProtocols().forEach(this::startProtocol);
