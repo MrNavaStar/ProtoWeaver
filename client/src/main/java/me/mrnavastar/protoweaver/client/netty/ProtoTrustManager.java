@@ -62,7 +62,7 @@ public class ProtoTrustManager {
             if (trusted == null) {
                 hostsFile.getParentFile().mkdirs();
                 hostsFile.createNewFile();
-                try (BufferedWriter writer = new BufferedWriter(new FileWriter(hostsFile))) {
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(hostsFile, true))) {
                     writer.append(hostId).append("=").append(StringUtil.toHexString(fingerprint)).append("\n");
                     trusted = fingerprint;
                     return;
