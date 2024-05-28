@@ -85,7 +85,7 @@ public class ProtoTrustManager {
         if (!hostsFile.exists()) return;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(hostsFile))) {
-            reader.lines().filter(l -> l.startsWith(host)).findFirst()
+            reader.lines().filter(l -> l.startsWith(host + ":" + port)).findFirst()
                     .ifPresent(l -> trusted = StringUtil.decodeHexDump(l.split("=")[1]));
         } catch (IOException e) {
             throw new RuntimeException(e);

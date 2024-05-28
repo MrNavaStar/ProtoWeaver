@@ -102,7 +102,7 @@ public class ProtoPacketHandler extends ByteToMessageDecoder {
             ProtoLogger.error("Failed to connect to: " + parts[2] + ":" + parts[3]);
             ProtoLogger.error("Server SSL fingerprint does not match saved fingerprint! This could be a MITM ATTACK!");
             ProtoLogger.error(" - https://en.wikipedia.org/wiki/Man-in-the-middle_attack");
-            ProtoLogger.error("If you've reset your server configuration recently, you can probably ignore this and reset/remove the \"protoweaver_hosts\" file.");
+            ProtoLogger.error("If you've reset your server configuration recently, you can probably ignore this and reset/remove the \"protoweaver.hosts\" file.");
 
             connection.disconnect();
         }
