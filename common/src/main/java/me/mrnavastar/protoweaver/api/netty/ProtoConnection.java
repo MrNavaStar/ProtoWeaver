@@ -15,11 +15,14 @@ import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
 import java.lang.reflect.Modifier;
 import java.net.InetSocketAddress;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This provider represents a connection to either a client or a server
  */
 public class ProtoConnection {
+
+    private static final ConcurrentHashMap<String, Integer> connectionCount = new ConcurrentHashMap<>();
 
     private final ProtoPacketHandler packetHandler;
     private final Channel channel;
@@ -45,12 +48,12 @@ public class ProtoConnection {
     @Getter
     private Side disconnecter;
 
-    public ProtoConnection(@NonNull Protocol protocol, @NonNull Side side, @NonNull Channel channel) throws Exception {
+    public ProtoConnection(@NonNull Protocol protocol, @NonNull Side side, @NonNull Channel channel) {
         this.side = side;
         this.disconnecter = Side.SERVER == side ? Side.CLIENT : Side.SERVER;
         this.protocol = protocol;
         this.handler = createHandler(protocol, side);
-        this.packetHandler = new ProtoPacketHandler(this);
+        this.packetHandler = new ProtoPacketHandler(this, connectionCount);
         packetHandler.setHandler(handler);
         this.channel = channel;
         this.pipeline = channel.pipeline();
@@ -59,13 +62,17 @@ public class ProtoConnection {
         setCompression(protocol);
     }
 
-    private static ProtoConnectionHandler createHandler(@NonNull Protocol protocol, @NonNull Side side) throws Exception {
+    @SneakyThrows
+    private static ProtoConnectionHandler createHandler(@NonNull Protocol protocol, @NonNull Side side) {
         return switch (side) {
             case CLIENT -> {
                 if (protocol.getClientHandler() == null) throw new RuntimeException("Failed to create client handler for protocol: " + protocol);
                 yield protocol.getClientHandler().getDeclaredConstructor().newInstance();
             }
-            case SERVER -> protocol.getServerHandler().getDeclaredConstructor().newInstance();
+            case SERVER -> {
+                if (protocol.getServerHandler() == null) throw new RuntimeException("Failed to create server handler for protocol: " + protocol);
+                yield protocol.getServerHandler().getDeclaredConstructor().newInstance();
+            }
         };
     }
 
@@ -102,7 +109,6 @@ public class ProtoConnection {
      */
     public void upgradeProtocol(@NonNull Protocol protocol) {
         setCompression(protocol);
-        this.protocol = protocol;
 
         try {
             this.handler = createHandler(protocol, side);
@@ -121,6 +127,9 @@ public class ProtoConnection {
             disconnect();
         }
 
+        connectionCount.put(protocol.toString(), connectionCount.getOrDefault(protocol.toString(), 1) - 1);
+        this.protocol = protocol;
+        connectionCount.put(protocol.toString(), connectionCount.getOrDefault(protocol.toString(), 0) + 1);
         packetHandler.setHandler(handler);
 
         try {
@@ -129,6 +138,13 @@ public class ProtoConnection {
             ProtoLogger.error("Protocol: " + protocol + " threw an error on initialization!");
             e.printStackTrace();
         }
+    }
+
+    /**
+     * @return The number of connected clients the passed in protocol is currently serving.
+     */
+    public static int getConnectionCount(Protocol protocol) {
+        return connectionCount.getOrDefault(protocol.toString(), 0);
     }
 
     /**

@@ -13,10 +13,12 @@ import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
 import me.mrnavastar.protoweaver.api.auth.ServerAuthHandler;
+import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -37,6 +39,7 @@ public class Protocol {
     @Getter private Class<? extends ServerAuthHandler> serverAuthHandler;
     @Getter private Class<? extends ClientAuthHandler> clientAuthHandler;
 
+    private final ArrayList<ProtoConnection> connections = new ArrayList<>();
     private int packetHash = 0;
 
     private Protocol(String namespace, String name) {
@@ -66,7 +69,7 @@ public class Protocol {
         return new Builder(this);
     }
 
-    public byte[] serialize(Object packet) {
+    public byte[] serialize(@NonNull Object packet) {
         try (Output output = new Output(maxPacketSize)) {
             try {
                 kryo.writeClassAndObject(output, packet);
@@ -75,10 +78,17 @@ public class Protocol {
         }
     }
 
-    public Object deserialize(byte[] packet) {
+    public Object deserialize(byte @NonNull [] packet) {
         try (Input in = new Input(packet)) {
             return kryo.readClassAndObject(in);
         }
+    }
+
+    /**
+     * @return The number of connected clients this protocol is currently serving.
+     */
+    public int getConnections() {
+        return ProtoConnection.getConnectionCount(this);
     }
 
     @Override

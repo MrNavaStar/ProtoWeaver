@@ -14,8 +14,11 @@ import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ProtoPacketHandler extends ByteToMessageDecoder {
+
+    private static ConcurrentHashMap<String, Integer> connectionCount;
 
     private final ProtoConnection connection;
     @Setter
@@ -23,8 +26,9 @@ public class ProtoPacketHandler extends ByteToMessageDecoder {
     private ChannelHandlerContext ctx;
     private ByteBuf buf = Unpooled.buffer();
 
-    public ProtoPacketHandler(ProtoConnection connection) {
+    public ProtoPacketHandler(ProtoConnection connection, ConcurrentHashMap<String, Integer> connectionCount) {
         this.connection = connection;
+        ProtoPacketHandler.connectionCount = connectionCount;
         if (connection.getSide().equals(Side.CLIENT)) {
             buf.writeByte(0); // Fake out minecraft packet len
             buf.writeByte(ProtoConstants.PROTOWEAVER_MAGIC_BYTE);
@@ -39,6 +43,7 @@ public class ProtoPacketHandler extends ByteToMessageDecoder {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         try {
+            connectionCount.put(connection.getProtocol().toString(), connectionCount.getOrDefault(connection.getProtocol().toString(), 1) - 1);
             this.handler.onDisconnect(connection);
         } catch (Exception e) {
             ProtoLogger.error("Protocol: " + connection.getProtocol() + " threw an error on disconnect!");
