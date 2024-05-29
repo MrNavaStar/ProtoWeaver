@@ -39,6 +39,7 @@ public class Protocol {
     private Protocol(String namespace, String name) {
         this.namespace = namespace;
         this.name = name;
+        kryo.setRegistrationRequired(false);
         kryo.setInstantiatorStrategy(new DefaultInstantiatorStrategy(new StdInstantiatorStrategy()));
     }
 
@@ -195,13 +196,11 @@ public class Protocol {
         public Builder addPacket(@NonNull Class<?> packet) {
             if (protocol.kryo.getClassResolver().getRegistration(packet) != null) return this;
 
-            try {
-                protocol.kryo.register(packet);
-                protocol.packetHash = 31 * protocol.packetHash + packet.getName().hashCode();
+            protocol.kryo.register(packet);
+            protocol.packetHash = 31 * protocol.packetHash + packet.getName().hashCode();
 
-                for (Field field : packet.getDeclaredFields())
-                    if (((Modifier.STATIC | Modifier.TRANSIENT) & field.getModifiers()) == 0) addPacket(field.getType());
-            } catch (InaccessibleObjectException ignore) {}
+            /*for (Field field : packet.getDeclaredFields())
+                if (((Modifier.STATIC | Modifier.TRANSIENT) & field.getModifiers()) == 0) addPacket(field.getType());*/
             return this;
         }
 

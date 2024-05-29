@@ -25,7 +25,7 @@ import javax.net.ssl.SSLException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 
-public class ProtoWeaverClient {
+public class ProtoClient {
 
     @FunctionalInterface
     public interface ConnectionEstablishedHandler {
@@ -45,7 +45,7 @@ public class ProtoWeaverClient {
     private final ArrayList<ConnectionEstablishedHandler> connectionEstablishedHandlers = new ArrayList<>();
     private final ArrayList<ConnectionLostHandler> connectionLostHandlers = new ArrayList<>();
 
-    public ProtoWeaverClient(@NonNull InetSocketAddress address, @NonNull String hostsFile) {
+    public ProtoClient(@NonNull InetSocketAddress address, @NonNull String hostsFile) {
         try {
             this.address = address;
             ProtoTrustManager trustManager = new ProtoTrustManager(address.getHostName(), address.getPort(), hostsFile);
@@ -55,19 +55,19 @@ public class ProtoWeaverClient {
         }
     }
 
-    public ProtoWeaverClient(@NonNull InetSocketAddress address) {
+    public ProtoClient(@NonNull InetSocketAddress address) {
         this(address.getHostName(), address.getPort());
     }
 
-    public ProtoWeaverClient(@NonNull String host, int port, @NonNull String hostsFile) {
+    public ProtoClient(@NonNull String host, int port, @NonNull String hostsFile) {
         this(new InetSocketAddress(host, port), hostsFile);
     }
 
-    public ProtoWeaverClient(@NonNull String host, int port) {
+    public ProtoClient(@NonNull String host, int port) {
         this(host, port, ".");
     }
 
-    public ProtoWeaverClient connect(@NonNull Protocol protocol) {
+    public ProtoClient connect(@NonNull Protocol protocol) {
         ProtoWeaver.load(protocol);
 
         Bootstrap b = new Bootstrap();
@@ -132,12 +132,12 @@ public class ProtoWeaverClient {
         if (workerGroup != null && !workerGroup.isShutdown()) workerGroup.shutdownGracefully();
     }
 
-    public ProtoWeaverClient onConnectionEstablished(@NonNull ConnectionEstablishedHandler handler) {
+    public ProtoClient onConnectionEstablished(@NonNull ConnectionEstablishedHandler handler) {
         connectionEstablishedHandlers.add(handler);
         return this;
     }
 
-    public ProtoWeaverClient onConnectionLost(@NonNull ConnectionLostHandler handler) {
+    public ProtoClient onConnectionLost(@NonNull ConnectionLostHandler handler) {
         this.connectionLostHandlers.add(handler);
         return this;
     }
