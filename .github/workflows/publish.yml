@@ -1,0 +1,92 @@
+name: Publish To Maven
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set Version
+        run: |
+          sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' gradle.properties
+          sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' common/src/main/java/me/mrnavastar/protoweaver/core/util/ProtoConstants.java
+          sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' fabric/src/main/resources/fabric.mod.json
+          sed -i 's/0.debug-build/${{ github.event.release.tag_name }}/g' forge/src/main/resources/META-INF/mods.toml
+          sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' paper/src/main/resources/plugin.yml
+          sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' proxy/src/main/resources/bungee.yml
+      
+      - name: Build
+        run: ./gradlew build publish
+        env:
+          MAVEN_NAME: ${{ secrets.MAVEN_NAME }}
+          MAVEN_SECRET: ${{ secrets.MAVEN_SECRET }}
+
+      - name: Upload Fabric
+        uses: Kir-Antipov/mc-publish@v3.3.0
+        with:
+          modrinth-id: 6nKmUVc7
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          modrinth-featured: true
+          files: |
+            ${{ github.workspace }}/fabric/build/libs/protoweaver-${{ github.event.release.tag_name }}-fabric.jar
+            ${{ github.workspace }}/fabric/build/libs/protoweaver-${{ github.event.release.tag_name }}-fabric-sources.jar
+          java: 21
+          loaders: |
+            fabric
+            quilt
+          game-versions: |
+            1.20.6
+
+      - name: Upload Forge
+        uses: Kir-Antipov/mc-publish@v3.3.0
+        with:
+          modrinth-id: 6nKmUVc7
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          modrinth-featured: true
+          files: |
+            ${{ github.workspace }}/forge/build/libs/protoweaver-${{ github.event.release.tag_name }}-forge.jar
+            ${{ github.workspace }}/forge/build/libs/protoweaver-${{ github.event.release.tag_name }}-forge-sources.jar
+          java: 21
+          loaders: forge
+          game-versions: |
+            1.20.6
+
+      - name: Upload Paper
+        uses: Kir-Antipov/mc-publish@v3.3.0
+        with:
+          modrinth-id: 6nKmUVc7
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          modrinth-featured: true
+          files: |
+            ${{ github.workspace }}/paper/build/libs/protoweaver-${{ github.event.release.tag_name }}-paper.jar
+            ${{ github.workspace }}/paper/build/libs/protoweaver-${{ github.event.release.tag_name }}-paper-sources.jar
+          java: 21
+          loaders: |
+            paper
+            folia
+            purpur
+          game-versions: |
+            1.20.6
+
+      - name: Upload Proxy
+        uses: Kir-Antipov/mc-publish@v3.3.0
+        with:
+          modrinth-id: 6nKmUVc7
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          modrinth-featured: true
+          files: |
+            ${{ github.workspace }}/proxy/build/libs/protoweaver-${{ github.event.release.tag_name }}-proxy.jar
+            ${{ github.workspace }}/proxy/build/libs/protoweaver-${{ github.event.release.tag_name }}-proxy-sources.jar
+          java: 21
+          loaders: |
+            velocity
+            waterfall
+          game-versions: |
+            1.20.6
