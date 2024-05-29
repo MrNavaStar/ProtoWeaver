@@ -6,7 +6,7 @@ import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.netty.Sender;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
-import me.mrnavastar.protoweaver.client.ProtoWeaverClient;
+import me.mrnavastar.protoweaver.client.ProtoClient;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 import me.mrnavastar.protoweaver.proxy.ServerSupplier;
 import org.jetbrains.annotations.ApiStatus;
@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ProtoProxy {
 
-    private static final ConcurrentHashMap<SocketAddress, ArrayList<ProtoWeaverClient>> servers = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<SocketAddress, ArrayList<ProtoClient>> servers = new ConcurrentHashMap<>();
 
     /**
      * Sets the polling rate of servers that are disconnected. Defaults to 5 seconds
@@ -40,7 +40,7 @@ public class ProtoProxy {
         if (protocol.toString().equals("protoweaver:internal")) return;
 
         servers.forEach((address, clients) -> {
-            for (ProtoWeaverClient client : clients) {
+            for (ProtoClient client : clients) {
                 // Don't start a new connection if one already exists for this protocol
                 if (client.getCurrentProtocol().toString().equals(protocol.toString())) return;
             }
@@ -48,8 +48,8 @@ public class ProtoProxy {
         });
     }
 
-    private void connectClient(Protocol protocol, SocketAddress address, ArrayList<ProtoWeaverClient> clients) {
-        ProtoWeaverClient client = new ProtoWeaverClient((InetSocketAddress) address, hostsFile);
+    private void connectClient(Protocol protocol, SocketAddress address, ArrayList<ProtoClient> clients) {
+        ProtoClient client = new ProtoClient((InetSocketAddress) address, hostsFile);
         client.connect(protocol).onConnectionLost(connection -> {
             clients.remove(client);
 
@@ -62,7 +62,7 @@ public class ProtoProxy {
 
     @ApiStatus.Internal
     public void shutdown() {
-        servers.values().forEach(clients -> clients.forEach(ProtoWeaverClient::disconnect));
+        servers.values().forEach(clients -> clients.forEach(ProtoClient::disconnect));
         servers.clear();
     }
 
@@ -78,7 +78,7 @@ public class ProtoProxy {
      * @return true if success, false if failure or the server doesn't have the relevant protocol loaded
      */
     public static boolean send(@NonNull InetSocketAddress address, @NonNull Object packet) {
-        for (ProtoWeaverClient client : servers.get(address)) {
+        for (ProtoClient client : servers.get(address)) {
             Sender s = client.send(packet);
             if (s.isSuccess()) return true;
         }

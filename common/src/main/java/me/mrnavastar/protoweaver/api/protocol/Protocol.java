@@ -3,15 +3,9 @@ package me.mrnavastar.protoweaver.api.protocol;
 import com.esotericsoftware.kryo.kryo5.Kryo;
 import com.esotericsoftware.kryo.kryo5.io.Input;
 import com.esotericsoftware.kryo.kryo5.io.Output;
-import com.esotericsoftware.kryo.kryo5.objenesis.Objenesis;
-import com.esotericsoftware.kryo.kryo5.objenesis.ObjenesisStd;
-import com.esotericsoftware.kryo.kryo5.objenesis.instantiator.ObjectInstantiator;
 import com.esotericsoftware.kryo.kryo5.objenesis.strategy.StdInstantiatorStrategy;
 import com.esotericsoftware.kryo.kryo5.util.DefaultInstantiatorStrategy;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NonNull;
+import lombok.*;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
@@ -36,11 +30,10 @@ public class Protocol {
     @Getter private int maxPacketSize = 16384;
     @Getter private int maxConnections = -1;
 
-    private ObjectInstantiator<?> serverConnectionHandler;
-    private ObjectInstantiator<?> clientConnectionHandler;
-    private ObjectInstantiator<?> serverAuthHandler;
-    private ObjectInstantiator<?> clientAuthHandler;
-
+    private Class<? extends ProtoConnectionHandler> serverConnectionHandler;
+    private Class<? extends ProtoConnectionHandler> clientConnectionHandler;
+    private Class<? extends ServerAuthHandler> serverAuthHandler;
+    private Class<? extends ClientAuthHandler> clientAuthHandler;
     private int packetHash = 0;
 
     private Protocol(String namespace, String name) {
@@ -70,27 +63,30 @@ public class Protocol {
         return new Builder(this);
     }
 
+    @SneakyThrows
     public ProtoConnectionHandler newConnectionHandler(Side side) {
         return switch (side) {
             case CLIENT -> {
                 if (clientConnectionHandler == null) throw new RuntimeException("No client connection handler set for protocol: " + this);
-                yield (ProtoConnectionHandler) clientConnectionHandler.newInstance();
+                yield clientConnectionHandler.getDeclaredConstructor().newInstance();
             }
             case SERVER -> {
                 if (serverConnectionHandler == null) throw new RuntimeException("No server connection handler set for protocol: " + this);
-                yield (ProtoConnectionHandler) serverConnectionHandler.newInstance();
+                yield serverConnectionHandler.getDeclaredConstructor().newInstance();
             }
         };
     }
 
+    @SneakyThrows
     public ServerAuthHandler newServerAuthHandler() {
         if (serverAuthHandler == null) throw new RuntimeException("No server auth handler set for protocol: " + this);
-        return (ServerAuthHandler) serverAuthHandler.newInstance();
+        return serverAuthHandler.getDeclaredConstructor().newInstance();
     }
 
+    @SneakyThrows
     public ClientAuthHandler newClientAuthHandler() {
         if (clientAuthHandler == null) throw new RuntimeException("No client auth handler set for protocol: " + this);
-        return (ClientAuthHandler) clientAuthHandler.newInstance();
+        return clientAuthHandler.getDeclaredConstructor().newInstance();
     }
 
     public byte[] serialize(@NonNull Object packet) {
@@ -115,6 +111,10 @@ public class Protocol {
         return ProtoConnection.getConnectionCount(this);
     }
 
+    /**
+     * Determine if a side requires auth by checking to see if an auth handler was set for the given side.
+     * @param side The {@link Side} to check for an auth handler.
+     */
     public boolean requiresAuth(Side side) {
         if (side.equals(Side.CLIENT)) return clientAuthHandler != null;
         return serverAuthHandler != null;
@@ -138,16 +138,17 @@ public class Protocol {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Builder {
 
-        private static final Objenesis objenesis = new ObjenesisStd();
         private final Protocol protocol;
 
         /**
          * Set the packet handler that the server will use to process inbound packets.
          * @param handler The class of the packet handler.
          */
+        @SneakyThrows
         public Builder setServerHandler(Class<? extends ProtoConnectionHandler> handler) {
             if (Modifier.isAbstract(handler.getModifiers())) throw new IllegalArgumentException("Handler class cannot be abstract: " + handler);
-            protocol.serverConnectionHandler = objenesis.getInstantiatorOf(handler);
+            if (handler.getDeclaredConstructor().getParameterCount() != 0) throw new IllegalArgumentException("Handler class must have a zero arg constructor: " + handler);
+            protocol.serverConnectionHandler = handler;
             return this;
         }
 
@@ -155,9 +156,11 @@ public class Protocol {
          * Set the packet handler that the client will use to process inbound packets.
          * @param handler The class of the packet handler.
          */
+        @SneakyThrows
         public Builder setClientHandler(Class<? extends ProtoConnectionHandler> handler) {
             if (Modifier.isAbstract(handler.getModifiers())) throw new IllegalArgumentException("Handler class cannot be abstract: " + handler);
-            protocol.clientConnectionHandler = objenesis.getInstantiatorOf(handler);
+            if (handler.getDeclaredConstructor().getParameterCount() != 0) throw new IllegalArgumentException("Handler class must have a zero arg constructor: " + handler);
+            protocol.clientConnectionHandler = handler;
             return this;
         }
 
@@ -165,9 +168,11 @@ public class Protocol {
          * Set the auth handler that the server will use to process inbound client secrets.
          * @param handler The class of the auth handler.
          */
+        @SneakyThrows
         public Builder setServerAuthHandler(Class<? extends ServerAuthHandler> handler) {
             if (Modifier.isAbstract(handler.getModifiers())) throw new IllegalArgumentException("Handler class cannot be abstract: " + handler);
-            protocol.serverAuthHandler = objenesis.getInstantiatorOf(handler);
+            if (handler.getDeclaredConstructor().getParameterCount() != 0) throw new IllegalArgumentException("Handler class must have a zero arg constructor: " + handler);
+            protocol.serverAuthHandler = handler;
             return this;
         }
 
@@ -175,9 +180,11 @@ public class Protocol {
          * Set the auth handler that the client will use to get the secret that will be sent to the server.
          * @param handler The class of the auth handler.
          */
+        @SneakyThrows
         public Builder setClientAuthHandler(Class<? extends ClientAuthHandler> handler) {
             if (Modifier.isAbstract(handler.getModifiers())) throw new IllegalArgumentException("Handler class cannot be abstract: " + handler);
-            protocol.clientAuthHandler = objenesis.getInstantiatorOf(handler);
+            if (handler.getDeclaredConstructor().getParameterCount() != 0) throw new IllegalArgumentException("Handler class must have a zero arg constructor: " + handler);
+            protocol.clientAuthHandler = handler;
             return this;
         }
 
