@@ -40,7 +40,7 @@ jobs:
             fabric
             quilt
           game-versions: |
-            1.20.6
+            >=1.14
 
       - name: Upload Forge
         uses: Kir-Antipov/mc-publish@v3.3.0
@@ -52,7 +52,7 @@ jobs:
           java: 21
           loaders: forge
           game-versions: |
-            1.20.6
+            >=1.15
 
       - name: Upload Paper
         uses: Kir-Antipov/mc-publish@v3.3.0
@@ -67,7 +67,7 @@ jobs:
             folia
             purpur
           game-versions: |
-            1.20.6
+            >=1.14
 
       - name: Upload Proxy
         uses: Kir-Antipov/mc-publish@v3.3.0
@@ -81,4 +81,4 @@ jobs:
             velocity
             waterfall
           game-versions: |
-            1.20.6
+            >=1.14
