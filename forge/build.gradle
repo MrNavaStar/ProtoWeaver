@@ -50,4 +50,8 @@ jar {
     }
 }
 
+remapJar {
+    archiveFileName = "protoweaver-${version}-forge.jar"
+}
+
 jar.finalizedBy(remapJar)

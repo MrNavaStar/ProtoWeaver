@@ -48,7 +48,8 @@ subprojects {
     }
 
     task jarSources(type:Jar){
-        archiveClassifier.set("sources")
+        archiveBaseName.set("protoweaver")
+        archiveClassifier.set(project.name + "-sources")
         exclude {
             sourceSets.main.allSource.contains it.file
         }

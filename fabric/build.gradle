@@ -48,4 +48,8 @@ jar {
     }
 }
 
+remapJar {
+    archiveFileName = "protoweaver-${version}-fabric.jar"
+}
+
 jar.finalizedBy(remapJar)

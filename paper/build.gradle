@@ -9,7 +9,7 @@ dependencies {
 }
 
 jar {
-    archiveFileName = "paper-${version}.jar"
+    archiveFileName = "protoweaver-${version}-paper.jar"
     from {
         exclude "architectury.common.marker"
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE

@@ -12,6 +12,7 @@ dependencies {
 }
 
 jar {
+    archiveFileName = "protoweaver-${version}-proxy.jar"
     from {
         exclude "io/**"
         exclude "com/**"
