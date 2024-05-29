@@ -27,13 +27,6 @@ jobs:
         env:
           MAVEN_NAME: ${{ secrets.MAVEN_NAME }}
           MAVEN_SECRET: ${{ secrets.MAVEN_SECRET }}
-
-      - name: Rename Source Jars
-        run: |
-          mv  ${{ github.workspace }}/fabric/build/libs/protoweaver-${{ github.event.release.tag_name }}-sources.jar  ${{ github.workspace }}/fabric/build/libs/protoweaver-${{ github.event.release.tag_name }}-fabric-sources.jar
-          mv  ${{ github.workspace }}/forge/build/libs/protoweaver-${{ github.event.release.tag_name }}-sources.jar  ${{ github.workspace }}/forge/build/libs/protoweaver-${{ github.event.release.tag_name }}-forge-sources.jar
-          mv  ${{ github.workspace }}/paper/build/libs/protoweaver-${{ github.event.release.tag_name }}-sources.jar  ${{ github.workspace }}/paper/build/libs/protoweaver-${{ github.event.release.tag_name }}-paper-sources.jar
-          mv  ${{ github.workspace }}/proxy/build/libs/protoweaver-${{ github.event.release.tag_name }}-sources.jar  ${{ github.workspace }}/proxy/build/libs/protoweaver-${{ github.event.release.tag_name }}-proxy-sources.jar
       
       - name: Upload Fabric
         uses: Kir-Antipov/mc-publish@v3.3.0
@@ -41,9 +34,7 @@ jobs:
           modrinth-id: 6nKmUVc7
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           modrinth-featured: true
-          files: |
-            ${{ github.workspace }}/fabric/build/libs/protoweaver-${{ github.event.release.tag_name }}-fabric.jar
-            ${{ github.workspace }}/fabric/build/libs/protoweaver-${{ github.event.release.tag_name }}-fabric-sources.jar
+          files: ${{ github.workspace }}/fabric/build/libs/protoweaver-${{ github.event.release.tag_name }}-fabric.jar
           java: 21
           loaders: |
             fabric
@@ -57,9 +48,7 @@ jobs:
           modrinth-id: 6nKmUVc7
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           modrinth-featured: true
-          files: |
-            ${{ github.workspace }}/forge/build/libs/protoweaver-${{ github.event.release.tag_name }}-forge.jar
-            ${{ github.workspace }}/forge/build/libs/protoweaver-${{ github.event.release.tag_name }}-forge-sources.jar
+          files: ${{ github.workspace }}/forge/build/libs/protoweaver-${{ github.event.release.tag_name }}-forge.jar
           java: 21
           loaders: forge
           game-versions: |
@@ -71,9 +60,7 @@ jobs:
           modrinth-id: 6nKmUVc7
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           modrinth-featured: true
-          files: |
-            ${{ github.workspace }}/paper/build/libs/protoweaver-${{ github.event.release.tag_name }}-paper.jar
-            ${{ github.workspace }}/paper/build/libs/protoweaver-${{ github.event.release.tag_name }}-paper-sources.jar
+          files: ${{ github.workspace }}/paper/build/libs/protoweaver-${{ github.event.release.tag_name }}-paper.jar
           java: 21
           loaders: |
             paper
@@ -88,9 +75,7 @@ jobs:
           modrinth-id: 6nKmUVc7
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           modrinth-featured: true
-          files: |
-            ${{ github.workspace }}/proxy/build/libs/protoweaver-${{ github.event.release.tag_name }}-proxy.jar
-            ${{ github.workspace }}/proxy/build/libs/protoweaver-${{ github.event.release.tag_name }}-proxy-sources.jar
+          files: ${{ github.workspace }}/proxy/build/libs/protoweaver-${{ github.event.release.tag_name }}-proxy.jar
           java: 21
           loaders: |
             velocity
