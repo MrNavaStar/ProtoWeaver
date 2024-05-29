@@ -7,6 +7,7 @@ import me.mrnavastar.protoweaver.api.netty.Sender;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.client.ProtoWeaverClient;
+import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 import me.mrnavastar.protoweaver.proxy.ServerSupplier;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -55,7 +56,7 @@ public class ProtoProxy {
             if (connection.getDisconnecter().equals(Side.CLIENT)) return;
             Thread.sleep(serverPollRate);
             connectClient(protocol, address, clients);
-        });
+        }).onConnectionEstablished(connection -> ProtoLogger.info("Connected to: " + address + " with protocol: " + protocol));
         clients.add(client);
     }
 

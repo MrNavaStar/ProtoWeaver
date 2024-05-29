@@ -5,6 +5,7 @@ import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
+import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
 public class ClientConnectionHandler extends InternalConnectionHandler implements ProtoConnectionHandler {
@@ -12,7 +13,7 @@ public class ClientConnectionHandler extends InternalConnectionHandler implement
     private boolean authenticated = false;
     private ClientAuthHandler authHandler = null;
 
-    public void start(ProtoConnection connection, String nextProtocolName) throws Exception {
+    public void start(ProtoConnection connection, String nextProtocolName) {
         Protocol nextProtocol = ProtoWeaver.getLoadedProtocol(nextProtocolName);
         if (nextProtocol == null) {
             protocolNotLoaded(connection, nextProtocolName);
@@ -20,7 +21,7 @@ public class ClientConnectionHandler extends InternalConnectionHandler implement
         }
 
         authenticated = false;
-        if (nextProtocol.getClientAuthHandler() != null) authHandler = nextProtocol.getClientAuthHandler().getDeclaredConstructor().newInstance();
+        if (nextProtocol.requiresAuth(Side.CLIENT)) authHandler = nextProtocol.newClientAuthHandler();
         connection.send(new ProtocolStatus(connection.getProtocol().toString(), nextProtocol.toString(), nextProtocol.hashCode(), ProtocolStatus.Status.START));
     }
 

@@ -52,7 +52,7 @@ public class ProtoConnection {
         this.side = side;
         this.disconnecter = Side.SERVER == side ? Side.CLIENT : Side.SERVER;
         this.protocol = protocol;
-        this.handler = createHandler(protocol, side);
+        this.handler = protocol.newConnectionHandler(side);
         this.packetHandler = new ProtoPacketHandler(this, connectionCount);
         packetHandler.setHandler(handler);
         this.channel = channel;
@@ -60,20 +60,6 @@ public class ProtoConnection {
 
         pipeline.addLast("packetHandler", packetHandler);
         setCompression(protocol);
-    }
-
-    @SneakyThrows
-    private static ProtoConnectionHandler createHandler(@NonNull Protocol protocol, @NonNull Side side) {
-        return switch (side) {
-            case CLIENT -> {
-                if (protocol.getClientHandler() == null) throw new RuntimeException("Failed to create client handler for protocol: " + protocol);
-                yield protocol.getClientHandler().getDeclaredConstructor().newInstance();
-            }
-            case SERVER -> {
-                if (protocol.getServerHandler() == null) throw new RuntimeException("Failed to create server handler for protocol: " + protocol);
-                yield protocol.getServerHandler().getDeclaredConstructor().newInstance();
-            }
-        };
     }
 
     private void setCompression(@NonNull Protocol protocol) {
@@ -108,31 +94,14 @@ public class ProtoConnection {
      * @param protocol The protocol the connection will switch to.
      */
     public void upgradeProtocol(@NonNull Protocol protocol) {
-        setCompression(protocol);
-
         try {
-            this.handler = createHandler(protocol, side);
-        } catch (Exception e) {
-            ProtoLogger.error("Failed to start protocol: " + protocol);
+            setCompression(protocol);
+            this.handler = protocol.newConnectionHandler(side);
+            connectionCount.put(protocol.toString(), connectionCount.getOrDefault(protocol.toString(), 1) - 1);
+            this.protocol = protocol;
+            connectionCount.put(protocol.toString(), connectionCount.getOrDefault(protocol.toString(), 0) + 1);
+            packetHandler.setHandler(handler);
 
-            Class<?> handler = side.equals(Side.SERVER) ? protocol.getServerHandler() : protocol.getClientHandler();
-            if (Modifier.isAbstract(handler.getModifiers())) {
-                ProtoLogger.error(protocol + "'s connection handler is an abstract class, which is not allowed!");
-                ProtoLogger.error(protocol + "'s mod author must address this issue");
-            } else {
-                ProtoLogger.error(protocol + "'s connection handler doesn't have a zero arg constructor");
-                ProtoLogger.error(protocol + "'s mod author must add one to: " + handler.getName());
-            }
-
-            disconnect();
-        }
-
-        connectionCount.put(protocol.toString(), connectionCount.getOrDefault(protocol.toString(), 1) - 1);
-        this.protocol = protocol;
-        connectionCount.put(protocol.toString(), connectionCount.getOrDefault(protocol.toString(), 0) + 1);
-        packetHandler.setHandler(handler);
-
-        try {
             this.handler.onReady(this);
         } catch (Exception e) {
             ProtoLogger.error("Protocol: " + protocol + " threw an error on initialization!");

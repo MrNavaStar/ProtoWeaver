@@ -8,7 +8,7 @@ import me.mrnavastar.protoweaver.api.protocol.CompressionType;
 import me.mrnavastar.protoweaver.api.util.Event;
 
 /**
- * Serves mostly as an example protocol, however it can be used in your mod if your so desire.
+ * Serves mostly as an example protocol, however it can be used in your project if you desire.
  */
 public class ProtoMessage implements ProtoConnectionHandler {
 

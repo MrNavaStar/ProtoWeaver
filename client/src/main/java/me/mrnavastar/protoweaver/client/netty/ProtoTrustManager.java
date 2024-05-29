@@ -3,6 +3,7 @@ package me.mrnavastar.protoweaver.client.netty;
 import io.netty.util.concurrent.FastThreadLocal;
 import io.netty.util.internal.EmptyArrays;
 import io.netty.util.internal.StringUtil;
+import lombok.Cleanup;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -62,11 +63,11 @@ public class ProtoTrustManager {
             if (trusted == null) {
                 hostsFile.getParentFile().mkdirs();
                 hostsFile.createNewFile();
-                try (BufferedWriter writer = new BufferedWriter(new FileWriter(hostsFile, true))) {
-                    writer.append(hostId).append("=").append(StringUtil.toHexString(fingerprint)).append("\n");
-                    trusted = fingerprint;
-                    return;
-                }
+
+                @Cleanup BufferedWriter writer = new BufferedWriter(new FileWriter(hostsFile, true));
+                writer.append(hostId).append("=").append(StringUtil.toHexString(fingerprint)).append("\n");
+                trusted = fingerprint;
+                return;
             }
 
             if (Arrays.equals(trusted, fingerprint)) return;

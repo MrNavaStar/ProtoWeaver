@@ -7,6 +7,7 @@ import me.mrnavastar.protoweaver.api.auth.ServerAuthHandler;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.netty.Sender;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
+import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
 public class ServerConnectionHandler extends InternalConnectionHandler implements ProtoConnectionHandler {
@@ -42,9 +43,8 @@ public class ServerConnectionHandler extends InternalConnectionHandler implement
                         return;
                     }
 
-                    // Check if protocol needs authentication
-                    if (nextProtocol.getServerAuthHandler() != null) {
-                        authHandler = nextProtocol.getServerAuthHandler().getDeclaredConstructor().newInstance();
+                    if (nextProtocol.requiresAuth(Side.SERVER)) {
+                        authHandler = nextProtocol.newServerAuthHandler();
                         connection.send(AuthStatus.REQUIRED);
                         return;
                     }
