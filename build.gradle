@@ -36,6 +36,7 @@ subprojects {
 
     dependencies {
         compileOnly "com.esotericsoftware:kryo5:${project.kyro_version}"
+        compileOnly "de.javakaffee:kryo-serializers:${project.kyro_ser_version}"
         compileOnly "io.netty:netty-buffer:${project.netty_version}"
         compileOnly "io.netty:netty-transport:${project.netty_version}"
         compileOnly "io.netty:netty-handler:${project.netty_version}"

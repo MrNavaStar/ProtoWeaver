@@ -4,6 +4,7 @@ import com.esotericsoftware.kryo.kryo5.Kryo;
 import com.esotericsoftware.kryo.kryo5.io.Input;
 import com.esotericsoftware.kryo.kryo5.io.Output;
 import com.esotericsoftware.kryo.kryo5.objenesis.strategy.StdInstantiatorStrategy;
+import com.esotericsoftware.kryo.kryo5.serializers.DefaultSerializers;
 import com.esotericsoftware.kryo.kryo5.util.DefaultInstantiatorStrategy;
 import lombok.*;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
@@ -12,10 +13,9 @@ import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
 import me.mrnavastar.protoweaver.api.auth.ServerAuthHandler;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Modifier;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Stores all the registered packets, settings and additional configuration of a {@link ProtoWeaver} protocol.
@@ -41,6 +41,8 @@ public class Protocol {
         this.name = name;
         kryo.setRegistrationRequired(false);
         kryo.setInstantiatorStrategy(new DefaultInstantiatorStrategy(new StdInstantiatorStrategy()));
+
+        kryo.addDefaultSerializer(UUID.class, new DefaultSerializers.UUIDSerializer());
     }
 
     /**
