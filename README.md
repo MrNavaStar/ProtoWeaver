@@ -23,6 +23,7 @@ Protoweaver is fast, secure, and easy to use. All protocols run under the same n
 - [x] SSL encrytion
 - [x] Protocol authentication
 - [x] Packets as POJO's
+- [x] Compression (Gzip, Snappy, LZ)
 - [x] All major mod loaders (neoforge soon tm)
 - [ ] API for registering raw protocols (http, ssh, etc)
 - [ ] Custom serialization
