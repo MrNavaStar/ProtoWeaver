@@ -1,5 +1,5 @@
 plugins {
-    id "io.github.goooler.shadow" version "8.1.7"
+    id "io.github.goooler.shadow" version "8.1.8"
     id "io.freefair.lombok" version "8.6"
     id "architectury-plugin" version "3.4-SNAPSHOT"
     id "dev.architectury.loom" version "1.6-SNAPSHOT" apply false
