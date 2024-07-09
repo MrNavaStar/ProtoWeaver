@@ -38,7 +38,7 @@ dependencies {
     modLocalRuntime "com.moandjiezana.toml:toml4j:${project.toml4j_version}"
 
     // Dev
-    modLocalRuntime "maven.modrinth:easy-eula:1.1.0-fabric"
+    modLocalRuntime "maven.modrinth:easy-eula:1.1.1-forge"
 }
 
 jar {

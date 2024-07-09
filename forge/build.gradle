@@ -40,7 +40,7 @@ dependencies {
     modCompileOnly "maven.modrinth:proxy-compatible-forge:${project.proxy_forge_version}"
 
     //Dev
-    modLocalRuntime "maven.modrinth:easy-eula:1.1.0-forge"
+    modLocalRuntime "maven.modrinth:easy-eula:1.1.1-forge"
 }
 
 jar {
