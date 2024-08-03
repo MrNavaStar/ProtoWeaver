@@ -39,9 +39,8 @@ repositories {
 }
 
 dependencies {
-    implementation "me.mrnavastar.protoweaver:common:1.0.5"
     // 'common' can be replaced with any of: `client`, `fabric`, `forge`, `paper` or `proxy`.
-    implementation "me.mrnavastar.protoweaver:fabric:1.0.5"
+    implementation "me.mrnavastar.protoweaver:common:1.0.5"
 }
 ```
 
@@ -49,7 +48,7 @@ dependencies {
 Protocols are very customizable with a lot of built in functionality. Here is an example protocol:
 ```java
 Protocol protocol = Protocol.create("my_mod_id", "cool_protocol")
-    .enableCompression(CompressionType.GZIP)
+    .setCompression(CompressionType.GZIP)
     .setServerHandler(MyCustomServerHandler.class)
     .setClientHandler(MyCustomClientHandler.class)
     .setMaxConnections(15)
