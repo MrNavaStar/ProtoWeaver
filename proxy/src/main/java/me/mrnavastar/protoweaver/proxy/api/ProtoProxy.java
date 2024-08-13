@@ -3,7 +3,6 @@ package me.mrnavastar.protoweaver.proxy.api;
 import lombok.NonNull;
 import lombok.Setter;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
-import me.mrnavastar.protoweaver.api.netty.Sender;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.client.ProtoClient;
@@ -15,11 +14,9 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public class ProtoProxy {
 
@@ -93,6 +90,20 @@ public class ProtoProxy {
     }
 
     /**
+     * @return A {@link ProtoServer} that is registered to this proxy instance.
+     */
+    public static Optional<ProtoServer> getRegisteredServer(String name) {
+        return getRegisteredServers().stream().filter(s -> s.getName().equals(name)).findFirst();
+    }
+
+    /**
+     * @return A {@link ProtoServer} that is registered to this proxy instance.
+     */
+    public static Optional<ProtoServer> getRegisteredServer(SocketAddress address) {
+        return getRegisteredServers().stream().filter(s -> s.getAddress().equals(address)).findFirst();
+    }
+
+    /**
      * Returns a list of servers connected on the supplied {@link Protocol}.
      * @param protocol the protocol to check for.
      */
@@ -105,22 +116,20 @@ public class ProtoProxy {
     }
 
     /**
-     * Sends a packet to every server running protoweaver with the correct protocol.
+     * Returns a {@link ProtoServer} connected on the supplied {@link Protocol}.
+     * @param protocol the protocol to check for.
+     * @param name the name of the server.
      */
-    public static void send(@NonNull Protocol protocol, @NonNull Object packet) {
-        servers.values().forEach(clients -> clients.forEach(client -> {
-            if (protocol.equals(client.getCurrentProtocol())) client.send(packet);
-        }));
+    public static Optional<ProtoServer> getConnectedServer(@NonNull Protocol protocol, String name) {
+        return getConnectedServers(protocol).stream().filter(s -> s.getName().equals(name)).findFirst();
     }
 
     /**
-     * Sends a packet to a specific server.
-     * @return true if success, false if failure or the server doesn't have the relevant protocol loaded
+     * Returns a {@link ProtoServer} connected on the supplied {@link Protocol}.
+     * @param protocol the protocol to check for.
+     * @param address the address of the server.
      */
-    public static boolean send(@NonNull Protocol protocol, @NonNull InetSocketAddress address, @NonNull Object packet) {
-        for (ProtoClient client : servers.get(address)) {
-            if (protocol.equals(client.getCurrentProtocol())) return client.send(packet).isSuccess();
-        }
-        return false;
+    public static Optional<ProtoServer> getConnectedServer(@NonNull Protocol protocol, SocketAddress address) {
+        return getConnectedServers(protocol).stream().filter(s -> s.getAddress().equals(address)).findFirst();
     }
 }
