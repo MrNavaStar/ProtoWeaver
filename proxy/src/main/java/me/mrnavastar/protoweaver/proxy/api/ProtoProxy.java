@@ -83,6 +83,10 @@ public class ProtoProxy {
         Optional.ofNullable(servers.remove(server)).ifPresent(clients -> clients.forEach(ProtoClient::disconnect));
     }
 
+    /**
+     * Returns a list of servers connected on the supplied {@link Protocol}.
+     * @param protocol the protocol to check for.
+     */
     public static ArrayList<ProtoServer> getConnectedServers(@NonNull Protocol protocol) {
         ArrayList<ProtoServer> connected = new ArrayList<>();
         servers.forEach((server, clients) -> clients.stream()

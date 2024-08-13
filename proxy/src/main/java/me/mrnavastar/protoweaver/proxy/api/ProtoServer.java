@@ -5,6 +5,7 @@ import lombok.Setter;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 
 import java.net.SocketAddress;
+import java.util.Objects;
 
 @Setter
 @Getter
@@ -17,6 +18,16 @@ public class ProtoServer {
     public ProtoServer(String name, SocketAddress address) {
         this.name = name;
         this.address = address;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof ProtoServer server && Objects.equals(server.name, name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
     }
 
     @Override
