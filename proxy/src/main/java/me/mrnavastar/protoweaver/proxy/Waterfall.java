@@ -25,9 +25,7 @@ public class Waterfall extends Plugin implements ServerSupplier, ProtoLogger.IPr
 
     @Override
     public List<ProtoServer> getServers() {
-        return getProxy().getServersCopy().values().stream()
-                .map(server -> new ProtoServer(server.getName(), server.getSocketAddress()))
-                .toList();
+        return getProxy().getServersCopy().values().stream().map(server -> new ProtoServer(server.getName(), server.getSocketAddress())).toList();
     }
 
     @Override

@@ -57,9 +57,7 @@ public class Velocity implements ServerSupplier, ProtoLogger.IProtoLogger {
 
     @Override
     public List<ProtoServer> getServers() {
-        return proxy.getAllServers().stream()
-                .map(server -> new ProtoServer(server.getServerInfo().getName(), server.getServerInfo().getAddress()))
-                .toList();
+        return proxy.getAllServers().stream().map(server -> new ProtoServer(server.getServerInfo().getName(), server.getServerInfo().getAddress())).toList();
     }
 
     @Override
