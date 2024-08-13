@@ -16,12 +16,14 @@ import java.net.SocketAddress;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class ProtoProxy {
 
-    private static final HashSet<ProtoServer> connectedServers = new HashSet<>();
-    private static final ConcurrentHashMap<SocketAddress, ArrayList<ProtoClient>> servers = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<ProtoServer, ArrayList<ProtoClient>> servers = new ConcurrentHashMap<>();
 
     /**
      * Sets the polling rate of servers that are disconnected. Defaults to 5 seconds
@@ -31,9 +33,9 @@ public class ProtoProxy {
     private final String hostsFile;
 
     @ApiStatus.Internal
-    public ProtoProxy(ServerSupplier serverSupplier, Path dir) {
+    public ProtoProxy(ServerSupplier supplier, Path dir) {
         this.hostsFile = dir.toAbsolutePath().toString();
-        serverSupplier.getServers().forEach(server -> servers.put(server, new ArrayList<>()));
+        supplier.getServers().forEach(server -> servers.put(server, new ArrayList<>()));
         ProtoWeaver.PROTOCOL_LOADED.register(this::startProtocol);
         ProtoWeaver.getLoadedProtocols().forEach(this::startProtocol);
     }
@@ -41,25 +43,25 @@ public class ProtoProxy {
     private void startProtocol(Protocol protocol) {
         if (protocol.toString().equals("protoweaver:internal")) return;
 
-        servers.forEach((address, clients) -> {
+        servers.forEach((server, clients) -> {
             for (ProtoClient client : clients) {
                 // Don't start a new connection if one already exists for this protocol
                 if (client.getCurrentProtocol().toString().equals(protocol.toString())) return;
             }
-            connectClient(protocol, address, clients);
+            connectClient(protocol, server, clients);
         });
     }
 
-    private void connectClient(Protocol protocol, SocketAddress address, ArrayList<ProtoClient> clients) {
-        ProtoClient client = new ProtoClient((InetSocketAddress) address, hostsFile);
+    private void connectClient(Protocol protocol, ProtoServer server, ArrayList<ProtoClient> clients) {
+        ProtoClient client = new ProtoClient((InetSocketAddress) server.getAddress(), hostsFile);
         client.connect(protocol).onConnectionLost(connection -> {
             clients.remove(client);
 
             if (connection.getDisconnecter().equals(Side.CLIENT)) return;
             Thread.sleep(serverPollRate);
-            connectClient(protocol, address, clients);
+            connectClient(protocol, server, clients);
         }).onConnectionEstablished(connection -> {
-            ProtoLogger.info("Connected to: " + address + " with protocol: " + protocol);
+            ProtoLogger.info("Connected to: " + server + " with protocol: " + protocol);
         });
         clients.add(client);
     }
@@ -68,6 +70,25 @@ public class ProtoProxy {
     public void shutdown() {
         servers.values().forEach(clients -> clients.forEach(ProtoClient::disconnect));
         servers.clear();
+    }
+
+    @ApiStatus.Internal
+    public void register(ProtoServer server) {
+        if (servers.putIfAbsent(server, new ArrayList<>()) == null)
+            ProtoWeaver.getLoadedProtocols().forEach(this::startProtocol);
+    }
+
+    @ApiStatus.Internal
+    public void unregister(ProtoServer server) {
+        Optional.ofNullable(servers.remove(server)).ifPresent(clients -> clients.forEach(ProtoClient::disconnect));
+    }
+
+    public static ArrayList<ProtoServer> getConnectedServers(@NonNull Protocol protocol) {
+        ArrayList<ProtoServer> connected = new ArrayList<>();
+        servers.forEach((server, clients) -> clients.stream()
+                .filter(c -> protocol.equals(c.getCurrentProtocol()) || c.isConnected())
+                .findFirst().ifPresent(c -> connected.add(server)));
+        return connected;
     }
 
     /**
