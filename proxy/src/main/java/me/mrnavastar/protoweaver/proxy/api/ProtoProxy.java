@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 public class ProtoProxy {
 
     private static final ConcurrentHashMap<ProtoServer, ArrayList<ProtoClient>> servers = new ConcurrentHashMap<>();
+    private static ServerSupplier supplier;
 
     /**
      * Sets the polling rate of servers that are disconnected. Defaults to 5 seconds
@@ -33,7 +34,8 @@ public class ProtoProxy {
     private final String hostsFile;
 
     @ApiStatus.Internal
-    public ProtoProxy(ServerSupplier supplier, Path dir) {
+    public ProtoProxy(ServerSupplier serverSupplier, Path dir) {
+        supplier = serverSupplier;
         this.hostsFile = dir.toAbsolutePath().toString();
         supplier.getServers().forEach(server -> servers.put(server, new ArrayList<>()));
         ProtoWeaver.PROTOCOL_LOADED.register(this::startProtocol);
@@ -84,14 +86,21 @@ public class ProtoProxy {
     }
 
     /**
+     * @return A list of {@link ProtoServer} that are registered to this proxy instance.
+     */
+    public static List<ProtoServer> getRegisteredServers() {
+        return supplier.getServers();
+    }
+
+    /**
      * Returns a list of servers connected on the supplied {@link Protocol}.
      * @param protocol the protocol to check for.
      */
-    public static ArrayList<ProtoServer> getConnectedServers(@NonNull Protocol protocol) {
-        ArrayList<ProtoServer> connected = new ArrayList<>();
+    public static List<ProtoServer> getConnectedServers(@NonNull Protocol protocol) {
+        List<ProtoServer> connected = new ArrayList<>();
         servers.forEach((server, clients) -> clients.stream()
                 .filter(c -> protocol.equals(c.getCurrentProtocol()) || c.isConnected())
-                .findFirst().ifPresent(c -> connected.add(server)));
+                .findFirst().ifPresent(c -> connected.add(new ProtoServer(server, c.getConnection()))));
         return connected;
     }
 

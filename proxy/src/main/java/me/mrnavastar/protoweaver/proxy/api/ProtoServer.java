@@ -1,13 +1,11 @@
 package me.mrnavastar.protoweaver.proxy.api;
 
 import lombok.Getter;
-import lombok.Setter;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 
 import java.net.SocketAddress;
 import java.util.Objects;
 
-@Setter
 @Getter
 public class ProtoServer {
 
@@ -18,6 +16,12 @@ public class ProtoServer {
     public ProtoServer(String name, SocketAddress address) {
         this.name = name;
         this.address = address;
+    }
+
+    public ProtoServer(ProtoServer server, ProtoConnection connection) {
+        this.name = server.getName();
+        this.address = server.getAddress();
+        this.connection = connection;
     }
 
     @Override

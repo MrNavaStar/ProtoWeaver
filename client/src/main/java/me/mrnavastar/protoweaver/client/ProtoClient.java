@@ -40,6 +40,7 @@ public class ProtoClient {
     @Getter
     private final InetSocketAddress address;
     private EventLoopGroup workerGroup = null;
+    @Getter
     private ProtoConnection connection = null;
     private final SslContext sslContext;
     private final ArrayList<ConnectionEstablishedHandler> connectionEstablishedHandlers = new ArrayList<>();

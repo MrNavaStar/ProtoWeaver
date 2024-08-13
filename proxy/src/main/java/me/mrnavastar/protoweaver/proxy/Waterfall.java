@@ -7,21 +7,15 @@ import net.md_5.bungee.api.plugin.Plugin;
 
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class Waterfall extends Plugin implements ServerSupplier, ProtoLogger.IProtoLogger {
 
     private final Logger logger = getLogger();
-    private ProtoProxy protoProxy;
+    private final ProtoProxy protoProxy = new ProtoProxy(this, getDataFolder().toPath());
 
     @Override
     public void onLoad() {
         ProtoLogger.setLogger(this);
-    }
-
-    @Override
-    public void onEnable() {
-        protoProxy = new ProtoProxy(this, getDataFolder().toPath());
     }
 
     @Override
@@ -33,7 +27,7 @@ public class Waterfall extends Plugin implements ServerSupplier, ProtoLogger.IPr
     public List<ProtoServer> getServers() {
         return getProxy().getServersCopy().values().stream()
                 .map(server -> new ProtoServer(server.getName(), server.getSocketAddress()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
