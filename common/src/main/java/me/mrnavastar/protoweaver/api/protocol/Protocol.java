@@ -41,7 +41,6 @@ public class Protocol {
         this.name = name;
         kryo.setRegistrationRequired(false);
         kryo.setInstantiatorStrategy(new DefaultInstantiatorStrategy(new StdInstantiatorStrategy()));
-
         kryo.addDefaultSerializer(UUID.class, new DefaultSerializers.UUIDSerializer());
     }
 
@@ -101,9 +100,13 @@ public class Protocol {
         }
     }
 
-    public Object deserialize(byte @NonNull [] packet) {
+    public Object deserialize(byte @NonNull [] packet) throws IllegalArgumentException {
         try (Input in = new Input(packet)) {
-            return kryo.readClassAndObject(in);
+            Object obj = kryo.readClassAndObject(in);
+            if (obj == null || kryo.getClassResolver().getRegistration(obj.getClass()) == null) {
+                throw new IllegalArgumentException("Protocol:" + this + " received an unknown packet: " + obj);
+            }
+            return obj;
         }
     }
 

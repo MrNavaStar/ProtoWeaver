@@ -111,6 +111,7 @@ public class ProtoClient {
                         throw new RuntimeException(e);
                     }
                 });
+                connection = null;
             } catch (Exception e) {
                 throw new RuntimeException(e);
             } finally {
@@ -125,10 +126,7 @@ public class ProtoClient {
     }
 
     public void disconnect() {
-        if (connection != null) {
-            connection.disconnect();
-            connection = null;
-        }
+        if (connection != null) connection.disconnect();
         if (workerGroup != null && !workerGroup.isShutdown()) workerGroup.shutdownGracefully();
     }
 
