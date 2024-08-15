@@ -18,9 +18,9 @@ allprojects {
 
     repositories {
         mavenCentral()
-        maven { url "https://maven.minecraftforge.net" }                    // Forge
+        maven { url "https://maven.minecraftforge.net/" }                   // Forge
         maven { url "https://repo.papermc.io/repository/maven-public/" }    // Paper + Velocity
-        maven { url "https://api.modrinth.com/maven" }                      // Modrinth
+        maven { url "https://api.modrinth.com/maven/" }                     // Modrinth
     }
     
     tasks.withType(JavaCompile) {
@@ -35,6 +35,8 @@ subprojects {
     apply plugin: "io.freefair.lombok"
 
     dependencies {
+        compileOnly "org.apache.fury:fury-core:${project.fury_version}"
+
         compileOnly "com.esotericsoftware:kryo5:${project.kyro_version}"
         compileOnly "de.javakaffee:kryo-serializers:${project.kyro_ser_version}"
         compileOnly "io.netty:netty-buffer:${project.netty_version}"

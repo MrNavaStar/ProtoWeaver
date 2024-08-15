@@ -26,7 +26,7 @@ dependencies {
     modCompileOnly "net.fabricmc:fabric-loader:${project.loader_version}"
 
     // Libs
-    include implementation("com.esotericsoftware:kryo5:${project.kyro_version}")
+    include implementation("org.apache.fury:fury-core:${project.fury_version}")
     include implementation("org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}")
     include "org.bouncycastle:bcprov-jdk18on:${project.bouncy_version}"
     include "org.bouncycastle:bcutil-jdk18on:${project.bouncy_version}"

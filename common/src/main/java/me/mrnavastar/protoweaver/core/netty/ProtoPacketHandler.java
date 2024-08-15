@@ -53,21 +53,17 @@ public class ProtoPacketHandler extends ByteToMessageDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) {
+        if (byteBuf.readableBytes() == 0) return;
+
+        byte[] bytes = new byte[byteBuf.readInt()];
+        byteBuf.readBytes(bytes);
+        Object packet = connection.getProtocol().deserialize(bytes);
+
         try {
-            if (byteBuf.readableBytes() == 0) return;
-
-            byte[] bytes = new byte[byteBuf.readInt()];
-            byteBuf.readBytes(bytes);
-            Object packet = connection.getProtocol().deserialize(bytes);
-
-            try {
-                handler.handlePacket(connection, packet);
-            } catch (Exception e) {
-                ProtoLogger.error("Protocol: " + connection.getProtocol() + " threw an error on when trying to handle: " + packet.getClass() + "!");
-                e.printStackTrace();
-            }
-        } catch (IllegalArgumentException e) {
-            ProtoLogger.warn(e.getMessage());
+            handler.handlePacket(connection, packet);
+        } catch (Exception e) {
+            ProtoLogger.error("Protocol: " + connection.getProtocol() + " threw an error on when trying to handle: " + packet.getClass() + "!");
+            e.printStackTrace();
         }
     }
 

@@ -1,30 +1,26 @@
 package me.mrnavastar.protoweaver.api.protocol;
 
-import com.esotericsoftware.kryo.kryo5.Kryo;
-import com.esotericsoftware.kryo.kryo5.io.Input;
-import com.esotericsoftware.kryo.kryo5.io.Output;
-import com.esotericsoftware.kryo.kryo5.objenesis.strategy.StdInstantiatorStrategy;
-import com.esotericsoftware.kryo.kryo5.serializers.DefaultSerializers;
-import com.esotericsoftware.kryo.kryo5.util.DefaultInstantiatorStrategy;
 import lombok.*;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
 import me.mrnavastar.protoweaver.api.auth.ServerAuthHandler;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
+import org.apache.fury.Fury;
+import org.apache.fury.ThreadSafeFury;
 
 import java.lang.reflect.Modifier;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * Stores all the registered packets, settings and additional configuration of a {@link ProtoWeaver} protocol.
  */
 public class Protocol {
 
+    private final ThreadSafeFury fury = Fury.builder().buildThreadSafeFury();
+
     @Getter private final String namespace;
     @Getter private final String name;
-    private final Kryo kryo = new Kryo();
     @Getter private CompressionType compression = CompressionType.NONE;
     @Getter private int compressionLevel = -37;
     @Getter private int maxPacketSize = 16384;
@@ -39,9 +35,6 @@ public class Protocol {
     private Protocol(String namespace, String name) {
         this.namespace = namespace;
         this.name = name;
-        kryo.setRegistrationRequired(false);
-        kryo.setInstantiatorStrategy(new DefaultInstantiatorStrategy(new StdInstantiatorStrategy()));
-        kryo.addDefaultSerializer(UUID.class, new DefaultSerializers.UUIDSerializer());
     }
 
     /**
@@ -92,22 +85,11 @@ public class Protocol {
     }
 
     public byte[] serialize(@NonNull Object packet) {
-        try (Output output = new Output(maxPacketSize)) {
-            try {
-                kryo.writeClassAndObject(output, packet);
-            } catch (IllegalArgumentException ignore) {}
-            return output.toBytes();
-        }
+        return fury.serialize(packet);
     }
 
-    public Object deserialize(byte @NonNull [] packet) throws IllegalArgumentException {
-        try (Input in = new Input(packet)) {
-            Object obj = kryo.readClassAndObject(in);
-            if (obj == null || kryo.getClassResolver().getRegistration(obj.getClass()) == null) {
-                throw new IllegalArgumentException("Protocol:" + this + " received an unknown packet: " + obj);
-            }
-            return obj;
-        }
+    public Object deserialize(byte @NonNull [] packet) {
+        return fury.deserialize(packet);
     }
 
     /**
@@ -199,13 +181,8 @@ public class Protocol {
          * @param packet The packet to register.
          */
         public Builder addPacket(@NonNull Class<?> packet) {
-            if (protocol.kryo.getClassResolver().getRegistration(packet) != null) return this;
-
-            protocol.kryo.register(packet);
+            protocol.fury.register(packet);
             protocol.packetHash = 31 * protocol.packetHash + packet.getName().hashCode();
-
-            /*for (Field field : packet.getDeclaredFields())
-                if (((Modifier.STATIC | Modifier.TRANSIENT) & field.getModifiers()) == 0) addPacket(field.getType());*/
             return this;
         }
 
