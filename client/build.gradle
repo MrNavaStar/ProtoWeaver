@@ -2,7 +2,7 @@ apply plugin: "io.github.goooler.shadow"
 
 dependencies {
     shadow compileOnly(project(path: ':common', configuration: 'default'))
-    shadow compileOnly("org.apache.fury:fury:${project.fury_version}")
+    shadow compileOnly("org.apache.fury:fury-core:${project.fury_version}")
     shadow compileOnly("io.netty:netty-buffer:${project.netty_version}")
     shadow compileOnly("io.netty:netty-transport:${project.netty_version}")
     shadow compileOnly("io.netty:netty-handler:${project.netty_version}")
