@@ -17,7 +17,7 @@ import java.util.Objects;
  */
 public class Protocol {
 
-    private final ThreadSafeFury fury = Fury.builder().buildThreadSafeFury();
+    private final ThreadSafeFury fury = Fury.builder().withJdkClassSerializableCheck(false).buildThreadSafeFury();
 
     @Getter private final String namespace;
     @Getter private final String name;
