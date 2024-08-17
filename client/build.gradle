@@ -2,7 +2,7 @@ apply plugin: "io.github.goooler.shadow"
 
 dependencies {
     shadow compileOnly(project(path: ':common', configuration: 'default'))
-    shadow compileOnly("com.esotericsoftware:kryo5:${project.kyro_version}")
+    shadow compileOnly("org.apache.fury:fury-core:${project.fury_version}")
     shadow compileOnly("io.netty:netty-buffer:${project.netty_version}")
     shadow compileOnly("io.netty:netty-transport:${project.netty_version}")
     shadow compileOnly("io.netty:netty-handler:${project.netty_version}")
@@ -16,7 +16,7 @@ shadowJar {
         mergeServiceFiles()
     }
 
-    relocate "com.esotericsoftware", "me.mrnavastar.protoweaver.libs.esotericsoftware"
+    relocate "org.apache.fury", "me.mrnavastar.protoweaver.libs.org.apache.fury"
     relocate 'io.netty', 'me.mrnavastar.protoweaver.libs.netty'
 
     exclude "META-INF/maven/**"
