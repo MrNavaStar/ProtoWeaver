@@ -8,6 +8,7 @@ import me.mrnavastar.protoweaver.api.auth.ServerAuthHandler;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import org.apache.fury.Fury;
 import org.apache.fury.ThreadSafeFury;
+import org.apache.fury.logging.LoggerFactory;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -20,6 +21,11 @@ import java.util.Objects;
 public class Protocol {
 
     private final ThreadSafeFury fury = Fury.builder().withJdkClassSerializableCheck(false).buildThreadSafeFury();
+
+    static {
+        // Make fury be quiet
+        LoggerFactory.disableLogging();
+    }
 
     @Getter private final String namespace;
     @Getter private final String name;
