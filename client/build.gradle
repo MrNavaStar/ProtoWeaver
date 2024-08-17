@@ -17,10 +17,10 @@ shadowJar {
     }
 
     relocate "org.apache.fury", "me.mrnavastar.protoweaver.libs.org.apache.fury"
-    relocate 'io.netty', 'me.mrnavastar.protoweaver.libs.netty'
+    relocate 'io.netty', 'me.mrnavastar.protoweaver.libs.io.netty'
 
     exclude "META-INF/maven/**"
-    minimize()
+    //minimize()
 }
 
 jar.finalizedBy(shadowJar)

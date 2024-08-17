@@ -8,8 +8,11 @@ import me.mrnavastar.protoweaver.api.auth.ServerAuthHandler;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import org.apache.fury.Fury;
 import org.apache.fury.ThreadSafeFury;
+import org.apache.fury.logging.LoggerFactory;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -18,6 +21,11 @@ import java.util.Objects;
 public class Protocol {
 
     private final ThreadSafeFury fury = Fury.builder().withJdkClassSerializableCheck(false).buildThreadSafeFury();
+
+    static {
+        // Make fury be quiet
+        LoggerFactory.disableLogging();
+    }
 
     @Getter private final String namespace;
     @Getter private final String name;
@@ -176,12 +184,21 @@ public class Protocol {
             return this;
         }
 
+        private void recursiveRegister(Class<?> packet, List<Class<?>> registered) {
+            if (packet == null || registered.contains(packet)) return;
+            protocol.fury.register(packet);
+            registered.add(packet);
+
+            List.of(packet.getDeclaredFields()).forEach(field -> recursiveRegister(field.getType(), registered));
+            recursiveRegister(packet.getSuperclass(), registered);
+        }
+
         /**
          * Register a class to the {@link Protocol}. Does nothing if the class has already been registered.
          * @param packet The packet to register.
          */
         public Builder addPacket(@NonNull Class<?> packet) {
-            protocol.fury.register(packet);
+            recursiveRegister(packet, new ArrayList<>());
             protocol.packetHash = 31 * protocol.packetHash + packet.getName().hashCode();
             return this;
         }
