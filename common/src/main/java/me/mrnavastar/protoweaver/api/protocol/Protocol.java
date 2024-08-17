@@ -10,6 +10,8 @@ import org.apache.fury.Fury;
 import org.apache.fury.ThreadSafeFury;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -176,12 +178,21 @@ public class Protocol {
             return this;
         }
 
+        private void recursiveRegister(Class<?> packet, List<Class<?>> registered) {
+            if (packet == null || registered.contains(packet)) return;
+            protocol.fury.register(packet);
+            registered.add(packet);
+
+            List.of(packet.getDeclaredFields()).forEach(field -> recursiveRegister(field.getType(), registered));
+            recursiveRegister(packet.getSuperclass(), registered);
+        }
+
         /**
          * Register a class to the {@link Protocol}. Does nothing if the class has already been registered.
          * @param packet The packet to register.
          */
         public Builder addPacket(@NonNull Class<?> packet) {
-            protocol.fury.register(packet);
+            recursiveRegister(packet, new ArrayList<>());
             protocol.packetHash = 31 * protocol.packetHash + packet.getName().hashCode();
             return this;
         }

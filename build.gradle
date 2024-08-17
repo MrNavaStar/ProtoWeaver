@@ -62,7 +62,6 @@ subprojects {
         publishing {
             repositories {
                 maven {
-                    name "MrNavaStar"
                     url "https://maven.mrnavastar.rocks/releases"
                     credentials {
                         username = System.getenv("MAVEN_NAME")
