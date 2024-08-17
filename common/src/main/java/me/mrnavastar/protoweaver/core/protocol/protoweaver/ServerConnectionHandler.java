@@ -29,7 +29,7 @@ public class ServerConnectionHandler extends InternalConnectionHandler implement
                         return;
                     }
 
-                    if (nextProtocol.getConnections() >= nextProtocol.getMaxConnections()) {
+                    if (nextProtocol.getMaxConnections() != -1 && nextProtocol.getConnections() >= nextProtocol.getMaxConnections()) {
                         status.setStatus(ProtocolStatus.Status.FULL);
                         disconnectIfNeverUpgraded(connection, connection.send(status));
                         return;
