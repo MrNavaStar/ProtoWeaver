@@ -28,11 +28,11 @@ dependencies {
     // Libs
     include implementation("org.apache.fury:fury-core:${project.fury_version}")
     include implementation("org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}")
-    include "org.bouncycastle:bcprov-jdk18on:${project.bouncy_version}"
-    include "org.bouncycastle:bcutil-jdk18on:${project.bouncy_version}"
+    include implementation("org.bouncycastle:bcprov-jdk18on:${project.bouncy_version}")
+    include implementation("org.bouncycastle:bcutil-jdk18on:${project.bouncy_version}")
     include implementation("io.netty:netty-codec-http:${project.netty_version}")
     include implementation("io.netty:netty-codec-http2:${project.netty_version}")
-    include "me.mrnavastar:r:${project.r_version}"
+    include implementation("me.mrnavastar:r:${project.r_version}")
 
     // Mod Compat
     modCompileOnly "maven.modrinth:fabricproxy-lite:${project.proxy_lite_version}"

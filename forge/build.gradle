@@ -31,11 +31,11 @@ dependencies {
     // Libs
     include forgeRuntimeLibrary(implementation("org.apache.fury:fury-core:${project.fury_version}"))
     include forgeRuntimeLibrary(implementation("org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}"))
-    include forgeRuntimeLibrary("org.bouncycastle:bcprov-jdk18on:${project.bouncy_version}")
-    include forgeRuntimeLibrary("org.bouncycastle:bcutil-jdk18on:${project.bouncy_version}")
+    include forgeRuntimeLibrary(implementation("org.bouncycastle:bcprov-jdk18on:${project.bouncy_version}"))
+    include forgeRuntimeLibrary(implementation("org.bouncycastle:bcutil-jdk18on:${project.bouncy_version}"))
     include forgeRuntimeLibrary(implementation("io.netty:netty-codec-http:${project.netty_version}"))
     include forgeRuntimeLibrary(implementation("io.netty:netty-codec-http2:${project.netty_version}"))
-    include forgeRuntimeLibrary("me.mrnavastar:r:${project.r_version}")
+    include forgeRuntimeLibrary(implementation("me.mrnavastar:r:${project.r_version}"))
 
     // Mod Compat
     modCompileOnly "maven.modrinth:proxy-compatible-forge:${project.proxy_forge_version}"
