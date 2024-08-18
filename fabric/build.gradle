@@ -32,6 +32,7 @@ dependencies {
     include "org.bouncycastle:bcutil-jdk18on:${project.bouncy_version}"
     include implementation("io.netty:netty-codec-http:${project.netty_version}")
     include implementation("io.netty:netty-codec-http2:${project.netty_version}")
+    include "me.mrnavastar:r:${project.r_version}"
 
     // Mod Compat
     modCompileOnly "maven.modrinth:fabricproxy-lite:${project.proxy_lite_version}"
