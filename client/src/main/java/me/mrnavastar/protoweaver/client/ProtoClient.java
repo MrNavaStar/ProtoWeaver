@@ -25,7 +25,14 @@ import javax.net.ssl.SSLException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 
+import com.google.common.base.internal.Finalizer;
+
 public class ProtoClient {
+
+    static {
+        // This exists so shadow jar does not yeet it
+        Class<?> c = Finalizer.class;
+    }
 
     @FunctionalInterface
     public interface ConnectionEstablishedHandler {
