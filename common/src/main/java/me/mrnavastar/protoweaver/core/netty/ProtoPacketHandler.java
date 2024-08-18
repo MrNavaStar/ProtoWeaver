@@ -12,6 +12,7 @@ import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.core.util.DrunkenBishop;
 import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
+import org.apache.fury.exception.InsecureException;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,15 +55,18 @@ public class ProtoPacketHandler extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) {
         if (byteBuf.readableBytes() == 0) return;
-
-        byte[] bytes = new byte[byteBuf.readInt()];
-        byteBuf.readBytes(bytes);
-        Object packet = connection.getProtocol().deserialize(bytes);
+        Object packet = null;
 
         try {
+            byte[] bytes = new byte[byteBuf.readInt()];
+            byteBuf.readBytes(bytes);
+            packet = connection.getProtocol().deserialize(bytes);
             handler.handlePacket(connection, packet);
+
+        } catch (InsecureException e) {
+            ProtoLogger.warn("Protocol: " + connection.getProtocol() + " ignoring an " + e.getMessage());
         } catch (Exception e) {
-            ProtoLogger.error("Protocol: " + connection.getProtocol() + " threw an error on when trying to handle: " + packet.getClass() + "!");
+            if (packet != null) ProtoLogger.error("Protocol: " + connection.getProtocol() + " threw an error when trying to handle: " + packet.getClass() + "!");
             e.printStackTrace();
         }
     }
@@ -79,8 +83,12 @@ public class ProtoPacketHandler extends ByteToMessageDecoder {
             Sender sender = new Sender(connection, ctx.writeAndFlush(buf), true);
             buf = Unpooled.buffer();
             return sender;
+
+        } catch (InsecureException e) {
+            ProtoLogger.error("Protocol: " + connection.getProtocol() + " tried to send an " + e.getMessage());
+            return new Sender(connection, ctx.newSucceededFuture(), false);
         } catch (Exception e) {
-            ProtoLogger.error("Failed to encode object: " + packet.getClass().getName());
+            ProtoLogger.error("Protocol: " + connection.getProtocol() + " threw an error when trying to send: " + packet.getClass() + "!");
             e.printStackTrace();
             return new Sender(connection, ctx.newSucceededFuture(), false);
         }

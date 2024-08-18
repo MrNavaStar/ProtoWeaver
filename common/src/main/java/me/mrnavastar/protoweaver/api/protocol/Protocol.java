@@ -7,6 +7,7 @@ import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
 import me.mrnavastar.protoweaver.api.auth.ServerAuthHandler;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.core.util.Furious;
+import org.apache.fury.exception.InsecureException;
 
 import java.lang.reflect.Modifier;
 import java.util.Objects;
@@ -81,11 +82,11 @@ public class Protocol {
         return clientAuthHandler.getDeclaredConstructor().newInstance();
     }
 
-    public byte[] serialize(@NonNull Object packet) {
+    public byte[] serialize(@NonNull Object packet) throws InsecureException {
         return Furious.serialize(packet);
     }
 
-    public Object deserialize(byte @NonNull [] packet) {
+    public Object deserialize(byte @NonNull [] packet) throws InsecureException {
         return Furious.deserialize(packet);
     }
 

@@ -3,6 +3,7 @@ package me.mrnavastar.protoweaver.core.util;
 import me.mrnavastar.r.R;
 import org.apache.fury.Fury;
 import org.apache.fury.ThreadSafeFury;
+import org.apache.fury.exception.InsecureException;
 import org.apache.fury.logging.LoggerFactory;
 
 import java.util.ArrayList;
@@ -31,11 +32,20 @@ public class Furious {
         recursiveRegister(type, new ArrayList<>());
     }
 
-    public static byte[] serialize(Object object) {
-        return FURY.serialize(object);
+    public static byte[] serialize(Object object) throws InsecureException {
+        try {
+            return FURY.serialize(object);
+        } catch (InsecureException e) {
+            throw new InsecureException("unregistered packet: " + object.getClass().getName());
+        }
     }
 
-    public static Object deserialize(byte[] bytes) {
-        return FURY.deserialize(bytes);
+    public static Object deserialize(byte[] bytes) throws InsecureException {
+        try {
+            return FURY.deserialize(bytes);
+        } catch (InsecureException e) {
+            String packet = e.getMessage().split(" is not registered")[0].replace("class ", "");
+            throw new InsecureException("unregistered packet: " + packet);
+        }
     }
 }
