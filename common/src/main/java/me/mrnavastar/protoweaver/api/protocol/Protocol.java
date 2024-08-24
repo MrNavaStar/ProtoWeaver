@@ -7,6 +7,8 @@ import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
 import me.mrnavastar.protoweaver.api.auth.ServerAuthHandler;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.core.util.Furious;
+import org.apache.fury.Fury;
+import org.apache.fury.ThreadSafeFury;
 import org.apache.fury.exception.InsecureException;
 
 import java.lang.reflect.Modifier;
@@ -16,6 +18,8 @@ import java.util.Objects;
  * Stores all the registered packets, settings and additional configuration of a {@link ProtoWeaver} protocol.
  */
 public class Protocol {
+
+    private final ThreadSafeFury fury = Fury.builder().withJdkClassSerializableCheck(false).buildThreadSafeFury();
 
     @Getter private final String namespace;
     @Getter private final String name;
@@ -83,11 +87,11 @@ public class Protocol {
     }
 
     public byte[] serialize(@NonNull Object packet) throws InsecureException {
-        return Furious.serialize(packet);
+        return Furious.serialize(fury, packet);
     }
 
     public Object deserialize(byte @NonNull [] packet) throws InsecureException {
-        return Furious.deserialize(packet);
+        return Furious.deserialize(fury, packet);
     }
 
     /**
@@ -179,7 +183,7 @@ public class Protocol {
          * @param packet The packet to register.
          */
         public Builder addPacket(@NonNull Class<?> packet) {
-            Furious.register(packet);
+            Furious.register(protocol.fury, packet);
             protocol.packetHash = 31 * protocol.packetHash + packet.getName().hashCode();
             return this;
         }
