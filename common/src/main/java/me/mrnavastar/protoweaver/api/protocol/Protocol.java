@@ -6,9 +6,7 @@ import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
 import me.mrnavastar.protoweaver.api.auth.ServerAuthHandler;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
-import me.mrnavastar.protoweaver.core.util.Furious;
-import org.apache.fury.Fury;
-import org.apache.fury.ThreadSafeFury;
+import me.mrnavastar.protoweaver.core.util.ObjectSerializer;
 import org.apache.fury.exception.InsecureException;
 
 import java.lang.reflect.Modifier;
@@ -19,7 +17,7 @@ import java.util.Objects;
  */
 public class Protocol {
 
-    private final ThreadSafeFury fury = Fury.builder().withJdkClassSerializableCheck(false).buildThreadSafeFury();
+    private final ObjectSerializer serializer = new ObjectSerializer();
 
     @Getter private final String namespace;
     @Getter private final String name;
@@ -87,11 +85,11 @@ public class Protocol {
     }
 
     public byte[] serialize(@NonNull Object packet) throws InsecureException {
-        return Furious.serialize(fury, packet);
+        return serializer.serialize(packet);
     }
 
     public Object deserialize(byte @NonNull [] packet) throws InsecureException {
-        return Furious.deserialize(fury, packet);
+        return serializer.deserialize(packet);
     }
 
     /**
@@ -183,7 +181,7 @@ public class Protocol {
          * @param packet The packet to register.
          */
         public Builder addPacket(@NonNull Class<?> packet) {
-            Furious.register(protocol.fury, packet);
+            protocol.serializer.register(packet);
             protocol.packetHash = 31 * protocol.packetHash + packet.getName().hashCode();
             return this;
         }
