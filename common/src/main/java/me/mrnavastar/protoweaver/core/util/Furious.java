@@ -19,13 +19,13 @@ public class Furious {
     }
 
     private static void recursiveRegister(Class<?> type, List<Class<?>> registered) {
-        if (type == null || registered.contains(type)) return;
+        if (type == null || type == Object.class || registered.contains(type)) return;
         FURY.register(type);
         registered.add(type);
 
         List.of(type.getDeclaredFields()).forEach(field -> recursiveRegister(field.getType(), registered));
         List.of(R.of(type).generics()).forEach(t -> recursiveRegister(t, registered));
-        recursiveRegister(type.getSuperclass(), registered);
+        if (!type.isEnum()) recursiveRegister(type.getSuperclass(), registered);
     }
 
     public static void register(Class<?> type) {
