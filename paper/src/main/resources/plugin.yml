@@ -1,7 +1,9 @@
 name: ProtoWeaver
+author: MrNavaStar
 version: 'debug-build'
 main: me.mrnavastar.protoweaver.loader.Paper
 api-version: '1.13'
+load: STARTUP
 libraries:
   - org.apache.fury:fury-core:0.7.0
   - io.netty:netty-codec-http:4.1.97.Final
