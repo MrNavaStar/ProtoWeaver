@@ -63,7 +63,7 @@ public class ProtoPacketHandler extends ByteToMessageDecoder {
             packet = connection.getProtocol().deserialize(bytes);
             handler.handlePacket(connection, packet);
 
-        } catch (InsecureException e) {
+        } catch (IllegalArgumentException e) {
             ProtoLogger.warn("Protocol: " + connection.getProtocol() + " ignoring an " + e.getMessage());
         } catch (Exception e) {
             if (packet != null) ProtoLogger.error("Protocol: " + connection.getProtocol() + " threw an error when trying to handle: " + packet.getClass() + "!");
@@ -84,7 +84,7 @@ public class ProtoPacketHandler extends ByteToMessageDecoder {
             buf = Unpooled.buffer();
             return sender;
 
-        } catch (InsecureException e) {
+        } catch (IllegalArgumentException e) {
             ProtoLogger.error("Protocol: " + connection.getProtocol() + " tried to send an " + e.getMessage());
             return new Sender(connection, ctx.newSucceededFuture(), false);
         } catch (Exception e) {

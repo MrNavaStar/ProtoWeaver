@@ -84,11 +84,11 @@ public class Protocol {
         return clientAuthHandler.getDeclaredConstructor().newInstance();
     }
 
-    public byte[] serialize(@NonNull Object packet) throws InsecureException {
+    public byte[] serialize(@NonNull Object packet) throws IllegalArgumentException {
         return serializer.serialize(packet);
     }
 
-    public Object deserialize(byte @NonNull [] packet) throws InsecureException {
+    public Object deserialize(byte @NonNull [] packet) throws IllegalArgumentException {
         return serializer.deserialize(packet);
     }
 

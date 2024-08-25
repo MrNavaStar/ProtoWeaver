@@ -32,20 +32,20 @@ public class ObjectSerializer {
         recursiveRegister(type, new ArrayList<>());
     }
 
-    public byte[] serialize(Object object) throws InsecureException {
+    public byte[] serialize(Object object) throws IllegalArgumentException {
         try {
             return fury.serialize(object);
         } catch (InsecureException e) {
-            throw new InsecureException("unregistered object: " + object.getClass().getName());
+            throw new IllegalArgumentException("unregistered object: " + object.getClass().getName());
         }
     }
 
-    public Object deserialize(byte[] bytes) throws InsecureException {
+    public Object deserialize(byte[] bytes) throws IllegalArgumentException {
         try {
             return fury.deserialize(bytes);
         } catch (InsecureException e) {
             String packet = e.getMessage().split(" is not registered")[0].replace("class ", "");
-            throw new InsecureException("unregistered object: " + packet);
+            throw new IllegalArgumentException("unregistered object: " + packet);
         }
     }
 }
