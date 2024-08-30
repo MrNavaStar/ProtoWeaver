@@ -32,7 +32,9 @@ Protoweaver is fast, secure, and easy to use. All protocols run under the same n
 - [ ] Tell me what you want to see!
 
 ### Project Setup
-In your build.gradle include:
+In your build.gradle include
+
+*** Note: **Do not shade protoweaver! It will not work properly. ProtoWeaver is a mod/plugin that is installed along side yours!**
 ``` gradle
 repositories {
     maven { url "https://maven.mrnavastar.rocks/releases" }
