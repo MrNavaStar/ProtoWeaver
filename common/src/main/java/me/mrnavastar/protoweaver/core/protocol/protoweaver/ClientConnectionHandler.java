@@ -6,23 +6,18 @@ import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
-import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
 public class ClientConnectionHandler extends InternalConnectionHandler implements ProtoConnectionHandler {
 
+    private Protocol protocol;
     private boolean authenticated = false;
     private ClientAuthHandler authHandler = null;
 
-    public void start(ProtoConnection connection, String nextProtocolName) {
-        Protocol nextProtocol = ProtoWeaver.getLoadedProtocol(nextProtocolName);
-        if (nextProtocol == null) {
-            protocolNotLoaded(connection, nextProtocolName);
-            return;
-        }
-
+    public void start(ProtoConnection connection, Protocol protocol) {
+        this.protocol = protocol;
         authenticated = false;
-        if (nextProtocol.requiresAuth(Side.CLIENT)) authHandler = nextProtocol.newClientAuthHandler();
-        connection.send(new ProtocolStatus(connection.getProtocol().toString(), nextProtocol.toString(), nextProtocol.hashCode(), ProtocolStatus.Status.START));
+        if (protocol.requiresAuth(Side.CLIENT)) authHandler = protocol.newClientAuthHandler();
+        connection.send(new ProtocolStatus(connection.getProtocol().toString(), protocol.toString(), protocol.hashCode(), ProtocolStatus.Status.START));
     }
 
     @Override
@@ -30,27 +25,26 @@ public class ClientConnectionHandler extends InternalConnectionHandler implement
         if (packet instanceof ProtocolStatus status) {
             switch (status.getStatus()) {
                 case MISSING -> {
-                    ProtoLogger.error("Protocol: \"" + status.getNextProtocol() + "\" is not loaded on server.");
+                    protocol.logErr("Not loaded on server.");
                     disconnectIfNeverUpgraded(connection);
                 }
                 case MISMATCH -> {
-                    ProtoLogger.error("Protocol: \"" + status.getNextProtocol() + "\" has a mismatch with the version on the server!");
-                    ProtoLogger.error("Double check that all packets are registered in the same order and all settings are the same.");
+                    protocol.logErr("Mismatch with protocol version on the server!");
+                    protocol.logErr("Double check that all packets are registered in the same order and all settings are the same.");
                     disconnectIfNeverUpgraded(connection);
                 }
                 case FULL -> {
-                    ProtoLogger.error("Protocol: \"" + status.getNextProtocol() + "\" has reached the maximum number of allowed connections on the server!");
+                    protocol.logErr("The maximum number of allowed connections on the server has been reached!");
                     disconnectIfNeverUpgraded(connection);
                 }
                 case UPGRADE -> {
                     if (!authenticated) return;
-                    Protocol nextProtocol = ProtoWeaver.getLoadedProtocol(status.getNextProtocol());
-                    if (nextProtocol == null) {
+                    protocol = ProtoWeaver.getLoadedProtocol(status.getNextProtocol());
+                    if (protocol == null) {
                         protocolNotLoaded(connection, status.getNextProtocol());
                         return;
                     }
-
-                    connection.upgradeProtocol(nextProtocol);
+                    connection.upgradeProtocol(protocol);
                 }
             }
             return;
@@ -61,14 +55,14 @@ public class ClientConnectionHandler extends InternalConnectionHandler implement
                 case OK -> authenticated = true;
                 case REQUIRED -> {
                     if (authHandler == null) {
-                        ProtoLogger.error("Client protocol has not defined an auth handler, but the server requires auth. Closing connection.");
+                        protocol.logErr("Client protocol has not defined an auth handler, but the server requires auth. Closing connection.");
                         connection.disconnect();
                         return;
                     }
                     connection.send(authHandler.getSecret());
                 }
                 case DENIED -> {
-                    ProtoLogger.error("Client was denied access by the server.");
+                    protocol.logErr("Denied access by the server.");
                     disconnectIfNeverUpgraded(connection);
                 }
             }

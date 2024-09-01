@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 
 public class ProtoProxy {
 
@@ -60,7 +61,7 @@ public class ProtoProxy {
             Thread.sleep(serverPollRate);
             connectClient(protocol, server, clients);
         }).onConnectionEstablished(connection -> {
-            ProtoLogger.info("Connected to: " + server + " with protocol: " + protocol);
+            protocol.logInfo("Connected to: " + server + " with protocol: " + protocol);
         });
         clients.add(client);
     }

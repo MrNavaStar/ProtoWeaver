@@ -97,7 +97,7 @@ public class ProtoClient {
             try {
                 f.awaitUninterruptibly();
                 if (f.isSuccess()) {
-                    ((ClientConnectionHandler) connection.getHandler()).start(connection, protocol.toString());
+                    ((ClientConnectionHandler) connection.getHandler()).start(connection, protocol);
                     // Wait for protocol to switch to passed in one
                     while (connection == null || connection.isOpen() && !connection.getProtocol().toString().equals(protocol.toString()))
                         Thread.onSpinWait();

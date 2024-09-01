@@ -7,10 +7,11 @@ import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
 import me.mrnavastar.protoweaver.api.auth.ServerAuthHandler;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.core.util.ObjectSerializer;
-import org.apache.fury.exception.InsecureException;
+import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
 import java.lang.reflect.Modifier;
 import java.util.Objects;
+import java.util.logging.Level;
 
 /**
  * Stores all the registered packets, settings and additional configuration of a {@link ProtoWeaver} protocol.
@@ -25,6 +26,7 @@ public class Protocol {
     @Getter private int compressionLevel = -37;
     @Getter private int maxPacketSize = 16384;
     @Getter private int maxConnections = -1;
+    @Getter private Level loggingLevel = Level.ALL;
 
     private Class<? extends ProtoConnectionHandler> serverConnectionHandler;
     private Class<? extends ProtoConnectionHandler> clientConnectionHandler;
@@ -103,9 +105,21 @@ public class Protocol {
      * Determine if a side requires auth by checking to see if an auth handler was set for the given side.
      * @param side The {@link Side} to check for an auth handler.
      */
-    public boolean requiresAuth(Side side) {
+    public boolean requiresAuth(@NonNull Side side) {
         if (side.equals(Side.CLIENT)) return clientAuthHandler != null;
         return serverAuthHandler != null;
+    }
+
+    public void logInfo(@NonNull String message) {
+        if (loggingLevel.intValue() <= Level.INFO.intValue()) ProtoLogger.info("[" + this + "]: " + message);
+    }
+
+    public void logWarn(@NonNull String message) {
+        if (loggingLevel.intValue() <= Level.WARNING.intValue()) ProtoLogger.warn("[" + this + "]: " + message);
+    }
+
+    public void logErr(@NonNull String message) {
+        if (loggingLevel.intValue() <= Level.SEVERE.intValue()) ProtoLogger.err("[" + this + "]: " + message);
     }
 
     @Override
@@ -222,6 +236,14 @@ public class Protocol {
          */
         public Builder setMaxConnections(int maxConnections) {
             protocol.maxConnections = maxConnections;
+            return this;
+        }
+
+        /**
+         * Sets the logging level for this {@link Protocol}.
+         */
+        public Builder setLoggingLevel(Level level) {
+            protocol.loggingLevel = level;
             return this;
         }
 

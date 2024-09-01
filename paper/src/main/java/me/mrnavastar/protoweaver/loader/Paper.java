@@ -54,7 +54,7 @@ public class Paper extends JavaPlugin implements ChannelInitializeListener, Prot
     }
 
     @Override
-    public void error(String message) {
+    public void err(String message) {
         logger.severe(message);
     }
 }

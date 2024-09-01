@@ -13,5 +13,5 @@ public interface ServerAuthHandler {
      * @param secret The secret sent from the client
      * @return True to accept the connection, false to block it.
      */
-    boolean handleAuth(ProtoConnection connection, String secret);
+    boolean handleAuth(ProtoConnection connection, byte[] secret);
 }

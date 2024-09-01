@@ -24,6 +24,10 @@ public class ProtoServer {
         this.connection = connection;
     }
 
+    public boolean isConnected() {
+        return connection != null && connection.isOpen();
+    }
+
     @Override
     public boolean equals(Object obj) {
         return obj instanceof ProtoServer server && Objects.equals(server.name, name);

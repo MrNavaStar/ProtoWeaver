@@ -12,7 +12,6 @@ import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.core.util.DrunkenBishop;
 import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
-import org.apache.fury.exception.InsecureException;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,7 +46,7 @@ public class ProtoPacketHandler extends ByteToMessageDecoder {
             connectionCount.put(connection.getProtocol().toString(), connectionCount.getOrDefault(connection.getProtocol().toString(), 1) - 1);
             this.handler.onDisconnect(connection);
         } catch (Exception e) {
-            ProtoLogger.error("Protocol: " + connection.getProtocol() + " threw an error on disconnect!");
+            connection.getProtocol().logErr("Threw an error on disconnect!");
             e.printStackTrace();
         }
     }
@@ -64,9 +63,9 @@ public class ProtoPacketHandler extends ByteToMessageDecoder {
             handler.handlePacket(connection, packet);
 
         } catch (IllegalArgumentException e) {
-            ProtoLogger.warn("Protocol: " + connection.getProtocol() + " ignoring an " + e.getMessage());
+            connection.getProtocol().logWarn("Ignoring an " + e.getMessage());
         } catch (Exception e) {
-            if (packet != null) ProtoLogger.error("Protocol: " + connection.getProtocol() + " threw an error when trying to handle: " + packet.getClass() + "!");
+            if (packet != null) connection.getProtocol().logErr("Threw an error when trying to handle: " + packet.getClass() + "!");
             e.printStackTrace();
         }
     }
@@ -85,10 +84,10 @@ public class ProtoPacketHandler extends ByteToMessageDecoder {
             return sender;
 
         } catch (IllegalArgumentException e) {
-            ProtoLogger.error("Protocol: " + connection.getProtocol() + " tried to send an " + e.getMessage());
+            connection.getProtocol().logErr("Tried to send an " + e.getMessage());
             return new Sender(connection, ctx.newSucceededFuture(), false);
         } catch (Exception e) {
-            ProtoLogger.error("Protocol: " + connection.getProtocol() + " threw an error when trying to send: " + packet.getClass() + "!");
+            connection.getProtocol().logErr("Threw an error when trying to send: " + packet.getClass() + "!");
             e.printStackTrace();
             return new Sender(connection, ctx.newSucceededFuture(), false);
         }
@@ -108,10 +107,10 @@ public class ProtoPacketHandler extends ByteToMessageDecoder {
                 ProtoLogger.warn(line);
             }
 
-            ProtoLogger.error("Failed to connect to: " + parts[2] + ":" + parts[3]);
-            ProtoLogger.error("Server SSL fingerprint does not match saved fingerprint! This could be a MITM ATTACK!");
-            ProtoLogger.error(" - https://en.wikipedia.org/wiki/Man-in-the-middle_attack");
-            ProtoLogger.error("If you've reset your server configuration recently, you can probably ignore this and reset/remove the \"protoweaver.hosts\" file.");
+            ProtoLogger.err("Failed to connect to: " + parts[2] + ":" + parts[3]);
+            ProtoLogger.err("Server SSL fingerprint does not match saved fingerprint! This could be a MITM ATTACK!");
+            ProtoLogger.err(" - https://en.wikipedia.org/wiki/Man-in-the-middle_attack");
+            ProtoLogger.err("If you've reset your server configuration recently, you can probably ignore this and reset/remove the \"protoweaver.hosts\" file.");
 
             connection.disconnect();
         }

@@ -70,8 +70,7 @@ public class Velocity implements ServerSupplier, ProtoLogger.IProtoLogger {
         logger.warn(message);
     }
 
-    @Override
-    public void error(String message) {
+    public void err(String message) {
         logger.error(message);
     }
 }

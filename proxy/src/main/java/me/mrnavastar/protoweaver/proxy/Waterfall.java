@@ -38,8 +38,7 @@ public class Waterfall extends Plugin implements ServerSupplier, ProtoLogger.IPr
         logger.warning(message);
     }
 
-    @Override
-    public void error(String message) {
+    public void err(String message) {
         logger.severe(message);
     }
 }

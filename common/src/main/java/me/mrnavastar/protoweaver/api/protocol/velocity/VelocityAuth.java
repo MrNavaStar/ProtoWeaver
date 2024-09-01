@@ -11,26 +11,28 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 @Getter
 public class VelocityAuth implements ServerAuthHandler, ClientAuthHandler {
 
     @Setter
-    private static String secret = null;
+    private static byte[] secret = null;
 
     @Override
-    public boolean handleAuth(ProtoConnection connection, String key) {
-        return key.equals(secret);
+    public boolean handleAuth(ProtoConnection connection, byte[] key) {
+        return Arrays.equals(key, secret);
     }
 
     @Override
-    public String getSecret() {
+    public byte[] getSecret() {
         File file = new File("forwarding.secret");
         if (!file.exists()) return null;
 
         try {
             @Cleanup BufferedReader reader = new BufferedReader(new FileReader(file));
-            return reader.readLine();
+            return reader.readLine().getBytes(StandardCharsets.UTF_8);
         } catch (IOException ignore) {
             return null;
         }

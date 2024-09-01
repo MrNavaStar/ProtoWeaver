@@ -47,16 +47,16 @@ public class Forge implements ProtoLogger.IProtoLogger {
 
     @Override
     public void info(String message) {
-        logger.info("[" + ProtoConstants.PROTOWEAVER_NAME + "] " + message);
+        logger.info("[" + ProtoConstants.PROTOWEAVER_NAME + "]: {}", message);
     }
 
     @Override
     public void warn(String message) {
-        logger.info("[" + ProtoConstants.PROTOWEAVER_NAME + "] " + message);
+        logger.info("[" + ProtoConstants.PROTOWEAVER_NAME + "]: {}", message);
     }
 
     @Override
-    public void error(String message) {
-        logger.info("[" + ProtoConstants.PROTOWEAVER_NAME + "] " + message);
+    public void err(String message) {
+        logger.info("[" + ProtoConstants.PROTOWEAVER_NAME + "]: {}", message);
     }
 }

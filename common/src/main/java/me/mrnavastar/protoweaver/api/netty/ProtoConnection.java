@@ -5,7 +5,6 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.compression.*;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.SneakyThrows;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.protocol.CompressionType;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
@@ -13,7 +12,6 @@ import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.core.netty.ProtoPacketHandler;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
-import java.lang.reflect.Modifier;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -104,7 +102,7 @@ public class ProtoConnection {
 
             this.handler.onReady(this);
         } catch (Exception e) {
-            ProtoLogger.error("Protocol: " + protocol + " threw an error on initialization!");
+            protocol.logErr("Threw an error on initialization!");
             e.printStackTrace();
         }
     }

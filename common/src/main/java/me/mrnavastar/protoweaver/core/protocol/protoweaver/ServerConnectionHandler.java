@@ -10,6 +10,8 @@ import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
+import java.util.logging.Level;
+
 public class ServerConnectionHandler extends InternalConnectionHandler implements ProtoConnectionHandler {
 
     private boolean authenticated = false;
@@ -36,8 +38,9 @@ public class ServerConnectionHandler extends InternalConnectionHandler implement
                     }
 
                     if (nextProtocol.hashCode() != status.getNextProtocolHash()) {
-                        ProtoLogger.error("Protocol: \"" + nextProtocol + "\" has a mismatch with the version on the client!");
-                        ProtoLogger.error("Double check that all packets are registered in the same order and all settings are the same.");
+                        nextProtocol.logErr("Mismatch with protocol version on the client!");
+                        nextProtocol.logErr("Double check that all packets are registered in the same order and all settings are the same.");
+
                         status.setStatus(ProtocolStatus.Status.MISMATCH);
                         disconnectIfNeverUpgraded(connection, connection.send(status));
                         return;
@@ -52,14 +55,14 @@ public class ServerConnectionHandler extends InternalConnectionHandler implement
                     authenticated = true;
                 }
                 case MISSING -> {
-                    ProtoLogger.error("Protocol: \"" + status.getNextProtocol() + "\" is not loaded on client!");
+                    nextProtocol.logErr("Protocol is not loaded on client!");
                     disconnectIfNeverUpgraded(connection);
                 }
             }
         }
 
         // Authenticate client
-        if (nextProtocol != null && packet instanceof String secret) {
+        if (nextProtocol != null && packet instanceof byte[] secret) {
             authenticated = authHandler.handleAuth(connection, secret);
         }
 
@@ -73,5 +76,6 @@ public class ServerConnectionHandler extends InternalConnectionHandler implement
         connection.send(AuthStatus.OK);
         connection.send(new ProtocolStatus(connection.getProtocol().toString(), nextProtocol.toString(), 0, ProtocolStatus.Status.UPGRADE));
         connection.upgradeProtocol(nextProtocol);
+        nextProtocol.logInfo("Connected to: " + connection.getRemoteAddress());
     }
 }

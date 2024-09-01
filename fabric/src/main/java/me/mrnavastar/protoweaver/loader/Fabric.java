@@ -39,16 +39,16 @@ public class Fabric implements DedicatedServerModInitializer, ProtoLogger.IProto
 
     @Override
     public void info(String message) {
-        logger.info("[" + ProtoConstants.PROTOWEAVER_NAME + "] " + message);
+        logger.info("[" + ProtoConstants.PROTOWEAVER_NAME + "]: {}", message);
     }
 
     @Override
     public void warn(String message) {
-        logger.info("[" + ProtoConstants.PROTOWEAVER_NAME + "] " + message);
+        logger.info("[" + ProtoConstants.PROTOWEAVER_NAME + "]: {}", message);
     }
 
     @Override
-    public void error(String message) {
-        logger.info("[" + ProtoConstants.PROTOWEAVER_NAME + "] " + message);
+    public void err(String message) {
+        logger.info("[" + ProtoConstants.PROTOWEAVER_NAME + "]: {}", message);
     }
 }
