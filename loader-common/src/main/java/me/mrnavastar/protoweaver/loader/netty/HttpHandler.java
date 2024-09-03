@@ -7,9 +7,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 
-import static io.netty.handler.codec.http.HttpResponseStatus.*;
-import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
-
 public class HttpHandler extends SimpleChannelInboundHandler<Object> {
 
     private HttpRequest request;

@@ -41,8 +41,12 @@ subprojects {
         compileOnly "io.netty:netty-handler:${project.netty_version}"
         compileOnly "io.netty:netty-codec-http:${project.netty_version}"
         compileOnly "io.netty:netty-codec-http2:${project.netty_version}"
+        compileOnly "io.projectreactor.netty:reactor-netty-core:1.1.22"
+        compileOnly "io.projectreactor.netty:reactor-netty-http:1.1.22"
         compileOnly "org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}"
         compileOnly "me.mrnavastar:r:${project.r_version}"
+
+        compileOnly 'io.vertx:vertx-core:4.5.9'
 
         compileOnly "org.projectlombok:lombok:${project.lombok_version}"
 	    annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"

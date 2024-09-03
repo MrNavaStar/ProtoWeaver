@@ -1,15 +1,18 @@
 package me.mrnavastar.protoweaver.api;
 
 import lombok.NonNull;
+import me.mrnavastar.protoweaver.api.netty.NativeProtocol;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.util.Event;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ProtoWeaver {
 
+    private static final ArrayList<NativeProtocol> nativeProtocols = new ArrayList<>();
     private static final ConcurrentHashMap<String, Protocol> loadedProtocols = new ConcurrentHashMap<>();
 
     /**
@@ -80,5 +83,13 @@ public class ProtoWeaver {
     @FunctionalInterface
     public interface LoadedProtocol {
         void trigger(Protocol protocol);
+    }
+
+    public static void register(NativeProtocol protocol) {
+        nativeProtocols.add(protocol);
+    }
+
+    public static List<NativeProtocol> getNativeProtocols() {
+        return Collections.unmodifiableList(nativeProtocols);
     }
 }
