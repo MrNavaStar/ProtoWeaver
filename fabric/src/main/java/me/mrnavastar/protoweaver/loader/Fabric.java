@@ -11,6 +11,8 @@ import one.oktw.FabricProxyLite;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.nio.charset.StandardCharsets;
+
 public class Fabric implements DedicatedServerModInitializer, ProtoLogger.IProtoLogger {
 
     private final Logger logger = LogManager.getLogger();
@@ -32,7 +34,7 @@ public class Fabric implements DedicatedServerModInitializer, ProtoLogger.IProto
         // Fabric Proxy Lite support
         FabricLoader.getInstance().getModContainer("fabricproxy-lite").ifPresent(modContainer -> {
             // FabricProxyLites config is initialized as a mixin plugin, so it's guaranteed to be loaded before protoweaver
-            VelocityAuth.setSecret(FabricProxyLite.config.getSecret());
+            VelocityAuth.setSecret(FabricProxyLite.config.getSecret().getBytes(StandardCharsets.UTF_8));
         });
         setup = true;
     }

@@ -1,11 +1,12 @@
 package me.mrnavastar.protoweaver.core.protocol.protoweaver;
 
 import lombok.Getter;
-import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.netty.Sender;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
+
+import java.util.Optional;
 
 public class InternalConnectionHandler {
 
@@ -19,11 +20,9 @@ public class InternalConnectionHandler {
 
     protected void disconnectIfNeverUpgraded(ProtoConnection connection, Sender sender) {
         if (!connection.getProtocol().toString().equals(protocol.toString())) return;
-        if (sender != null) {
-            sender.disconnect();
-            return;
-        }
-        connection.disconnect();
+
+        Optional.ofNullable(sender).ifPresentOrElse(Sender::disconnect, connection::disconnect);
+        connection.getProtocol().logWarn("Refusing connection from: " + connection.getRemoteAddress());
     }
 
     protected void disconnectIfNeverUpgraded(ProtoConnection connection) {

@@ -13,6 +13,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
 public class Paper extends JavaPlugin implements ChannelInitializeListener, ProtoLogger.IProtoLogger {
@@ -34,7 +35,7 @@ public class Paper extends JavaPlugin implements ChannelInitializeListener, Prot
         SSLContext.genKeys();
         SSLContext.initContext();
 
-        VelocityAuth.setSecret(GlobalConfiguration.get().proxies.velocity.secret);
+        VelocityAuth.setSecret(GlobalConfiguration.get().proxies.velocity.secret.getBytes(StandardCharsets.UTF_8));
         setup = true;
     }
 

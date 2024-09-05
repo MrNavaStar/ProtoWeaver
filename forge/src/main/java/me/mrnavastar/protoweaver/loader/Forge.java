@@ -14,6 +14,8 @@ import org.adde0109.pcf.Initializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.nio.charset.StandardCharsets;
+
 
 @Mod(ProtoConstants.PROTOWEAVER_ID)
 public class Forge implements ProtoLogger.IProtoLogger {
@@ -40,7 +42,7 @@ public class Forge implements ProtoLogger.IProtoLogger {
         // Proxy Compatible Forge support
         if (FMLLoader.getLoadingModList().getModFileById("proxy-compatible-forge") != null) {
             // Proxy Compatible Forge's config becomes available after FMLServerAboutToStartEvent
-            VelocityAuth.setSecret(Initializer.config.forwardingSecret.get());
+            VelocityAuth.setSecret(Initializer.config.forwardingSecret.get().getBytes(StandardCharsets.UTF_8));
         }
         setup = true;
     }

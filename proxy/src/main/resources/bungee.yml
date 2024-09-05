@@ -1,4 +1,4 @@
 name: ProtoWeaver
-main: me.mrnavastar.protoweaver.proxy.Waterfall
+main: me.mrnavastar.protoweaver.loader.Waterfall
 version: "debug-build"
 author: MrNavaStar

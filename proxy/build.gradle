@@ -3,15 +3,25 @@ plugins {
     id "xyz.jpenilla.run-waterfall" version "2.3.1"
 }
 
+apply plugin: "io.github.goooler.shadow"
+
 dependencies {
-    api project(path: ':client', configuration: 'shadow')
+    shadow api(project(path: ':loader-common', configuration: 'default'))
+    shadow api(project(path: ':client', configuration: 'shadow'))
 
     compileOnly "io.github.waterfallmc:waterfall-api:${project.waterfall_version}"
     compileOnly "com.velocitypowered:velocity-api:${project.velocity_version}"
+    compileOnly "com.velocitypowered:velocity-proxy:${project.velocity_version}"
     annotationProcessor "com.velocitypowered:velocity-api:${project.velocity_version}"
+
+    shadow compileOnly("org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}")
+    shadow compileOnly("org.bouncycastle:bcprov-jdk18on:${project.bouncy_version}")
+    shadow compileOnly("org.bouncycastle:bcutil-jdk18on:${project.bouncy_version}")
+    shadow compileOnly("io.netty:netty-codec-http:${project.netty_version}")
+    shadow compileOnly("io.netty:netty-codec-http2:${project.netty_version}")
 }
 
-jar {
+/*jar {
     archiveFileName = "protoweaver-${version}-proxy.jar"
     from {
         exclude "io/**"
@@ -22,7 +32,31 @@ jar {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
+}*/
+
+shadowJar {
+    archiveClassifier = ""
+    configurations = [project.configurations.shadow]
+
+    dependencies {
+        mergeServiceFiles()
+    }
+
+    relocate "org.apache.fury", "me.mrnavastar.protoweaver.libs.org.apache.fury"
+    relocate "org.bouncycastle", "me.mrnavastar.protoweaver.libs.org.bouncycastle"
+    relocate 'io.netty', 'me.mrnavastar.protoweaver.libs.io.netty'
+    relocate 'me.mrnavastar.r', 'me.mrnavastar.protoweaver.libs.me.mrnavastar.r'
+
+    exclude "org/checkerframework/**"
+    exclude "javax/**"
+    //exclude "io/**"
+    exclude "com/**"
+    exclude "META-INF/maven/**"
+    exclude "META-INF/LICENSE"
+    exclude "META-INF/NOTICE"
 }
+
+jar.finalizedBy(shadowJar)
 
 tasks {
     runVelocity {

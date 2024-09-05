@@ -27,6 +27,7 @@ public class Protocol {
     @Getter private int maxPacketSize = 16384;
     @Getter private int maxConnections = -1;
     @Getter private Level loggingLevel = Level.ALL;
+    @Getter private Side polarity = Side.CLIENT;
 
     private Class<? extends ProtoConnectionHandler> serverConnectionHandler;
     private Class<? extends ProtoConnectionHandler> clientConnectionHandler;
@@ -71,6 +72,7 @@ public class Protocol {
                 if (serverConnectionHandler == null) throw new RuntimeException("No server connection handler set for protocol: " + this);
                 yield serverConnectionHandler.getDeclaredConstructor().newInstance();
             }
+            case BOTH -> null;
         };
     }
 
@@ -244,6 +246,19 @@ public class Protocol {
          */
         public Builder setLoggingLevel(Level level) {
             protocol.loggingLevel = level;
+            return this;
+        }
+
+        /**
+         * On velocity, this will set the direction this protocol serves. {@link Side#SERVER} will make it serve backend
+         * servers, while {@link Side#CLIENT} will make it serve in front of the proxy. {@link Side#BOTH} will serve both.
+         * <br></br>
+         * NOTE: ProtoClients do not care about polarity, and will attempt to use the protocol regardless of what it is
+         * set to.
+         * @param side The side to serve this {@link Protocol} to.
+         */
+        public Builder setPolarity(Side side) {
+            protocol.polarity = side;
             return this;
         }
 

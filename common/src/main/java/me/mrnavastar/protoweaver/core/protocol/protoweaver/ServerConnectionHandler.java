@@ -8,9 +8,6 @@ import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.netty.Sender;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
-import me.mrnavastar.protoweaver.core.util.ProtoLogger;
-
-import java.util.logging.Level;
 
 public class ServerConnectionHandler extends InternalConnectionHandler implements ProtoConnectionHandler {
 
@@ -28,6 +25,12 @@ public class ServerConnectionHandler extends InternalConnectionHandler implement
                     nextProtocol = ProtoWeaver.getLoadedProtocol(status.getNextProtocol());
                     if (nextProtocol == null) {
                         protocolNotLoaded(connection, status.getNextProtocol());
+                        return;
+                    }
+
+                    if (nextProtocol.getPolarity().equals(Side.SERVER)) {
+                        nextProtocol.logWarn("This protocol's polarity is set to server only.");
+                        disconnectIfNeverUpgraded(connection);
                         return;
                     }
 

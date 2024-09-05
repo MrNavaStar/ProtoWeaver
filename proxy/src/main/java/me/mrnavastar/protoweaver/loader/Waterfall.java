@@ -1,4 +1,4 @@
-package me.mrnavastar.protoweaver.proxy;
+package me.mrnavastar.protoweaver.loader;
 
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 import me.mrnavastar.protoweaver.proxy.api.ProtoProxy;

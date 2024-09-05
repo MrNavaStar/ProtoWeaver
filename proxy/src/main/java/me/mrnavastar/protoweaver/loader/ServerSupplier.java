@@ -1,8 +1,7 @@
-package me.mrnavastar.protoweaver.proxy;
+package me.mrnavastar.protoweaver.loader;
 
 import me.mrnavastar.protoweaver.proxy.api.ProtoServer;
 
-import java.net.SocketAddress;
 import java.util.List;
 
 public interface ServerSupplier {
