@@ -11,15 +11,13 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import com.velocitypowered.proxy.VelocityServer;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
-import me.mrnavastar.protoweaver.api.protocol.protomessage.ProtoMessage;
 import me.mrnavastar.protoweaver.api.protocol.velocity.VelocityAuth;
 import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
-import me.mrnavastar.protoweaver.libs.me.mrnavastar.r.R;
 import me.mrnavastar.protoweaver.loader.netty.SSLContext;
 import me.mrnavastar.protoweaver.proxy.api.ProtoProxy;
 import me.mrnavastar.protoweaver.proxy.api.ProtoServer;
-import me.mrnavastar.protoweaver.loader.netty.ProtoWeaverChannelInitializer;
+import me.mrnavastar.protoweaver.loader.netty.WrappedChannelInitializer;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
@@ -50,7 +48,7 @@ public class Velocity implements ServerSupplier, ProtoLogger.IProtoLogger {
     private void setup(Path dir) {
         if (setup) return;
         ProtoLogger.setLogger(this);
-        R.of(proxy).of("cm").of("serverChannelInitializer").set("initializer", new ProtoWeaverChannelInitializer((VelocityServer) proxy));
+        WrappedChannelInitializer.install(proxy);
 
         SSLContext.initKeystore(String.valueOf(dir));
         SSLContext.genKeys();
