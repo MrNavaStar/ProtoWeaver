@@ -3,8 +3,12 @@ plugins {
     id "xyz.jpenilla.run-waterfall" version "2.3.1"
 }
 
+configurations {
+    zip.exclude group: "net.fabricmc", module: "fabric-loader"
+}
+
 dependencies {
-    api project(path: ':client', configuration: 'shadow')
+    zip compileOnly(project(path: ':client', configuration: 'shadow'))
 
     compileOnly "io.github.waterfallmc:waterfall-api:${project.waterfall_version}"
     compileOnly "com.velocitypowered:velocity-api:${project.velocity_version}"
@@ -20,7 +24,7 @@ jar {
         exclude "META-INF/LICENSE"
         exclude "META-INF/NOTICE"
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.zip.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 

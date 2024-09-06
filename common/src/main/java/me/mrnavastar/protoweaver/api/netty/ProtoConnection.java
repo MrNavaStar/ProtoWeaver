@@ -13,6 +13,7 @@ import me.mrnavastar.protoweaver.core.netty.ProtoPacketHandler;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
 import java.net.InetSocketAddress;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -144,5 +145,16 @@ public class ProtoConnection {
     public void disconnect() {
         if (isOpen()) channel.close();
         disconnecter = side;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ProtoConnection connection)) return false;
+        return protocol.equals(connection.getProtocol()) && Objects.equals(getRemoteAddress(), connection.getRemoteAddress());
+    }
+
+    @Override
+    public String toString() {
+        return "[" + protocol.toString() + ", " + getRemoteAddress() + "]";
     }
 }
