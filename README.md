@@ -42,7 +42,7 @@ repositories {
 
 dependencies {
     // 'common' can be replaced with any of: `client`, `fabric`, `forge`, `paper` or `proxy`.
-    implementation "me.mrnavastar.protoweaver:common:1.0.5"
+    implementation "me.mrnavastar.protoweaver:common:1.3.11"
 }
 ```
 

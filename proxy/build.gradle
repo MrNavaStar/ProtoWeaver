@@ -5,13 +5,17 @@ plugins {
 
 apply plugin: "io.github.goooler.shadow"
 
+configurations {
+    zip.exclude group: "net.fabricmc", module: "fabric-loader"
+}
+
 dependencies {
+    zip compileOnly(project(path: ':client', configuration: 'shadow'))
     shadow api(project(path: ':loader-common', configuration: 'default'))
     shadow api(project(path: ':client', configuration: 'shadow'))
 
     compileOnly "io.github.waterfallmc:waterfall-api:${project.waterfall_version}"
     compileOnly "com.velocitypowered:velocity-api:${project.velocity_version}"
-    compileOnly "com.velocitypowered:velocity-proxy:${project.velocity_version}"
     annotationProcessor "com.velocitypowered:velocity-api:${project.velocity_version}"
 
     shadow compileOnly("org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}")
@@ -30,7 +34,7 @@ dependencies {
         exclude "META-INF/LICENSE"
         exclude "META-INF/NOTICE"
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.zip.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }*/
 

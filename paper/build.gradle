@@ -3,8 +3,12 @@ plugins {
     id "io.papermc.paperweight.userdev" version "1.7.2"
 }
 
+configurations {
+    zip.exclude group: "net.fabricmc", module: "fabric-loader"
+}
+
 dependencies {
-    api project(path: ':loader-common', configuration: 'default')
+    zip compileOnly(project(path: ':loader-common', configuration: 'default'))
     paperweight.paperDevBundle(project.paper_version)
 }
 
@@ -13,7 +17,7 @@ jar {
     from {
         exclude "architectury.common.marker"
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.zip.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 
