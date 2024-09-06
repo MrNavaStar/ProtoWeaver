@@ -16,9 +16,12 @@ import java.util.logging.Level;
 /**
  * Stores all the registered packets, settings and additional configuration of a {@link ProtoWeaver} protocol.
  */
+@EqualsAndHashCode
 public class Protocol {
 
+    @EqualsAndHashCode.Exclude
     private final ObjectSerializer serializer = new ObjectSerializer();
+    private int packetHash = 0;
 
     @Getter private final String namespace;
     @Getter private final String name;
@@ -28,11 +31,14 @@ public class Protocol {
     @Getter private int maxConnections = -1;
     @Getter private Level loggingLevel = Level.ALL;
 
+    @EqualsAndHashCode.Exclude
     private Class<? extends ProtoConnectionHandler> serverConnectionHandler;
+    @EqualsAndHashCode.Exclude
     private Class<? extends ProtoConnectionHandler> clientConnectionHandler;
+    @EqualsAndHashCode.Exclude
     private Class<? extends ServerAuthHandler> serverAuthHandler;
+    @EqualsAndHashCode.Exclude
     private Class<? extends ClientAuthHandler> clientAuthHandler;
-    private int packetHash = 0;
 
     private Protocol(String namespace, String name) {
         this.namespace = namespace;
