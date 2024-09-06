@@ -4,11 +4,14 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import me.mrnavastar.protoweaver.api.netty.NativeProtocol;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
+import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.core.protocol.protoweaver.InternalConnectionHandler;
 import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 
 public class NativeProtoWeaver implements NativeProtocol {
+
+    private final Protocol INTERNAL = InternalConnectionHandler.getProtocol().modify().setHandler(ServerConnectionHandler.class).load();
 
     @Override
     public boolean claim(int magic1, int magic2) {
@@ -22,7 +25,7 @@ public class NativeProtoWeaver implements NativeProtocol {
             return;
         }
 
-        new ProtoConnection(InternalConnectionHandler.getProtocol(), Side.SERVER, ctx.channel());
+        new ProtoConnection(INTERNAL, Side.SERVER, ctx.channel());
         buf.readerIndex(2);
     }
 }

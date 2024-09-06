@@ -9,21 +9,17 @@ import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.protocol.CompressionType;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
-import me.mrnavastar.protoweaver.core.netty.ProtoPacketHandler;
-import me.mrnavastar.protoweaver.core.util.ProtoLogger;
+import me.mrnavastar.protoweaver.core.netty.ProtoChannelHandler;
 
 import java.net.InetSocketAddress;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This provider represents a connection to either a client or a server
  */
 public class ProtoConnection {
 
-    private static final ConcurrentHashMap<String, Integer> connectionCount = new ConcurrentHashMap<>();
-
-    private final ProtoPacketHandler packetHandler;
+    private final ProtoChannelHandler channelHandler;
     private final Channel channel;
     private final ChannelPipeline pipeline;
     @Getter
@@ -51,13 +47,13 @@ public class ProtoConnection {
         this.side = side;
         this.disconnecter = Side.SERVER == side ? Side.CLIENT : Side.SERVER;
         this.protocol = protocol;
-        this.handler = protocol.newConnectionHandler(side);
-        this.packetHandler = new ProtoPacketHandler(this, connectionCount);
-        packetHandler.setHandler(handler);
+        this.handler = protocol.newConnectionHandler();
+        this.channelHandler = new ProtoChannelHandler(this);
+        channelHandler.setHandler(handler);
         this.channel = channel;
         this.pipeline = channel.pipeline();
 
-        pipeline.addLast("packetHandler", packetHandler);
+        pipeline.addLast("packetHandler", channelHandler);
         setCompression(protocol);
     }
 
@@ -93,26 +89,21 @@ public class ProtoConnection {
      * @param protocol The protocol the connection will switch to.
      */
     public void upgradeProtocol(@NonNull Protocol protocol) {
+
         try {
             setCompression(protocol);
-            this.handler = protocol.newConnectionHandler(side);
-            connectionCount.put(protocol.toString(), connectionCount.getOrDefault(protocol.toString(), 1) - 1);
+            this.handler = protocol.newConnectionHandler();
+            ProtoChannelHandler.incrementConnectionCount(this.protocol, -1);
+            ProtoChannelHandler.incrementConnectionCount(protocol, 1);
+
             this.protocol = protocol;
-            connectionCount.put(protocol.toString(), connectionCount.getOrDefault(protocol.toString(), 0) + 1);
-            packetHandler.setHandler(handler);
+            channelHandler.setHandler(handler);
 
             this.handler.onReady(this);
         } catch (Exception e) {
             protocol.logErr("Threw an error on initialization!");
             e.printStackTrace();
         }
-    }
-
-    /**
-     * @return The number of connected clients the passed in protocol is currently serving.
-     */
-    public static int getConnectionCount(Protocol protocol) {
-        return connectionCount.getOrDefault(protocol.toString(), 0);
     }
 
     /**
@@ -136,7 +127,7 @@ public class ProtoConnection {
      * @return A {@link Sender} that can be used to close the connection after the packet is sent.
      */
     public Sender send(@NonNull Object packet) {
-        return packetHandler.send(packet);
+        return channelHandler.send(packet);
     }
 
     /**

@@ -6,6 +6,8 @@ import io.netty.util.internal.StringUtil;
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import me.mrnavastar.protoweaver.client.DrunkenBishop;
+import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -71,7 +73,19 @@ public class ProtoTrustManager {
             }
 
             if (Arrays.equals(trusted, fingerprint)) return;
-            throw new CertificateException("protoweaver-client-cert-error:" + hostId + ":" + StringUtil.toHexString(trusted) + "!=" + StringUtil.toHexString(fingerprint));
+
+            ProtoLogger.warn(" Saved Fingerprint:     Server Fingerprint:");
+            String images = DrunkenBishop.inlineImages(DrunkenBishop.parse(StringUtil.toHexString(trusted)), StringUtil.toHexString(fingerprint));
+            for (String line : images.split("\n")) {
+                ProtoLogger.warn(line);
+            }
+
+            ProtoLogger.err("Failed to connect to: " + hostId);
+            ProtoLogger.err("Server SSL fingerprint does not match saved fingerprint! This could be a MITM ATTACK!");
+            ProtoLogger.err(" - https://en.wikipedia.org/wiki/Man-in-the-middle_attack");
+            ProtoLogger.err("If you've reset your server configuration recently, you can probably ignore this and reset/remove the \"protoweaver.hosts\" file.");
+
+            throw new CertificateException("protoweaver-client-cert-error");
         }
 
         @Override

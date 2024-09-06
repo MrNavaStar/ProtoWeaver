@@ -15,8 +15,7 @@ public class ProtoMessage implements ProtoConnectionHandler {
     @Getter
     private static final Protocol protocol = Protocol.create("protoweaver", "proto-message")
             .setCompression(CompressionType.SNAPPY)
-            .setServerHandler(ProtoMessage.class)
-            .setClientHandler(ProtoMessage.class)
+            .setHandler(ProtoMessage.class)
             .addPacket(Message.class)
             .build();
 

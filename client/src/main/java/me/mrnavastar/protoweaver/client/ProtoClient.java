@@ -18,7 +18,7 @@ import me.mrnavastar.protoweaver.api.netty.Sender;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.client.netty.ProtoTrustManager;
-import me.mrnavastar.protoweaver.core.protocol.protoweaver.ClientConnectionHandler;
+import me.mrnavastar.protoweaver.client.netty.ClientConnectionHandler;
 import me.mrnavastar.protoweaver.core.protocol.protoweaver.InternalConnectionHandler;
 
 import javax.net.ssl.SSLException;

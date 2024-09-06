@@ -5,14 +5,14 @@ import me.mrnavastar.protoweaver.api.netty.NativeProtocol;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.util.Event;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ProtoWeaver {
 
-    private static final ArrayList<NativeProtocol> nativeProtocols = new ArrayList<>();
+    private static final HashSet<NativeProtocol> nativeProtocols = new HashSet<>();
     private static final ConcurrentHashMap<String, Protocol> loadedProtocols = new ConcurrentHashMap<>();
 
     /**
@@ -89,7 +89,7 @@ public class ProtoWeaver {
         nativeProtocols.add(protocol);
     }
 
-    public static List<NativeProtocol> getNativeProtocols() {
-        return Collections.unmodifiableList(nativeProtocols);
+    public static HashSet<NativeProtocol> getNativeProtocols() {
+        return (HashSet<NativeProtocol>) Collections.unmodifiableSet(nativeProtocols);
     }
 }
