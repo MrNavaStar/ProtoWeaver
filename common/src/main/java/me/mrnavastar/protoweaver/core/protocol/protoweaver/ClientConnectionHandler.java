@@ -45,6 +45,7 @@ public class ClientConnectionHandler extends InternalConnectionHandler implement
                         return;
                     }
                     connection.upgradeProtocol(protocol);
+                    protocol.logInfo("Connected to: " + connection.getRemoteAddress());
                 }
             }
             return;

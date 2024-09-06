@@ -6,7 +6,6 @@ import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.client.ProtoClient;
-import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 import me.mrnavastar.protoweaver.proxy.ServerSupplier;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -17,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 
 public class ProtoProxy {
 
@@ -60,8 +58,6 @@ public class ProtoProxy {
             if (connection.getDisconnecter().equals(Side.CLIENT)) return;
             Thread.sleep(serverPollRate);
             connectClient(protocol, server, clients);
-        }).onConnectionEstablished(connection -> {
-            protocol.logInfo("Connected to: " + server + " with protocol: " + protocol);
         });
         clients.add(client);
     }
