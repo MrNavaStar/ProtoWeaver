@@ -1,19 +1,22 @@
-package me.mrnavastar.protoweaver.core.protocol.protoweaver;
+package me.mrnavastar.protoweaver.loader.netty;
 
 import lombok.SneakyThrows;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
-import me.mrnavastar.protoweaver.api.auth.ServerAuthHandler;
+import me.mrnavastar.protoweaver.api.auth.Authenticator;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.netty.Sender;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.AuthStatus;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.InternalConnectionHandler;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtocolStatus;
 
 public class ServerConnectionHandler extends InternalConnectionHandler implements ProtoConnectionHandler {
 
     private boolean authenticated = false;
     private Protocol nextProtocol = null;
-    private ServerAuthHandler authHandler = null;
+    private Authenticator authHandler = null;
 
     @SneakyThrows
     @Override
@@ -50,7 +53,7 @@ public class ServerConnectionHandler extends InternalConnectionHandler implement
                     }
 
                     if (nextProtocol.requiresAuth(Side.SERVER)) {
-                        authHandler = nextProtocol.newServerAuthHandler();
+                        authHandler = nextProtocol.newAuthenticator();
                         connection.send(AuthStatus.REQUIRED);
                         return;
                     }

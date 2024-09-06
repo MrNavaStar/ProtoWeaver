@@ -16,6 +16,7 @@ dependencies {
 
     compileOnly "io.github.waterfallmc:waterfall-api:${project.waterfall_version}"
     compileOnly "com.velocitypowered:velocity-api:${project.velocity_version}"
+    compileOnly "com.velocitypowered:velocity-proxy:${project.velocity_version}"
     annotationProcessor "com.velocitypowered:velocity-api:${project.velocity_version}"
 
     shadow compileOnly("org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}")

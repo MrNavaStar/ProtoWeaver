@@ -1,14 +1,13 @@
 package me.mrnavastar.protoweaver.api.protocol.velocity;
 
-import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
-import me.mrnavastar.protoweaver.api.auth.ServerAuthHandler;
+import me.mrnavastar.protoweaver.api.auth.AuthProvider;
+import me.mrnavastar.protoweaver.api.auth.Authenticator;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
-import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Arrays;
 
-public class VelocityAuth implements ServerAuthHandler, ClientAuthHandler {
+public class VelocityAuth implements Authenticator, AuthProvider {
 
     @Setter
     private static byte[] secret = null;

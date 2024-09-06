@@ -1,4 +1,4 @@
-package me.mrnavastar.protoweaver.core.util;
+package me.mrnavastar.protoweaver.client;
 
 // Robbed & modified from https://codegolf.stackexchange.com/questions/59670/the-drunken-bishop
 public class DrunkenBishop {

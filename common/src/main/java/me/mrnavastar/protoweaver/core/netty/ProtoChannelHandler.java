@@ -8,17 +8,16 @@ import lombok.Setter;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.netty.Sender;
+import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
-import me.mrnavastar.protoweaver.core.util.DrunkenBishop;
 import me.mrnavastar.protoweaver.core.util.ProtoConstants;
-import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ProtoPacketHandler extends ByteToMessageDecoder {
+public class ProtoChannelHandler extends ByteToMessageDecoder {
 
-    private static ConcurrentHashMap<String, Integer> connectionCount;
+    private static final ConcurrentHashMap<String, Integer> connectionCount = new ConcurrentHashMap<>();
 
     private final ProtoConnection connection;
     @Setter
@@ -26,13 +25,20 @@ public class ProtoPacketHandler extends ByteToMessageDecoder {
     private ChannelHandlerContext ctx;
     private ByteBuf buf = Unpooled.buffer();
 
-    public ProtoPacketHandler(ProtoConnection connection, ConcurrentHashMap<String, Integer> connectionCount) {
+    public ProtoChannelHandler(ProtoConnection connection) {
         this.connection = connection;
-        ProtoPacketHandler.connectionCount = connectionCount;
         if (connection.getSide().equals(Side.CLIENT)) {
             buf.writeByte(0); // Fake out minecraft packet len
             buf.writeByte(ProtoConstants.PROTOWEAVER_MAGIC_BYTE);
         }
+    }
+
+    public static int getConnectionCount(Protocol protocol) {
+        return connectionCount.getOrDefault(protocol.toString(), 0);
+    }
+
+    public static void incrementConnectionCount(Protocol protocol, int amount) {
+        connectionCount.put(protocol.toString(), connectionCount.getOrDefault(protocol.toString(), 1) + amount);
     }
 
     @Override
@@ -95,24 +101,6 @@ public class ProtoPacketHandler extends ByteToMessageDecoder {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        String message = cause.getMessage();
-        String[] parts = message.split(":");
-
-        if (parts[1].contains("protoweaver-client-cert-error")) {
-            String[] fingerprints = parts[4].split("!=");
-
-            ProtoLogger.warn(" Saved Fingerprint:     Server Fingerprint:");
-            String images = DrunkenBishop.inlineImages(DrunkenBishop.parse(fingerprints[0]), DrunkenBishop.parse(fingerprints[1]));
-            for (String line : images.split("\n")) {
-                ProtoLogger.warn(line);
-            }
-
-            ProtoLogger.err("Failed to connect to: " + parts[2] + ":" + parts[3]);
-            ProtoLogger.err("Server SSL fingerprint does not match saved fingerprint! This could be a MITM ATTACK!");
-            ProtoLogger.err(" - https://en.wikipedia.org/wiki/Man-in-the-middle_attack");
-            ProtoLogger.err("If you've reset your server configuration recently, you can probably ignore this and reset/remove the \"protoweaver.hosts\" file.");
-
-            connection.disconnect();
-        }
+        if (cause.getMessage().contains("protoweaver-client-cert-error")) connection.disconnect();
     }
 }

@@ -1,22 +1,25 @@
-package me.mrnavastar.protoweaver.core.protocol.protoweaver;
+package me.mrnavastar.protoweaver.client.netty;
 
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
-import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
+import me.mrnavastar.protoweaver.api.auth.AuthProvider;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.AuthStatus;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.InternalConnectionHandler;
+import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtocolStatus;
 
 public class ClientConnectionHandler extends InternalConnectionHandler implements ProtoConnectionHandler {
 
     private Protocol protocol;
     private boolean authenticated = false;
-    private ClientAuthHandler authHandler = null;
+    private AuthProvider authHandler = null;
 
     public void start(ProtoConnection connection, Protocol protocol) {
         this.protocol = protocol;
         authenticated = false;
-        if (protocol.requiresAuth(Side.CLIENT)) authHandler = protocol.newClientAuthHandler();
+        if (protocol.requiresAuth(Side.CLIENT)) authHandler = protocol.newAuthProvider();
         connection.send(new ProtocolStatus(connection.getProtocol().toString(), protocol.toString(), protocol.hashCode(), ProtocolStatus.Status.START));
     }
 
