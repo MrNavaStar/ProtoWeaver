@@ -9,4 +9,4 @@ libraries:
   - io.netty:netty-codec-http:4.1.97.Final
   - io.netty:netty-codec-http2:4.1.97.Final
   - org.bouncycastle:bcpkix-jdk18on:1.78.1
-  - me.mrnavastar:r:1.0.6
+  - me.mrnavastar:r:1.0.8
