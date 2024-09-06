@@ -10,7 +10,6 @@ import me.mrnavastar.protoweaver.core.util.ObjectSerializer;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
 import java.lang.reflect.Modifier;
-import java.util.Objects;
 import java.util.logging.Level;
 
 /**
@@ -126,16 +125,6 @@ public class Protocol {
 
     public void logErr(@NonNull String message) {
         if (loggingLevel.intValue() <= Level.SEVERE.intValue()) ProtoLogger.err("[" + this + "]: " + message);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(
-                namespace, name,
-                packetHash,
-                compression.ordinal(), compressionLevel,
-                maxPacketSize
-        );
     }
 
     @Override
