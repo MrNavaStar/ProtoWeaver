@@ -6,6 +6,7 @@ import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
+import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 
 public class ClientConnectionHandler extends InternalConnectionHandler implements ProtoConnectionHandler {
 
@@ -38,6 +39,10 @@ public class ClientConnectionHandler extends InternalConnectionHandler implement
                     disconnectIfNeverUpgraded(connection);
                 }
                 case UPGRADE -> {
+                    if (!ProtoConstants.PROTOWEAVER_VERSION.equals(status.getProtoweaverVersion())) {
+                        protocol.logWarn("Connecting with ProtoWeaver version: " + status.getProtoweaverVersion() + ", but server is running: " + ProtoConstants.PROTOWEAVER_VERSION + ". There could be unexpected issues.");
+                    }
+
                     if (!authenticated) return;
                     protocol = ProtoWeaver.getLoadedProtocol(status.getNextProtocol());
                     if (protocol == null) {
