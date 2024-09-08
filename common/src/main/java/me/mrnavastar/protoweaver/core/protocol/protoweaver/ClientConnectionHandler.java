@@ -17,7 +17,7 @@ public class ClientConnectionHandler extends InternalConnectionHandler implement
         this.protocol = protocol;
         authenticated = false;
         if (protocol.requiresAuth(Side.CLIENT)) authHandler = protocol.newClientAuthHandler();
-        connection.send(new ProtocolStatus(connection.getProtocol().toString(), protocol.toString(), protocol.hashCode(), ProtocolStatus.Status.START));
+        connection.send(new ProtocolStatus(connection.getProtocol().toString(), protocol.toString(), protocol.getSHA1(), ProtocolStatus.Status.START));
     }
 
     @Override

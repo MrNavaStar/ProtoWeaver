@@ -19,6 +19,6 @@ public class ProtocolStatus {
 
     private String currentProtocol;
     private String nextProtocol;
-    private int nextProtocolHash;
+    private byte[] nextSHA1;
     private Status status;
 }

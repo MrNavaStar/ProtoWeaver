@@ -1,7 +1,6 @@
 package me.mrnavastar.protoweaver.core.protocol.protoweaver;
 
 import lombok.Getter;
-import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.netty.Sender;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
@@ -32,7 +31,7 @@ public class InternalConnectionHandler {
 
     protected void protocolNotLoaded(ProtoConnection connection, String name) {
         ProtoLogger.warn("Protocol: " + name + " is not loaded! Closing connection!");
-        Sender sender = connection.send(new ProtocolStatus(connection.getProtocol().toString(), name, 0, ProtocolStatus.Status.MISSING));
+        Sender sender = connection.send(new ProtocolStatus(connection.getProtocol().toString(), name, new byte[]{}, ProtocolStatus.Status.MISSING));
         disconnectIfNeverUpgraded(connection, sender);
     }
 }

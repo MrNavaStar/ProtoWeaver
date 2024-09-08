@@ -8,9 +8,6 @@ import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.netty.Sender;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
-import me.mrnavastar.protoweaver.core.util.ProtoLogger;
-
-import java.util.logging.Level;
 
 public class ServerConnectionHandler extends InternalConnectionHandler implements ProtoConnectionHandler {
 
@@ -37,7 +34,7 @@ public class ServerConnectionHandler extends InternalConnectionHandler implement
                         return;
                     }
 
-                    if (nextProtocol.hashCode() != status.getNextProtocolHash()) {
+                    if (nextProtocol.getSHA1() != status.getNextSHA1()) {
                         nextProtocol.logErr("Mismatch with protocol version on the client!");
                         nextProtocol.logErr("Double check that all packets are registered in the same order and all settings are the same.");
 
@@ -74,7 +71,7 @@ public class ServerConnectionHandler extends InternalConnectionHandler implement
 
         // Upgrade protocol
         connection.send(AuthStatus.OK);
-        connection.send(new ProtocolStatus(connection.getProtocol().toString(), nextProtocol.toString(), 0, ProtocolStatus.Status.UPGRADE));
+        connection.send(new ProtocolStatus(connection.getProtocol().toString(), nextProtocol.toString(), new byte[]{}, ProtocolStatus.Status.UPGRADE));
         connection.upgradeProtocol(nextProtocol);
         nextProtocol.logInfo("Connected to: " + connection.getRemoteAddress());
     }
