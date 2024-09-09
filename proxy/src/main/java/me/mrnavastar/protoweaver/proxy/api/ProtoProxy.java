@@ -6,7 +6,9 @@ import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.client.ProtoClient;
+import me.mrnavastar.protoweaver.libs.me.mrnavastar.r.R;
 import me.mrnavastar.protoweaver.proxy.ServerSupplier;
+
 import org.jetbrains.annotations.ApiStatus;
 
 import java.net.InetSocketAddress;
@@ -20,7 +22,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ProtoProxy {
 
     private static final ConcurrentHashMap<ProtoServer, ArrayList<ProtoClient>> servers = new ConcurrentHashMap<>();
-    private static ServerSupplier supplier;
 
     /**
      * Sets the polling rate of servers that are disconnected. Defaults to 5 seconds
@@ -31,9 +32,8 @@ public class ProtoProxy {
 
     @ApiStatus.Internal
     public ProtoProxy(ServerSupplier serverSupplier, Path dir) {
-        supplier = serverSupplier;
         this.hostsFile = dir.toAbsolutePath().toString();
-        supplier.getServers().forEach(server -> servers.put(server, new ArrayList<>()));
+        serverSupplier.getServers().forEach(server -> servers.put(server, new ArrayList<>()));
         ProtoWeaver.PROTOCOL_LOADED.register(this::startProtocol);
         ProtoWeaver.getLoadedProtocols().forEach(this::startProtocol);
     }
@@ -58,7 +58,7 @@ public class ProtoProxy {
             if (connection.getDisconnecter().equals(Side.CLIENT)) return;
             Thread.sleep(serverPollRate);
             connectClient(protocol, server, clients);
-        });
+        }).onConnectionEstablished(connection -> R.of(server).set("connection", connection));
         clients.add(client);
     }
 
@@ -83,7 +83,7 @@ public class ProtoProxy {
      * @return A list of {@link ProtoServer} that are registered to this proxy instance.
      */
     public static List<ProtoServer> getRegisteredServers() {
-        return supplier.getServers();
+        return servers.keySet().stream().toList();
     }
 
     /**
@@ -108,7 +108,7 @@ public class ProtoProxy {
         List<ProtoServer> connected = new ArrayList<>();
         servers.forEach((server, clients) -> clients.stream()
                 .filter(c -> protocol.equals(c.getCurrentProtocol()) || c.isConnected())
-                .findFirst().ifPresent(c -> connected.add(new ProtoServer(server, c.getConnection()))));
+                .findFirst().ifPresent(c -> connected.add(server)));
         return connected;
     }
 
