@@ -3,6 +3,7 @@ package me.mrnavastar.protoweaver.core.protocol.protoweaver;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 
 @Getter
 @Setter
@@ -17,8 +18,9 @@ public class ProtocolStatus {
         UPGRADE
     }
 
+    private final String protoweaverVersion = ProtoConstants.PROTOWEAVER_VERSION;
     private String currentProtocol;
     private String nextProtocol;
-    private int nextProtocolHash;
+    private byte[] nextSHA1;
     private Status status;
 }

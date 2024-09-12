@@ -1,4 +1,4 @@
-package me.mrnavastar.protoweaver.client.netty;
+package me.mrnavastar.protoweaver.core.protocol.protoweaver;
 
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
@@ -9,6 +9,7 @@ import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.core.protocol.protoweaver.AuthStatus;
 import me.mrnavastar.protoweaver.core.protocol.protoweaver.InternalConnectionHandler;
 import me.mrnavastar.protoweaver.core.protocol.protoweaver.ProtocolStatus;
+import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 
 public class ClientConnectionHandler extends InternalConnectionHandler implements ProtoConnectionHandler {
 
@@ -20,7 +21,7 @@ public class ClientConnectionHandler extends InternalConnectionHandler implement
         this.protocol = protocol;
         authenticated = false;
         if (protocol.requiresAuth(Side.CLIENT)) authHandler = protocol.newAuthProvider();
-        connection.send(new ProtocolStatus(connection.getProtocol().toString(), protocol.toString(), protocol.hashCode(), ProtocolStatus.Status.START));
+        connection.send(new ProtocolStatus(connection.getProtocol().toString(), protocol.toString(), protocol.getSHA1(), ProtocolStatus.Status.START));
     }
 
     @Override
@@ -41,6 +42,10 @@ public class ClientConnectionHandler extends InternalConnectionHandler implement
                     disconnectIfNeverUpgraded(connection);
                 }
                 case UPGRADE -> {
+                    if (!ProtoConstants.PROTOWEAVER_VERSION.equals(status.getProtoweaverVersion())) {
+                        protocol.logWarn("Connecting with ProtoWeaver version: " + status.getProtoweaverVersion() + ", but server is running: " + ProtoConstants.PROTOWEAVER_VERSION + ". There could be unexpected issues.");
+                    }
+
                     if (!authenticated) return;
                     protocol = ProtoWeaver.getLoadedProtocol(status.getNextProtocol());
                     if (protocol == null) {
@@ -48,6 +53,7 @@ public class ClientConnectionHandler extends InternalConnectionHandler implement
                         return;
                     }
                     connection.upgradeProtocol(protocol);
+                    protocol.logInfo("Connected to: " + connection.getRemoteAddress());
                 }
             }
             return;

@@ -18,12 +18,6 @@ public class ProtoServer {
         this.address = address;
     }
 
-    public ProtoServer(ProtoServer server, ProtoConnection connection) {
-        this.name = server.getName();
-        this.address = server.getAddress();
-        this.connection = connection;
-    }
-
     public boolean isConnected() {
         return connection != null && connection.isOpen();
     }

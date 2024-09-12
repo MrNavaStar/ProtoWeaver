@@ -10,15 +10,22 @@ import me.mrnavastar.protoweaver.core.util.ObjectSerializer;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 
 import java.lang.reflect.Modifier;
-import java.util.Objects;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 
 /**
  * Stores all the registered packets, settings and additional configuration of a {@link ProtoWeaver} protocol.
  */
+@EqualsAndHashCode
 public class Protocol {
 
+    @EqualsAndHashCode.Exclude
     private final ObjectSerializer serializer = new ObjectSerializer();
+    @EqualsAndHashCode.Exclude
+    private final MessageDigest packetMD = MessageDigest.getInstance("SHA-1");
 
     @Getter private final String namespace;
     @Getter private final String name;
@@ -29,12 +36,12 @@ public class Protocol {
     @Getter private Level loggingLevel = Level.ALL;
     @Getter private Side polarity = Side.CLIENT;
 
-    private Class<? extends ProtoConnectionHandler> handler;
-    private Class<? extends Authenticator> authenticator;
-    private Class<? extends AuthProvider> authProvider;
+    @EqualsAndHashCode.Exclude private Class<? extends ProtoConnectionHandler> handler;
+    @EqualsAndHashCode.Exclude private Class<? extends Authenticator> authenticator;
+    @EqualsAndHashCode.Exclude private Class<? extends AuthProvider> authProvider;
     private int packetHash = 0;
 
-    private Protocol(String namespace, String name) {
+    private Protocol(String namespace, String name) throws NoSuchAlgorithmException {
         this.namespace = namespace;
         this.name = name;
     }
@@ -46,6 +53,7 @@ public class Protocol {
      * @param namespace Usually should be set to your mod id or project id
      * @param name The name of your protocol.
      */
+    @SneakyThrows
     public static Builder create(@NonNull String namespace, @NonNull String name) {
         return new Builder(new Protocol(namespace, name));
     }
@@ -86,6 +94,18 @@ public class Protocol {
         return serializer.deserialize(packet);
     }
 
+    @SneakyThrows
+    public byte[] getSHA1() {
+        MessageDigest md = (MessageDigest) this.packetMD.clone();
+        md.update(toString().getBytes(StandardCharsets.UTF_8));
+        md.update(ByteBuffer.allocate(12)
+                .putInt(compressionLevel)
+                .putInt(compression.ordinal())
+                .putInt(maxPacketSize)
+                .array());
+        return md.digest();
+    }
+
     /**
      * @return The number of connected clients this protocol is currently serving.
      */
@@ -112,16 +132,6 @@ public class Protocol {
 
     public void logErr(@NonNull String message) {
         if (loggingLevel.intValue() <= Level.SEVERE.intValue()) ProtoLogger.err("[" + this + "]: " + message);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(
-                namespace, name,
-                packetHash,
-                compression.ordinal(), compressionLevel,
-                maxPacketSize
-        );
     }
 
     @Override
@@ -179,7 +189,7 @@ public class Protocol {
          */
         public Builder addPacket(@NonNull Class<?> packet) {
             protocol.serializer.register(packet);
-            protocol.packetHash = 31 * protocol.packetHash + packet.getName().hashCode();
+            protocol.packetMD.update(packet.getName().getBytes(StandardCharsets.UTF_8));
             return this;
         }
 
