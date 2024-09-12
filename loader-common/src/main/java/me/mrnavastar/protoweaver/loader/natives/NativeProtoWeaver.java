@@ -1,4 +1,4 @@
-package me.mrnavastar.protoweaver.loader.netty;
+package me.mrnavastar.protoweaver.loader.natives;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -8,6 +8,7 @@ import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.core.protocol.protoweaver.InternalConnectionHandler;
 import me.mrnavastar.protoweaver.core.util.ProtoConstants;
+import me.mrnavastar.protoweaver.loader.netty.ServerConnectionHandler;
 
 public class NativeProtoWeaver implements NativeProtocol {
 

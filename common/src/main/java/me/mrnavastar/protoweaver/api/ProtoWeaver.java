@@ -85,11 +85,11 @@ public class ProtoWeaver {
         void trigger(Protocol protocol);
     }
 
-    public static void register(NativeProtocol protocol) {
+    public static void registerNative(NativeProtocol protocol) {
         nativeProtocols.add(protocol);
     }
 
     public static HashSet<NativeProtocol> getNativeProtocols() {
-        return (HashSet<NativeProtocol>) Collections.unmodifiableSet(nativeProtocols);
+        return (HashSet<NativeProtocol>) nativeProtocols.clone();
     }
 }

@@ -1,4 +1,4 @@
-package me.mrnavastar.protoweaver.loader.netty;
+package me.mrnavastar.protoweaver.loader.natives;
 
 import me.mrnavastar.protoweaver.api.netty.NativeProtocol;
 

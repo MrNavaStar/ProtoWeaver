@@ -9,7 +9,8 @@ import io.netty.handler.ssl.SslHandler;
 import lombok.SneakyThrows;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.netty.NativeProtocol;
-import me.mrnavastar.protoweaver.core.util.ProtoLogger;
+import me.mrnavastar.protoweaver.loader.natives.NativeMinecraft;
+import me.mrnavastar.protoweaver.loader.natives.NativeProtoWeaver;
 
 import java.util.List;
 
@@ -18,8 +19,8 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
     private final boolean isSSL;
 
     static {
-        ProtoWeaver.register(new NativeMinecraft());
-        ProtoWeaver.register(new NativeProtoWeaver());
+        ProtoWeaver.registerNative(new NativeMinecraft());
+        ProtoWeaver.registerNative(new NativeProtoWeaver());
     }
 
     public ProtoDeterminer() {
@@ -73,8 +74,8 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        ProtoLogger.warn("Client rejected ssl certificate. Closing connection");
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable e) {
+        e.printStackTrace();
         ctx.close();
     }
 }
