@@ -34,14 +34,14 @@ public class ServerConnectionHandler extends InternalConnectionHandler implement
                         return;
                     }
 
+                    if (!ProtoConstants.PROTOWEAVER_VERSION.equals(status.getProtoweaverVersion())) {
+                        nextProtocol.logWarn("Client connecting with ProtoWeaver version: " + status.getProtoweaverVersion() + ", but server is running: " + ProtoConstants.PROTOWEAVER_VERSION + ". There could be unexpected issues.");
+                    }
+
                     if (nextProtocol.getPolarity().equals(Side.SERVER)) {
                         nextProtocol.logWarn("This protocol's polarity is set to server only.");
                         disconnectIfNeverUpgraded(connection);
                         return;
-                    }
-
-                    if (!ProtoConstants.PROTOWEAVER_VERSION.equals(status.getProtoweaverVersion())) {
-                        nextProtocol.logWarn("Client connecting with ProtoWeaver version: " + status.getProtoweaverVersion() + ", but server is running: " + ProtoConstants.PROTOWEAVER_VERSION + ". There could be unexpected issues.");
                     }
 
                     if (nextProtocol.getMaxConnections() != -1 && nextProtocol.getConnections() >= nextProtocol.getMaxConnections()) {

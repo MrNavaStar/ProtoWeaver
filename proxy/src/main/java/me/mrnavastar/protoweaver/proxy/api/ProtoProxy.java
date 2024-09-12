@@ -8,7 +8,6 @@ import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.client.ProtoClient;
 import me.mrnavastar.protoweaver.loader.ServerSupplier;
 import me.mrnavastar.protoweaver.libs.me.mrnavastar.r.R;
-import me.mrnavastar.protoweaver.proxy.ServerSupplier;
 
 import org.jetbrains.annotations.ApiStatus;
 

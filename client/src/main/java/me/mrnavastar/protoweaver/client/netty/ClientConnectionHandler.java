@@ -1,4 +1,4 @@
-package me.mrnavastar.protoweaver.core.protocol.protoweaver;
+package me.mrnavastar.protoweaver.client.netty;
 
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
