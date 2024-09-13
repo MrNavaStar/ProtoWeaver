@@ -43,23 +43,22 @@ public class ProtoProxy {
 
         servers.forEach((server, clients) -> {
             for (ProtoClient client : clients) {
-                // Don't start a new connection if one already exists for this protocol
+                // Don't create a new client if one already exists for this protocol
                 if (client.getCurrentProtocol().toString().equals(protocol.toString())) return;
             }
-            connectClient(protocol, server, clients);
+
+            ProtoClient client = new ProtoClient((InetSocketAddress) server.getAddress(), hostsFile);
+            connectClient(client, protocol, server);
+            clients.add(client);
         });
     }
 
-    private void connectClient(Protocol protocol, ProtoServer server, ArrayList<ProtoClient> clients) {
-        ProtoClient client = new ProtoClient((InetSocketAddress) server.getAddress(), hostsFile);
+    private void connectClient(ProtoClient client, Protocol protocol, ProtoServer server) {
         client.connect(protocol).onConnectionLost(connection -> {
-            clients.remove(client);
-
             if (connection.getDisconnecter().equals(Side.CLIENT)) return;
             Thread.sleep(serverPollRate);
-            connectClient(protocol, server, clients);
+            connectClient(client, protocol, server);
         }).onConnectionEstablished(connection -> R.of(server).set("connection", connection));
-        clients.add(client);
     }
 
     @ApiStatus.Internal
