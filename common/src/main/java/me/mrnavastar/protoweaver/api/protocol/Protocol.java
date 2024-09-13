@@ -5,6 +5,7 @@ import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.auth.AuthProvider;
 import me.mrnavastar.protoweaver.api.auth.Authenticator;
+import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.core.netty.ProtoChannelHandler;
 import me.mrnavastar.protoweaver.core.util.ObjectSerializer;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
@@ -31,6 +32,7 @@ public class Protocol {
     @Getter private final String name;
     @Getter private CompressionType compression = CompressionType.NONE;
     @Getter private int compressionLevel = -37;
+    @Getter private boolean async = false;
     @Getter private int maxPacketSize = 16384;
     @Getter private int maxConnections = -1;
     @Getter private Level loggingLevel = Level.ALL;
@@ -39,7 +41,6 @@ public class Protocol {
     @EqualsAndHashCode.Exclude private Class<? extends ProtoConnectionHandler> handler;
     @EqualsAndHashCode.Exclude private Class<? extends Authenticator> authenticator;
     @EqualsAndHashCode.Exclude private Class<? extends AuthProvider> authProvider;
-    private int packetHash = 0;
 
     private Protocol(String namespace, String name) throws NoSuchAlgorithmException {
         this.namespace = namespace;
@@ -209,6 +210,16 @@ public class Protocol {
          */
         public Builder setCompressionLevel(int level) {
             protocol.compressionLevel = level;
+            return this;
+        }
+
+        /**
+         * Make this {@link Protocol} handle packets asynchronously, instead of one after the other. This means that the
+         * {@link ProtoConnectionHandler#handlePacket(ProtoConnection, Object)} method may be called before the previous
+         * call is finished. This will improve performance if your protocol is designed with this in mind.
+         */
+        public Builder setAsync() {
+            protocol.async = true;
             return this;
         }
 

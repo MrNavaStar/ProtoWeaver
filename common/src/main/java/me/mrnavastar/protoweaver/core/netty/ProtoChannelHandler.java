@@ -14,9 +14,12 @@ import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class ProtoChannelHandler extends ByteToMessageDecoder {
 
+    private static final Executor exec = Executors.newVirtualThreadPerTaskExecutor();
     private static final ConcurrentHashMap<String, Integer> connectionCount = new ConcurrentHashMap<>();
 
     private final ProtoConnection connection;
@@ -60,20 +63,25 @@ public class ProtoChannelHandler extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) {
         if (byteBuf.readableBytes() == 0) return;
-        Object packet = null;
 
-        try {
-            byte[] bytes = new byte[byteBuf.readInt()];
-            byteBuf.readBytes(bytes);
-            packet = connection.getProtocol().deserialize(bytes);
-            handler.handlePacket(connection, packet);
+        byte[] bytes = new byte[byteBuf.readInt()];
+        byteBuf.readBytes(bytes);
 
-        } catch (IllegalArgumentException e) {
-            connection.getProtocol().logWarn("Ignoring an " + e.getMessage());
-        } catch (Exception e) {
-            if (packet != null) connection.getProtocol().logErr("Threw an error when trying to handle: " + packet.getClass() + "!");
-            e.printStackTrace();
-        }
+        Runnable runnable = () -> {
+            Object packet = null;
+            try {
+                packet = connection.getProtocol().deserialize(bytes);
+                handler.handlePacket(connection, packet);
+            } catch (IllegalArgumentException e) {
+                connection.getProtocol().logWarn("Ignoring an " + e.getMessage());
+            } catch (Exception e) {
+                if (packet != null) connection.getProtocol().logErr("Threw an error when trying to handle: " + packet.getClass() + "!");
+                e.printStackTrace();
+            }
+        };
+
+        if (connection.getProtocol().isAsync()) exec.execute(runnable);
+        else runnable.run();
     }
 
     // Done with two bufs to prevent the user from messing with the internal data
