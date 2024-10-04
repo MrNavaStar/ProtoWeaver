@@ -37,7 +37,7 @@ In your build.gradle include
 *** Note: **Do not shade protoweaver! It will not work properly. ProtoWeaver is a mod/plugin that is installed along side yours!**
 ``` gradle
 repositories {
-    maven { url "https://maven.mrnavastar.rocks/releases" }
+    maven { url "https://maven.mrnavastar.me/releases" }
 }
 
 dependencies {
