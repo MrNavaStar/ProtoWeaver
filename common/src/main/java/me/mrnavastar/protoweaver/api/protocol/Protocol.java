@@ -282,5 +282,10 @@ public class Protocol {
             ProtoWeaver.load(build());
             return protocol;
         }
+
+        @Override
+        public String toString() {
+            return protocol.toString();
+        }
     }
 }

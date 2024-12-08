@@ -5,17 +5,33 @@ import org.apache.fury.Fury;
 import org.apache.fury.ThreadSafeFury;
 import org.apache.fury.exception.InsecureException;
 import org.apache.fury.logging.LoggerFactory;
+import org.apache.fury.resolver.ClassChecker;
+import org.apache.fury.resolver.ClassResolver;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ObjectSerializer {
+public class ObjectSerializer implements ClassChecker {
 
-    private final ThreadSafeFury fury = Fury.builder().withJdkClassSerializableCheck(false).buildThreadSafeFury();
+    private final ThreadSafeFury fury = Fury.builder().withJdkClassSerializableCheck(false)
+            .serializeEnumByName(true)
+            .requireClassRegistration(false)
+            .buildThreadSafeFury();
+
+    public ObjectSerializer() {
+        fury.setClassChecker(this);
+    }
 
     static {
         // Make fury be quiet
         LoggerFactory.disableLogging();
+    }
+
+    // TODO: Ensure this does not make protoweaver vulnerable to RCE attacks lol
+    @Override
+    public boolean checkClass(ClassResolver classResolver, String className) {
+        if (classResolver.getRegisteredClasses().stream().anyMatch(c -> c.getName().equals(className))) return true;
+        return className.startsWith("java");
     }
 
     private void recursiveRegister(Class<?> type, List<Class<?>> registered) {
@@ -36,7 +52,8 @@ public class ObjectSerializer {
         try {
             return fury.serialize(object);
         } catch (InsecureException e) {
-            throw new IllegalArgumentException("unregistered object: " + object.getClass().getName());
+            String packet = e.getMessage().split(" is not registered")[0].replace("class ", "");
+            throw new IllegalArgumentException("unregistered object: " + packet);
         }
     }
 

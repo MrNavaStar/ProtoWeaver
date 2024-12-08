@@ -29,6 +29,7 @@ import com.google.common.base.internal.Finalizer;
 
 public class ProtoClient {
 
+    private static final Protocol INTERNAL = InternalConnectionHandler.PROTOCOL.setHandler(ClientConnectionHandler.class).load();
     static {
         // This exists so shadow jar does not yeet it
         Class<?> c = Finalizer.class;
@@ -88,7 +89,7 @@ public class ProtoClient {
             @Override
             public void initChannel(@NonNull SocketChannel ch) throws Exception {
                 ch.pipeline().addLast("ssl", sslContext.newHandler(ch.alloc(), address.getHostName(), address.getPort()));
-                connection = new ProtoConnection(InternalConnectionHandler.getProtocol(), Side.CLIENT, ch);
+                connection = new ProtoConnection(INTERNAL, Side.CLIENT, ch);
             }
         });
 
