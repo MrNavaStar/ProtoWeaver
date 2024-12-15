@@ -1,6 +1,5 @@
 package me.mrnavastar.protoweaver.core.protocol.protoweaver;
 
-import lombok.Getter;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.netty.Sender;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
@@ -10,14 +9,12 @@ import java.util.Optional;
 
 public class InternalConnectionHandler {
 
-    @Getter
-    protected static final Protocol protocol = Protocol.create("protoweaver", "internal")
+    public static final Protocol.Builder PROTOCOL = Protocol.create("protoweaver", "internal")
             .addPacket(AuthStatus.class)
-            .addPacket(ProtocolStatus.class)
-            .build();
+            .addPacket(ProtocolStatus.class);
 
     protected void disconnectIfNeverUpgraded(ProtoConnection connection, Sender sender) {
-        if (!connection.getProtocol().toString().equals(protocol.toString())) return;
+        if (!connection.getProtocol().toString().equals(PROTOCOL.toString())) return;
 
         Optional.ofNullable(sender).ifPresentOrElse(Sender::disconnect, connection::disconnect);
         connection.getProtocol().logWarn("Refusing connection from: " + connection.getRemoteAddress());

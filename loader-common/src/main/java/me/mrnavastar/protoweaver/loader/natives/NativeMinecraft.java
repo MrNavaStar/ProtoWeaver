@@ -11,12 +11,12 @@ public class NativeMinecraft implements NativeProtocol {
     }
 
     @Override
-    public boolean supportsSSL() {
+    public boolean resetPipe() {
         return false;
     }
 
     @Override
-    public boolean resetPipe() {
+    public boolean supportsSSL() {
         return false;
     }
 }

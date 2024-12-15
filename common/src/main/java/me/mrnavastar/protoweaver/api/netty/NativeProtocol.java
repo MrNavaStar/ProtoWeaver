@@ -7,13 +7,13 @@ public interface NativeProtocol {
 
     boolean claim(int magic1, int magic2);
 
-    default boolean supportsSSL() {
-        return true;
-    }
-
     default boolean resetPipe() {
         return true;
     };
 
-    default void start(ChannelHandlerContext ctx, ByteBuf buf, boolean isSSL) {}
+    default boolean supportsSSL() {
+        return true;
+    }
+
+    default void start(ChannelHandlerContext ctx, ByteBuf buf) {}
 }

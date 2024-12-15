@@ -49,7 +49,7 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
         for (NativeProtocol protocol : ProtoWeaver.getNativeProtocols()) {
             if (!protocol.claim(magic1, magic2)) continue;
 
-            if (protocol.resetPipe() && !isSSL) pipeline.toMap().forEach((key, value) -> {
+            if (protocol.resetPipe()) pipeline.toMap().forEach((key, value) -> {
                 if (!key.equals("protoDeterminer")) pipeline.remove(value);
             });
 
@@ -60,7 +60,7 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
                 return;
             }
 
-            protocol.start(ctx, buf, isSSL);
+            protocol.start(ctx, buf);
             pipeline.remove(this);
             return;
         }
