@@ -3,6 +3,7 @@ package me.mrnavastar.protoweaver.proxy.api;
 import lombok.NonNull;
 import lombok.Setter;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
+import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
 import me.mrnavastar.protoweaver.api.protocol.Protocol;
 import me.mrnavastar.protoweaver.api.protocol.Side;
 import me.mrnavastar.protoweaver.client.ProtoClient;
@@ -110,6 +111,14 @@ public class ProtoProxy {
                 .filter(c -> protocol.equals(c.getCurrentProtocol()) || c.isConnected())
                 .findFirst().ifPresent(c -> connected.add(server)));
         return connected;
+    }
+
+    /**
+     * Returns a {@link ProtoServer} with a matching {@link ProtoConnection}.
+     * @param connection the connection to match.
+     */
+    public static Optional<ProtoServer> getConnectedServer(ProtoConnection connection) {
+        return getConnectedServers(connection.getProtocol()).stream().filter(server -> server.getConnection().equals(connection)).findFirst();
     }
 
     /**
