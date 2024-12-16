@@ -17,6 +17,7 @@ import java.net.SocketAddress;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -107,9 +108,14 @@ public class ProtoProxy {
      */
     public static List<ProtoServer> getConnectedServers(@NonNull Protocol protocol) {
         List<ProtoServer> connected = new ArrayList<>();
-        servers.forEach((server, clients) -> clients.stream()
+
+        servers.forEach(((server, clients) -> {
+            if (!server.isConnected()) return;
+
+            clients.stream()
                 .filter(c -> protocol.equals(c.getCurrentProtocol()) || c.isConnected())
-                .findFirst().ifPresent(c -> connected.add(server)));
+                .findFirst().ifPresent(c -> connected.add(server));
+        }));
         return connected;
     }
 
@@ -118,7 +124,7 @@ public class ProtoProxy {
      * @param connection the connection to match.
      */
     public static Optional<ProtoServer> getConnectedServer(ProtoConnection connection) {
-        return getConnectedServers(connection.getProtocol()).stream().filter(server -> server.getConnection().equals(connection)).findFirst();
+        return getConnectedServers(connection.getProtocol()).stream().filter(server -> Objects.equals(server.getConnection(), connection)).findFirst();
     }
 
     /**
