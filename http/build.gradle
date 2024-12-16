@@ -1,0 +1,10 @@
+dependencies {
+    compileOnly(project(path: ':loader-common', configuration: 'default'))
+
+    implementation "org.eclipse.jetty:jetty-server:${project.jetty_version}"
+    implementation "io.javalin:javalin:${project.javalin_version}"
+}
+
+jar {
+    archiveFileName = "protoweaver-${version}-http.jar"
+}

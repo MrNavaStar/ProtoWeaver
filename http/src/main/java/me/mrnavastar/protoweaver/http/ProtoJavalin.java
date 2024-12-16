@@ -1,4 +1,4 @@
-package me.mrnavastar.protoweaver.loader.natives;
+package me.mrnavastar.protoweaver.http;
 
 import io.javalin.Javalin;
 import io.javalin.config.JavalinConfig;
