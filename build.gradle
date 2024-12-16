@@ -63,7 +63,7 @@ subprojects {
         publishing {
             repositories {
                 maven {
-                    url "https://maven.mrnavastar.rocks/releases"
+                    url "https://maven.mrnavastar.me/releases"
                     credentials {
                         username = System.getenv("MAVEN_NAME")
                         password = System.getenv("MAVEN_SECRET")
