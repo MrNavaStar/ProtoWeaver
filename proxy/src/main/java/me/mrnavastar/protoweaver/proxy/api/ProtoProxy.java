@@ -48,6 +48,7 @@ public class ProtoProxy {
                 // Don't start a new connection if one already exists for this protocol
                 if (client.getCurrentProtocol().toString().equals(protocol.toString())) return;
             }
+            R.of(server).set("clients", clients);
             connectClient(protocol, server, clients);
         });
     }
@@ -60,7 +61,7 @@ public class ProtoProxy {
             if (connection.getDisconnecter().equals(Side.CLIENT)) return;
             Thread.sleep(serverPollRate);
             connectClient(protocol, server, clients);
-        }).onConnectionEstablished(connection -> R.of(server).set("connection", connection));
+        });
         clients.add(client);
     }
 
@@ -109,13 +110,9 @@ public class ProtoProxy {
     public static List<ProtoServer> getConnectedServers(@NonNull Protocol protocol) {
         List<ProtoServer> connected = new ArrayList<>();
 
-        servers.forEach(((server, clients) -> {
-            if (!server.isConnected()) return;
-
-            clients.stream()
-                .filter(c -> protocol.equals(c.getCurrentProtocol()) || c.isConnected())
-                .findFirst().ifPresent(c -> connected.add(server));
-        }));
+        servers.forEach(((server, clients) -> clients.stream()
+            .filter(c -> protocol.equals(c.getCurrentProtocol()) || c.isConnected())
+            .findFirst().ifPresent(c -> connected.add(server))));
         return connected;
     }
 
@@ -124,7 +121,9 @@ public class ProtoProxy {
      * @param connection the connection to match.
      */
     public static Optional<ProtoServer> getConnectedServer(ProtoConnection connection) {
-        return getConnectedServers(connection.getProtocol()).stream().filter(server -> Objects.equals(server.getConnection(), connection)).findFirst();
+        return getConnectedServers(connection.getProtocol()).stream()
+                .filter(server -> server.getConnection(connection.getProtocol()).map(con -> Objects.equals(con, connection)).orElse(false))
+                .findFirst();
     }
 
     /**

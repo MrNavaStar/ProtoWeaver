@@ -2,24 +2,40 @@ package me.mrnavastar.protoweaver.proxy.api;
 
 import lombok.Getter;
 import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
+import me.mrnavastar.protoweaver.api.protocol.Protocol;
+import me.mrnavastar.protoweaver.client.ProtoClient;
 
 import java.net.SocketAddress;
+import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
 
-@Getter
+
 public class ProtoServer {
 
+    @Getter
     private final String name;
+    @Getter
     private final SocketAddress address;
-    private ProtoConnection connection;
+    private ArrayList<ProtoClient> clients = new ArrayList<>();
 
     public ProtoServer(String name, SocketAddress address) {
         this.name = name;
         this.address = address;
     }
 
-    public boolean isConnected() {
-        return connection != null && connection.isOpen();
+    public boolean isConnected(Protocol protocol) {
+        for (ProtoClient client : clients) {
+            if (client.isConnected() && client.getCurrentProtocol().equals(protocol)) return true;
+        }
+        return false;
+    }
+
+    public Optional<ProtoConnection> getConnection(Protocol protocol) {
+        for (ProtoClient client : clients) {
+            if (client.isConnected() && client.getCurrentProtocol().equals(protocol)) return Optional.ofNullable(client.getConnection());
+        }
+        return Optional.empty();
     }
 
     @Override
