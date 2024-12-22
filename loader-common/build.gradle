@@ -18,3 +18,8 @@ dependencies {
     mappings loom.officialMojangMappings()
     modCompileOnly "net.fabricmc:fabric-loader:${project.loader_version}"
 }
+
+remapJar {
+    sourceNamespace = "named"
+    targetNamespace = "named"
+}

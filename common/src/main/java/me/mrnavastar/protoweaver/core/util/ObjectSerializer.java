@@ -1,5 +1,7 @@
 package me.mrnavastar.protoweaver.core.util;
 
+import lombok.SneakyThrows;
+import me.mrnavastar.protoweaver.api.ProtoSerializer;
 import me.mrnavastar.r.R;
 import org.apache.fury.Fury;
 import org.apache.fury.ThreadSafeFury;
@@ -30,6 +32,12 @@ public class ObjectSerializer {
 
     public void register(Class<?> type) {
         recursiveRegister(type, new ArrayList<>());
+    }
+
+    @SneakyThrows
+    public void register(Class<?> type, Class<? extends ProtoSerializer> serializer) {
+        ProtoSerializer<?> instance = serializer.getDeclaredConstructor(Class.class).newInstance(type);
+        fury.registerSerializer(type, instance);
     }
 
     public byte[] serialize(Object object) throws IllegalArgumentException {

@@ -2,6 +2,7 @@ package me.mrnavastar.protoweaver.api.protocol;
 
 import lombok.*;
 import me.mrnavastar.protoweaver.api.ProtoConnectionHandler;
+import me.mrnavastar.protoweaver.api.ProtoSerializer;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
 import me.mrnavastar.protoweaver.api.auth.ClientAuthHandler;
 import me.mrnavastar.protoweaver.api.auth.ServerAuthHandler;
@@ -204,6 +205,17 @@ public class Protocol {
          */
         public Builder addPacket(@NonNull Class<?> packet) {
             protocol.serializer.register(packet);
+            protocol.packetMD.update(packet.getName().getBytes(StandardCharsets.UTF_8));
+            return this;
+        }
+
+        /**
+         * Register a class to the {@link Protocol} with a custom serializer. Does nothing if the class has already been registered.
+         * @param packet The packet to register.
+         * @param serializer The custom serializer to register.
+         */
+        public Builder addPacket(@NonNull Class<?> packet, @NonNull Class<? extends ProtoSerializer> serializer) {
+            protocol.serializer.register(packet, serializer);
             protocol.packetMD.update(packet.getName().getBytes(StandardCharsets.UTF_8));
             return this;
         }
