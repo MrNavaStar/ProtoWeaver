@@ -26,7 +26,7 @@ Protoweaver is fast, secure, and easy to use. All protocols run under the same n
 - [x] Compression (Gzip, Snappy, LZ)
 - [x] All major mod loaders (neoforge soon tm)
 - [ ] API for registering raw protocols (http, ssh, etc)
-- [ ] Custom serialization
+- [x] Custom serialization
 - [ ] Custom SSL providers/certs
 - [ ] Muti-protocol connections
 - [ ] Tell me what you want to see!
@@ -113,6 +113,48 @@ public class MyCustomClientHandler implements ProtoConnectionHandler {
         connection.send("Hey server!");
     }
 }
+```
+
+### Custom Serialization
+Sometimes it can be useful to send minecraft objects or other premade POJO's in your protocol. To allow this, you can register a custom serializer.
+
+For example, here is a serializer for NBT tags:
+```java
+public class NbtSerializer extends ProtoSerializer<CompoundTag> {
+
+    public NbtSerializer(Class<CompoundTag> type) {
+        super(type);
+    }
+
+    @Override
+    public void write(ByteArrayOutputStream buffer, CompoundTag value) {
+        try {
+            NbtIo.writeCompressed(value, buffer);
+        } catch (IOException e) {
+            Platform.throwException(e);
+        }
+    }
+
+    @Override
+    public CompoundTag read(ByteArrayInputStream buffer) {
+        try {
+            return NbtIo.readCompressed(buffer, NbtAccounter.unlimitedHeap());
+        } catch (IOException e) {
+            Platform.throwException(e);
+            throw new RuntimeException(e);
+        }
+    }
+}
+```
+Then to register the serializer, simply do:
+```java
+Protocol protocol = Protocol.create("my_mod_id", "cool_protocol")
+    .setCompression(CompressionType.GZIP)
+    .setServerHandler(MyCustomServerHandler.class)
+    .setClientHandler(MyCustomClientHandler.class)
+    .setMaxConnections(15)
+    .addPacket(CompoundTag.class, NbtSerializer.class)
+    .build();
 ```
 
 ### More Docs Coming soon! Maybe a real website??
