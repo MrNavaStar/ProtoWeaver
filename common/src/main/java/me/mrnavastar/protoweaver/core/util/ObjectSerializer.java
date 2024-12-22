@@ -7,8 +7,8 @@ import org.apache.fury.Fury;
 import org.apache.fury.ThreadSafeFury;
 import org.apache.fury.exception.InsecureException;
 import org.apache.fury.logging.LoggerFactory;
-import org.apache.fury.serializer.Serializer;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,8 +37,12 @@ public class ObjectSerializer {
 
     @SneakyThrows
     public void register(Class<?> type, Class<? extends ProtoSerializer> serializer) {
-        ProtoSerializer<?> instance = serializer.getDeclaredConstructor(Class.class).newInstance(type);
-        fury.registerSerializer(type, R.of(instance).get("serializer", Serializer.class));
+        try {
+            serializer.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {
+            serializer.getDeclaredConstructor(Class.class).newInstance(type);
+        }
+        fury.registerSerializer(type, ProtoSerializer.SerializerWrapper.class);
     }
 
     public byte[] serialize(Object object) throws IllegalArgumentException {
