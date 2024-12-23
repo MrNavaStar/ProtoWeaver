@@ -112,6 +112,7 @@ public class ProtoPacketHandler extends ByteToMessageDecoder {
             ProtoLogger.err(" - https://en.wikipedia.org/wiki/Man-in-the-middle_attack");
             ProtoLogger.err("If you've reset your server configuration recently, you can probably ignore this and reset/remove the \"protoweaver.hosts\" file.");
 
+            ctx.close();
             connection.disconnect();
         }
     }
