@@ -9,6 +9,7 @@ import org.apache.fury.exception.InsecureException;
 import org.apache.fury.logging.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class ObjectSerializer {
     }
 
     private void recursiveRegister(Class<?> type, List<Class<?>> registered) {
-        if (type == null || type == Object.class || registered.contains(type)) return;
+        if (type == null || type == Object.class || registered.contains(type) || Modifier.isAbstract(type.getModifiers())) return;
         fury.register(type);
         registered.add(type);
 
