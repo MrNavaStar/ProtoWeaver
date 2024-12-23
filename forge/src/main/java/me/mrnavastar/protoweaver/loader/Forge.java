@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.minecraftforge.fml.loading.FMLConfig;
 import net.minecraftforge.fml.loading.FMLLoader;
-import org.adde0109.pcf.Initializer;
+import org.adde0109.pcf.v1_14_4.forge.Config;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -42,7 +42,7 @@ public class Forge implements ProtoLogger.IProtoLogger {
         // Proxy Compatible Forge support
         if (FMLLoader.getLoadingModList().getModFileById("proxy-compatible-forge") != null) {
             // Proxy Compatible Forge's config becomes available after FMLServerAboutToStartEvent
-            VelocityAuth.setSecret(Initializer.config.forwardingSecret.get().getBytes(StandardCharsets.UTF_8));
+            VelocityAuth.setSecret(Config.config.forwardingSecret.get().getBytes(StandardCharsets.UTF_8));
         }
         setup = true;
     }
