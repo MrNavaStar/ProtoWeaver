@@ -53,11 +53,18 @@ public class ProtoPacketHandler extends ByteToMessageDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) {
-        if (byteBuf.readableBytes() == 0) return;
-        Object packet = null;
+        // Ensure the whole packet has arrived before trying to decode
+        if (byteBuf.readableBytes() < 4) return;
+        byteBuf.markReaderIndex();
+        int packetLen = byteBuf.readInt();
+        if (byteBuf.readableBytes() < packetLen) {
+            byteBuf.resetReaderIndex();
+            return;
+        }
 
+        Object packet = null;
         try {
-            byte[] bytes = new byte[byteBuf.readInt()];
+            byte[] bytes = new byte[packetLen];
             byteBuf.readBytes(bytes);
             packet = connection.getProtocol().deserialize(bytes);
             handler.handlePacket(connection, packet);
