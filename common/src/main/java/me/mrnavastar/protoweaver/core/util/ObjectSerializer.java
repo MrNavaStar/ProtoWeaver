@@ -4,7 +4,9 @@ import lombok.SneakyThrows;
 import me.mrnavastar.protoweaver.api.ProtoSerializer;
 import me.mrnavastar.r.R;
 import org.apache.fury.Fury;
-import org.apache.fury.ThreadSafeFury;
+import org.apache.fury.ThreadLocalFury;
+import org.apache.fury.config.CompatibleMode;
+import org.apache.fury.config.Language;
 import org.apache.fury.exception.InsecureException;
 import org.apache.fury.logging.LoggerFactory;
 
@@ -15,7 +17,12 @@ import java.util.List;
 
 public class ObjectSerializer {
 
-    private final ThreadSafeFury fury = Fury.builder().withJdkClassSerializableCheck(false).buildThreadSafeFury();
+    private final ThreadLocalFury fury = Fury.builder()
+            .withJdkClassSerializableCheck(false)
+            .withDeserializeNonexistentClass(false)
+            .withLanguage(Language.JAVA)
+            .withCompatibleMode(CompatibleMode.COMPATIBLE)
+            .buildThreadLocalFury();
 
     static {
         // Make fury be quiet
