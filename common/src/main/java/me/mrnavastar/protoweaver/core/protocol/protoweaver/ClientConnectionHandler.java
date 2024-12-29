@@ -26,21 +26,21 @@ public class ClientConnectionHandler extends InternalConnectionHandler implement
         if (packet instanceof ProtocolStatus status) {
             switch (status.getStatus()) {
                 case MISSING -> {
-                    protocol.logErr("Not loaded on server.");
+                    protocol.logErr("Not loaded on server: " + connection.getRemoteAddress());
                     disconnectIfNeverUpgraded(connection);
                 }
                 case MISMATCH -> {
-                    protocol.logErr("Mismatch with protocol version on the server!");
-                    protocol.logErr("Double check that all packets are registered in the same order and all settings are the same.");
+                    protocol.logErr("Mismatch with protocol version on server: " + connection.getRemoteAddress());
+                    protocol.logErr("Double check that all packets are registered in the same order and all settings are the same");
                     disconnectIfNeverUpgraded(connection);
                 }
                 case FULL -> {
-                    protocol.logErr("The maximum number of allowed connections on the server has been reached!");
+                    protocol.logErr("The maximum number of allowed connections on server: " + connection.getRemoteAddress() + " has been reached!");
                     disconnectIfNeverUpgraded(connection);
                 }
                 case UPGRADE -> {
                     if (!ProtoConstants.PROTOWEAVER_VERSION.equals(status.getProtoweaverVersion())) {
-                        protocol.logWarn("Connecting with ProtoWeaver version: " + status.getProtoweaverVersion() + ", but server is running: " + ProtoConstants.PROTOWEAVER_VERSION + ". There could be unexpected issues.");
+                        protocol.logWarn("Connecting with ProtoWeaver version: " + status.getProtoweaverVersion() + ", but server is running: " + ProtoConstants.PROTOWEAVER_VERSION + ". There could be unexpected issues");
                     }
 
                     if (!authenticated) return;
@@ -61,17 +61,22 @@ public class ClientConnectionHandler extends InternalConnectionHandler implement
                 case OK -> authenticated = true;
                 case REQUIRED -> {
                     if (authHandler == null) {
-                        protocol.logErr("Client protocol has not defined an auth handler, but the server requires auth. Closing connection.");
+                        protocol.logErr("Client protocol has not defined an auth handler, but the server at: " + connection.getRemoteAddress() + " requires auth. Closing connection");
                         connection.disconnect();
                         return;
                     }
                     connection.send(authHandler.getSecret());
                 }
                 case DENIED -> {
-                    protocol.logErr("Denied access by the server.");
+                    protocol.logErr("Denied access by server at: " + connection.getRemoteAddress());
                     disconnectIfNeverUpgraded(connection);
                 }
             }
         }
+    }
+
+    @Override
+    public void onDisconnect(ProtoConnection connection) {
+        protocol.logInfo("Disconnected from: " + connection.getRemoteAddress());
     }
 }

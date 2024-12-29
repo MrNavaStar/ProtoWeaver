@@ -82,4 +82,9 @@ public class ServerConnectionHandler extends InternalConnectionHandler implement
         connection.upgradeProtocol(nextProtocol);
         nextProtocol.logInfo("Connected to: " + connection.getRemoteAddress());
     }
+
+    @Override
+    public void onDisconnect(ProtoConnection connection) {
+        protocol.logInfo("Disconnected from: " + connection.getRemoteAddress());
+    }
 }
