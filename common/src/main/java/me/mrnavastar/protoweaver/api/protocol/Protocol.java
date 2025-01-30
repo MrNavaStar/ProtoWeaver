@@ -214,7 +214,7 @@ public class Protocol {
          * @param packet The packet to register.
          * @param serializer The custom serializer to register.
          */
-        public Builder addPacket(@NonNull Class<?> packet, @NonNull Class<? extends ProtoSerializer> serializer) {
+        public Builder addPacket(@NonNull Class<?> packet, @NonNull Class<? extends ProtoSerializer<?>> serializer) {
             protocol.serializer.register(packet, serializer);
             protocol.packetMD.update(packet.getName().getBytes(StandardCharsets.UTF_8));
             return this;

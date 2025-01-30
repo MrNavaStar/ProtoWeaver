@@ -77,6 +77,6 @@ public class ClientConnectionHandler extends InternalConnectionHandler implement
 
     @Override
     public void onDisconnect(ProtoConnection connection) {
-        protocol.logInfo("Disconnected from: " + connection.getRemoteAddress());
+        if (wasUpgraded(connection)) protocol.logInfo("Disconnected from: " + connection.getRemoteAddress());
     }
 }

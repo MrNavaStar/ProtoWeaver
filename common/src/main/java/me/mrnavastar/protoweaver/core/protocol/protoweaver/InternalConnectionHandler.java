@@ -16,8 +16,12 @@ public class InternalConnectionHandler {
             .addPacket(ProtocolStatus.class)
             .load();
 
+    protected boolean wasUpgraded(ProtoConnection connection) {
+        return connection.getProtocol().toString().equals(protocol.toString());
+    }
+
     protected void disconnectIfNeverUpgraded(ProtoConnection connection, Sender sender) {
-        if (!connection.getProtocol().toString().equals(protocol.toString())) return;
+        if (!wasUpgraded(connection)) return;
         if (sender != null) {
             sender.disconnect();
             return;
