@@ -77,7 +77,7 @@ public class MyCustomServerHandler implements ProtoConnectionHandler {
     // Note that all functions are optional to implement
 
     @Override
-    public void void onReady(ProtoConnection connection) {
+    public void onReady(ProtoConnection connection) {
         System.out.println("awesome! looks like a new client has connected from: " + connection.getRemoteAddress());
     }
 
@@ -98,7 +98,7 @@ public class MyCustomClientHandler implements ProtoConnectionHandler {
     // Note that all functions are optional to implement
 
     @Override
-    public void void onReady(ProtoConnection connection) {
+    public void onReady(ProtoConnection connection) {
         System.out.println("awesome! connected to: " + connection.getRemoteAddress());
     }
 
@@ -149,10 +149,6 @@ public class NbtSerializer extends ProtoSerializer<CompoundTag> {
 Then to register the serializer, simply do:
 ```java
 Protocol protocol = Protocol.create("my_mod_id", "cool_protocol")
-    .setCompression(CompressionType.GZIP)
-    .setServerHandler(MyCustomServerHandler.class)
-    .setClientHandler(MyCustomClientHandler.class)
-    .setMaxConnections(15)
     .addPacket(CompoundTag.class, NbtSerializer.class)
     .build();
 ```
