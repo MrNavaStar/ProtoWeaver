@@ -22,6 +22,7 @@ public class ObjectSerializer {
             .withLanguage(Language.JAVA)
             .withCompatibleMode(CompatibleMode.COMPATIBLE)
             .withAsyncCompilation(true)
+            .withClassLoader(ProtoSerializer.class.getClassLoader())
             .build();
 
     static {
@@ -47,13 +48,8 @@ public class ObjectSerializer {
 
     @SneakyThrows
     public void register(Class<?> type, Class<? extends ProtoSerializer<?>> serializer) {
-        try {
-            serializer.getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {
-            serializer.getDeclaredConstructor(Class.class).newInstance(type);
-        }
         synchronized (fury) {
-            fury.registerSerializer(type, ProtoSerializer.SerializerWrapper.class);
+            fury.registerSerializer(type, serializer);
         }
     }
 

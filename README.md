@@ -122,8 +122,8 @@ For example, here is a serializer for NBT tags:
 ```java
 public class NbtSerializer extends ProtoSerializer<CompoundTag> {
 
-    public NbtSerializer(Class<CompoundTag> type) {
-        super(type);
+    public NbtSerializer(org.apache.fury.Fury fury, Class<CompoundTag> type) {
+        super(fury, type);
     }
 
     @Override
