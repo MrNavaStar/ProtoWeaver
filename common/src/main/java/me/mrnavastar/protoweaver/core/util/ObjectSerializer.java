@@ -10,7 +10,6 @@ import org.apache.fury.config.Language;
 import org.apache.fury.exception.InsecureException;
 import org.apache.fury.logging.LoggerFactory;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +56,6 @@ public class ObjectSerializer {
     public byte[] serialize(Object object) throws IllegalArgumentException {
         synchronized (fury) {
             try {
-
                 return fury.serialize(object);
             } catch (InsecureException e) {
                 throw new IllegalArgumentException("unregistered object: " + object.getClass().getName());
