@@ -17,54 +17,31 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigInteger;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.Provider;
-import java.security.Security;
+import java.nio.charset.StandardCharsets;
+import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Optional;
 
 public class SSLContext {
 
     @Getter
     private static io.netty.handler.ssl.SslContext context;
-    private static File privateKey;
-    private static File cert;
+    private static InputStream privateKey;
+    private static InputStream cert;
 
-    public static void initKeystore(String dir) {
+    @SneakyThrows
+    public static void init(String dir) {
         Security.addProvider(new BouncyCastleProvider());
 
-        privateKey = new File(dir + "/keys/private.pem");
-        cert = new File(dir + "/keys/cert.pem");
-    }
+        Optional.ofNullable(System.getenv("PROTOWEAVER_PRIVATE_KEY")).ifPresent(value -> privateKey = new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8)));
+        Optional.ofNullable(System.getenv("PROTOWEAVER_CERT")).ifPresent(value -> privateKey = new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8)));
 
-    @SneakyThrows
-    public static void genKeys() {
-        if (privateKey.exists() && cert.exists()) return;
-
-        ProtoLogger.info("Generating SSL Keys");
-
-        KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-        kpg.initialize(2048);
-        KeyPair kp = kpg.generateKeyPair();
-        X509Certificate certificate = genCert(kp);
-
-        privateKey.getParentFile().mkdirs();
-        @Cleanup JcaPEMWriter privateWriter = new JcaPEMWriter(new FileWriter(privateKey));
-        privateWriter.writeObject(kp.getPrivate());
-
-        @Cleanup JcaPEMWriter certWriter = new JcaPEMWriter(new FileWriter(cert));
-        certWriter.writeObject(certificate);
-    }
-
-    @SneakyThrows
-    public static void initContext() {
+        genKeys(dir);
         context = SslContextBuilder.forServer(cert, privateKey)
                 .sslProvider(OpenSsl.isAvailable() ? SslProvider.OPENSSL : SslProvider.JDK)
                 .ciphers(Http2SecurityUtil.CIPHERS, SupportedCipherSuiteFilter.INSTANCE)
@@ -75,8 +52,31 @@ public class SSLContext {
                         //ApplicationProtocolNames.HTTP_2,
                         ApplicationProtocolNames.HTTP_1_1)
                 ).build();
+    }
 
-        ProtoLogger.info("Initialized SSL Context");
+    private static void genKeys(String dir) throws NoSuchAlgorithmException, CertificateException, IOException, OperatorCreationException {
+        if (privateKey != null && cert != null) return;
+
+        KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+        kpg.initialize(2048);
+        KeyPair kp = kpg.generateKeyPair();
+        X509Certificate certificate = genCert(kp);
+
+        File privateKeyFile = new File(dir + "/keys/private.pem");
+        File certFile = new File(dir + "/keys/cert.pem");
+
+        if (!privateKeyFile.exists() || !certFile.exists()) {
+            ProtoLogger.info("Generating SSL Keys");
+            privateKeyFile.getParentFile().mkdirs();
+
+            @Cleanup JcaPEMWriter privateWriter = new JcaPEMWriter(new FileWriter(privateKeyFile));
+            @Cleanup JcaPEMWriter certWriter = new JcaPEMWriter(new FileWriter(certFile));
+            privateWriter.writeObject(kp.getPrivate());
+            certWriter.writeObject(certificate);
+        }
+
+        privateKey = new FileInputStream(privateKeyFile);
+        cert = new FileInputStream(certFile);
     }
 
     // From https://stackoverflow.com/questions/29852290/self-signed-x509-certificate-with-bouncy-castle-in-java

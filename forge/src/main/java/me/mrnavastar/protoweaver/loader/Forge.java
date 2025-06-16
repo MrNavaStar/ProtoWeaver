@@ -35,9 +35,7 @@ public class Forge implements ProtoLogger.IProtoLogger {
     private void setup() {
         if (setup) return;
         ProtoLogger.setLogger(this);
-        SSLContext.initKeystore(FMLConfig.defaultConfigPath() + "/protoweaver");
-        SSLContext.genKeys();
-        SSLContext.initContext();
+        SSLContext.init(FMLConfig.defaultConfigPath() + "/protoweaver");
 
         // Proxy Compatible Forge support
         if (FMLLoader.getLoadingModList().getModFileById("proxy-compatible-forge") != null) {

@@ -27,9 +27,7 @@ public class Fabric implements DedicatedServerModInitializer, ProtoLogger.IProto
     private void setup() {
         if (setup) return;
         ProtoLogger.setLogger(this);
-        SSLContext.initKeystore(FabricLoader.getInstance().getConfigDir() + "/protoweaver");
-        SSLContext.genKeys();
-        SSLContext.initContext();
+        SSLContext.init(FabricLoader.getInstance().getConfigDir() + "/protoweaver");
 
         // Fabric Proxy Lite support
         FabricLoader.getInstance().getModContainer("fabricproxy-lite").ifPresent(modContainer -> {
