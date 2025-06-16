@@ -120,14 +120,14 @@ Sometimes it can be useful to send minecraft objects or other premade POJO's in 
 
 For example, here is a serializer for NBT tags:
 ```java
-public class NbtSerializer extends ProtoSerializer<CompoundTag> {
+public class NbtSerializer implements ProtoSerializer<CompoundTag> {
 
     @Override
     public void write(ByteArrayOutputStream buffer, CompoundTag value) {
         try {
             NbtIo.writeCompressed(value, buffer);
         } catch (IOException e) {
-            Platform.throwException(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -136,7 +136,6 @@ public class NbtSerializer extends ProtoSerializer<CompoundTag> {
         try {
             return NbtIo.readCompressed(buffer, NbtAccounter.unlimitedHeap());
         } catch (IOException e) {
-            Platform.throwException(e);
             throw new RuntimeException(e);
         }
     }

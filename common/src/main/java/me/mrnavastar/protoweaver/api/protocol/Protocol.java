@@ -225,8 +225,9 @@ public class Protocol {
          * @param packet The packet to register.
          * @param serializer The custom serializer to register.
          */
-        public Builder addPacket(@NonNull Class<?> packet, @NonNull Class<? extends ProtoSerializer<?>> serializer) {
-            protocol.serializer.register(packet, serializer);
+        @SneakyThrows
+        public <T> Builder addPacket(@NonNull Class<T> packet, @NonNull Class<? extends ProtoSerializer<T>> serializer, Object... args) {
+            protocol.serializer.register(packet, serializer.getDeclaredConstructor(getArgTypes(args)).newInstance(args));
             protocol.packetMD.update(packet.getName().getBytes(StandardCharsets.UTF_8));
             return this;
         }
