@@ -8,5 +8,5 @@ libraries:
   - org.apache.fury:fury-core:0.10.3
   - io.netty:netty-codec-http:4.1.97.Final
   - io.netty:netty-codec-http2:4.1.97.Final
-  - org.bouncycastle:bcpkix-jdk18on:1.80
-  - me.mrnavastar:r:1.0.8
+  - org.bouncycastle:bcpkix-jdk18on:1.81
+  - me.mrnavastar:r:1.0.9
