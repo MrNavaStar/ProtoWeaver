@@ -9,11 +9,6 @@ import java.io.ByteArrayOutputStream;
 
 public abstract class ProtoSerializer<T> extends Serializer<T> {
 
-    public ProtoSerializer() {
-        super(null, null);
-        throw new RuntimeException("this class cannot be instantiated manually");
-    }
-
     public ProtoSerializer(Fury fury, Class<T> type) {
         super(fury, type);
     }
