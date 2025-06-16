@@ -2,6 +2,7 @@ package me.mrnavastar.protoweaver.core.util;
 
 import lombok.SneakyThrows;
 import me.mrnavastar.protoweaver.api.ProtoSerializer;
+import me.mrnavastar.protoweaver.core.ProtoSerializerAdapter;
 import me.mrnavastar.r.R;
 import org.apache.fury.Fury;
 import org.apache.fury.config.CompatibleMode;
@@ -49,7 +50,7 @@ public class ObjectSerializer {
     @SneakyThrows
     public void register(Class<?> type, Class<? extends ProtoSerializer<?>> serializer) {
         synchronized (fury) {
-            fury.registerSerializer(type, serializer);
+            fury.registerSerializer(type, new ProtoSerializerAdapter<>(fury, type, serializer));
         }
     }
 
