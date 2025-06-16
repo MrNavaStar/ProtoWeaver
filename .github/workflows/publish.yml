@@ -54,6 +54,18 @@ jobs:
           game-versions: |
             >=1.15
 
+      - name: Upload Forge
+        uses: Kir-Antipov/mc-publish@v3.3.0
+        with:
+          modrinth-id: 6nKmUVc7
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          modrinth-featured: true
+          files: ${{ github.workspace }}/neoforge/build/libs/protoweaver-${{ github.event.release.tag_name }}-neoforge.jar
+          java: 21
+          loaders: neoforge
+          game-versions: |
+            >=1.20.2
+
       - name: Upload Paper
         uses: Kir-Antipov/mc-publish@v3.3.0
         with:

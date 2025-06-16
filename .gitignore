@@ -21,6 +21,11 @@ protoweaver_hosts
 /forge/.gradle/
 /forge/run/
 
+/neoforge/build/
+/neoforge/.architectury-transformer/
+/neoforge/.gradle/
+/neoforge/run/
+
 /paper/build/
 /paper/.architectury-transformer/
 /paper/.gradle/
