@@ -122,10 +122,6 @@ For example, here is a serializer for NBT tags:
 ```java
 public class NbtSerializer extends ProtoSerializer<CompoundTag> {
 
-    public NbtSerializer(Class<CompoundTag> type) {
-        super(type);
-    }
-
     @Override
     public void write(ByteArrayOutputStream buffer, CompoundTag value) {
         try {

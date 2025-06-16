@@ -2,6 +2,7 @@ package me.mrnavastar.protoweaver.core.util;
 
 import lombok.SneakyThrows;
 import me.mrnavastar.protoweaver.api.ProtoSerializer;
+import me.mrnavastar.protoweaver.core.ProtoSerializerAdapter;
 import me.mrnavastar.r.R;
 import org.apache.fury.Fury;
 import org.apache.fury.config.CompatibleMode;
@@ -9,7 +10,6 @@ import org.apache.fury.config.Language;
 import org.apache.fury.exception.InsecureException;
 import org.apache.fury.logging.LoggerFactory;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +22,7 @@ public class ObjectSerializer {
             .withLanguage(Language.JAVA)
             .withCompatibleMode(CompatibleMode.COMPATIBLE)
             .withAsyncCompilation(true)
+            .withClassLoader(ProtoSerializer.class.getClassLoader())
             .build();
 
     static {
@@ -47,20 +48,14 @@ public class ObjectSerializer {
 
     @SneakyThrows
     public void register(Class<?> type, Class<? extends ProtoSerializer<?>> serializer) {
-        try {
-            serializer.getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {
-            serializer.getDeclaredConstructor(Class.class).newInstance(type);
-        }
         synchronized (fury) {
-            fury.registerSerializer(type, ProtoSerializer.SerializerWrapper.class);
+            fury.registerSerializer(type, new ProtoSerializerAdapter<>(fury, type, serializer));
         }
     }
 
     public byte[] serialize(Object object) throws IllegalArgumentException {
         synchronized (fury) {
             try {
-
                 return fury.serialize(object);
             } catch (InsecureException e) {
                 throw new IllegalArgumentException("unregistered object: " + object.getClass().getName());
