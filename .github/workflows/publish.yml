@@ -19,6 +19,7 @@ jobs:
           sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' common/src/main/java/me/mrnavastar/protoweaver/core/util/ProtoConstants.java
           sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' fabric/src/main/resources/fabric.mod.json
           sed -i 's/0.debug-build/${{ github.event.release.tag_name }}/g' forge/src/main/resources/META-INF/mods.toml
+          sed -i 's/0.debug-build/${{ github.event.release.tag_name }}/g' neoforge/src/main/resources/META-INF/neoforge.mods.toml
           sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' paper/src/main/resources/plugin.yml
           sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' proxy/src/main/resources/bungee.yml
       
@@ -54,7 +55,7 @@ jobs:
           game-versions: |
             >=1.15
 
-      - name: Upload Forge
+      - name: Upload NeoForge
         uses: Kir-Antipov/mc-publish@v3.3.0
         with:
           modrinth-id: 6nKmUVc7
