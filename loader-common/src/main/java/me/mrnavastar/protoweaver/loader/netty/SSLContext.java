@@ -39,7 +39,7 @@ public class SSLContext {
         Security.addProvider(new BouncyCastleProvider());
 
         Optional.ofNullable(System.getenv("PROTOWEAVER_PRIVATE_KEY")).ifPresent(value -> privateKey = new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8)));
-        Optional.ofNullable(System.getenv("PROTOWEAVER_CERT")).ifPresent(value -> privateKey = new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8)));
+        Optional.ofNullable(System.getenv("PROTOWEAVER_CERT")).ifPresent(value -> cert = new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8)));
 
         genKeys(dir);
         context = SslContextBuilder.forServer(cert, privateKey)
