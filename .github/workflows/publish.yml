@@ -28,7 +28,7 @@ jobs:
 
       - name: Fix Paper
         run: |
-          mv paper/build/libs/paper-${{ github.event.release.tag_name }}-dev-all.jar paper/build/libs/paper-${{ github.event.release.tag_name }}.jar
+          mv paper/build/libs/paper-${{ github.event.release.tag_name }}-dev-all.jar paper/build/libs/protoweaver-${{ github.event.release.tag_name }}-paper.jar
 
       - name: Publish
         run: ./gradlew publish
