@@ -24,7 +24,14 @@ jobs:
           sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' proxy/src/main/resources/bungee.yml
       
       - name: Build
-        run: ./gradlew build publish
+        run: ./gradlew build
+
+      - name: Fix Paper
+        run: |
+          mv paper/build/libs/paper-${{ github.event.release.tag_name }}-dev-all.jar paper/build/libs/paper-${{ github.event.release.tag_name }}.jar
+
+      - name: Publish
+        run: ./gradlew publish
         env:
           MAVEN_NAME: ${{ secrets.MAVEN_NAME }}
           MAVEN_SECRET: ${{ secrets.MAVEN_SECRET }}

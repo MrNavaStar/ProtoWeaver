@@ -3,23 +3,40 @@ plugins {
     id "io.papermc.paperweight.userdev" version "1.7.7"
 }
 
-configurations {
+apply plugin: "io.github.goooler.shadow"
+
+/*configurations {
     zip.exclude group: "net.fabricmc", module: "fabric-loader"
-}
+}*/
 
 dependencies {
-    zip compileOnly(project(path: ':loader-common', configuration: 'default'))
+    shadow compileOnly(project(path: ':loader-common', configuration: 'default'))
     paperweight.paperDevBundle(project.paper_version)
+
+    shadow "me.mrnavastar:r:${project.r_version}"
 }
 
-jar {
+/*jar {
     archiveFileName = "protoweaver-${version}-paper.jar"
     from {
         exclude "architectury.common.marker"
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         configurations.zip.collect { it.isDirectory() ? it : zipTree(it) }
     }
+}*/
+
+shadowJar {
+    archiveClassifier = ""
+    configurations = [project.configurations.shadow]
+
+    dependencies {
+        mergeServiceFiles()
+    }
+
+    relocate 'me.mrnavastar.r', 'me.mrnavastar.protoweaver.libs.me.mrnavastar.r'
 }
+
+jar.finalizedBy(shadowJar)
 
 tasks {
     runServer {
