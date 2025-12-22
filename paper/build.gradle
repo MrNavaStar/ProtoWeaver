@@ -1,6 +1,5 @@
 plugins {
     id "xyz.jpenilla.run-paper" version "3.0.2"
-    id "io.papermc.paperweight.userdev" version "1.7.7"
 }
 
 apply plugin: "io.github.goooler.shadow"
@@ -11,10 +10,10 @@ apply plugin: "io.github.goooler.shadow"
 
 dependencies {
     shadow compileOnly(project(path: ':loader-common', configuration: 'default'))
-    paperweight.paperDevBundle(project.paper_version)
+    compileOnly "io.papermc.paper:paper-api:${project.paper_version}"
 
     shadow "me.mrnavastar:r:${project.r_version}"
-    shadow "org.apache.fury:fury-core:${project.fory_version}"
+    shadow "org.apache.fory:fory-core:${project.fory_version}"
     shadow "org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}"
     shadow "org.bouncycastle:bcprov-jdk18on:${project.bouncy_version}"
     shadow "org.bouncycastle:bcutil-jdk18on:${project.bouncy_version}"
@@ -38,7 +37,7 @@ shadowJar {
     }
 
     relocate 'me.mrnavastar.r', 'me.mrnavastar.protoweaver.libs.me.mrnavastar.r'
-    relocate 'org.apache.fury:fury-core', 'me.mrnavastar.protoweaver.libs.org.apache.fury:fury-core'
+    relocate 'org.apache.fory:fory-core', 'me.mrnavastar.protoweaver.libs.org.apache.fory:fory-core'
     relocate 'org.bouncycastle:bcpkix-jdk18on', 'me.mrnavastar.protoweaver.libs.org.bouncycastle:bcpkix-jdk18on'
     relocate 'org.bouncycastle:bcprov-jdk18on', 'me.mrnavastar.protoweaver.libs.org.bouncycastle:bcprov-jdk18on'
     relocate 'org.bouncycastle:bcutil-jdk18on', 'me.mrnavastar.protoweaver.libs.org.bouncycastle:bcutil-jdk18on'

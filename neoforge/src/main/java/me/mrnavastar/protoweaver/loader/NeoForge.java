@@ -6,10 +6,8 @@ import me.mrnavastar.protoweaver.core.util.ProtoConstants;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 import me.mrnavastar.protoweaver.loader.netty.SSLContext;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.neoforged.fml.loading.FMLConfig;
-import net.neoforged.fml.loading.FMLLoader;
-import org.adde0109.pcf.v1_20_2.neoforge.Config;
+import org.adde0109.pcf.PCF;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,10 +21,6 @@ public class NeoForge implements ProtoLogger.IProtoLogger {
     private boolean setup = false;
 
     public NeoForge() {
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(this::serverStarted);
-    }
-
-    private void serverStarted(FMLDedicatedServerSetupEvent event) {
         if (!ProtoWeaver.getLoadedProtocols().isEmpty()) setup();
         else ProtoWeaver.PROTOCOL_LOADED.register(protocol -> setup());
     }
@@ -37,10 +31,10 @@ public class NeoForge implements ProtoLogger.IProtoLogger {
         SSLContext.init(FMLConfig.defaultConfigPath() + "/protoweaver");
 
         // Proxy Compatible Forge support
-        if (FMLLoader.getLoadingModList().getModFileById("proxy-compatible-forge") != null) {
-            // Proxy Compatible Forge's config becomes available after FMLServerAboutToStartEvent
-            VelocityAuth.setSecret(Config.config.forwardingSecret.get().getBytes(StandardCharsets.UTF_8));
-        }
+        try {
+            Class.forName("org.adde0109.pcf.PFC");
+            VelocityAuth.setSecret(PCF.instance().forwarding().secret().getBytes(StandardCharsets.UTF_8));
+        } catch (Exception ignore) {}
         setup = true;
     }
 

@@ -2,7 +2,7 @@ plugins {
     id "io.github.goooler.shadow" version "8.1.8"
     id "io.freefair.lombok" version "8.14.3"
     id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.9-SNAPSHOT" apply false
+    id "dev.architectury.loom" version "1.13-SNAPSHOT" apply false
     id "maven-publish"
 }
 
