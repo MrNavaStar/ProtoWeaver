@@ -35,7 +35,7 @@ subprojects {
     apply plugin: "io.freefair.lombok"
 
     dependencies {
-        compileOnly "org.apache.fury:fury-core:${project.fury_version}"
+        compileOnly "org.apache.fory:fory-core:${project.fory_version}"
         compileOnly "io.netty:netty-buffer:${project.netty_version}"
         compileOnly "io.netty:netty-transport:${project.netty_version}"
         compileOnly "io.netty:netty-handler:${project.netty_version}"

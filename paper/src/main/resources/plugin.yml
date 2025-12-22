@@ -5,7 +5,7 @@ main: me.mrnavastar.protoweaver.loader.Paper
 api-version: '1.13'
 load: STARTUP
 libraries:
-  - org.apache.fury:fury-core:0.10.3
+  - org.apache.fury:fury-core:0.14.0
   - io.netty:netty-codec-http:4.1.97.Final
   - io.netty:netty-codec-http2:4.1.97.Final
   - org.bouncycastle:bcpkix-jdk18on:1.80

@@ -3,13 +3,13 @@ package me.mrnavastar.protoweaver.core.util;
 import lombok.SneakyThrows;
 import me.mrnavastar.protoweaver.api.ProtoSerializer;
 import me.mrnavastar.r.R;
-import org.apache.fury.Fury;
-import org.apache.fury.config.CompatibleMode;
-import org.apache.fury.config.Language;
-import org.apache.fury.exception.InsecureException;
-import org.apache.fury.logging.LoggerFactory;
-import org.apache.fury.memory.MemoryBuffer;
-import org.apache.fury.serializer.Serializer;
+import org.apache.fory.Fory;
+import org.apache.fory.config.CompatibleMode;
+import org.apache.fory.config.Language;
+import org.apache.fory.exception.InsecureException;
+import org.apache.fory.logging.LoggerFactory;
+import org.apache.fory.memory.MemoryBuffer;
+import org.apache.fory.serializer.Serializer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,7 +23,7 @@ public class ObjectSerializer {
 
         private final ProtoSerializer<T> serializer;
 
-        public SerializerAdapter(Fury fury, Class<T> type, ProtoSerializer<T> serializer) {
+        public SerializerAdapter(Fory fury, Class<T> type, ProtoSerializer<T> serializer) {
             super(fury, type);
             this.serializer = serializer;
         }
@@ -42,7 +42,7 @@ public class ObjectSerializer {
         }
     }
 
-    private final Fury fury = Fury.builder()
+    private final Fory fury = Fory.builder()
             .withJdkClassSerializableCheck(false)
             .withDeserializeNonexistentClass(false)
             .withLanguage(Language.JAVA)
