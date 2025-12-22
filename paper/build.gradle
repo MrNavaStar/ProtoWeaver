@@ -14,6 +14,10 @@ dependencies {
     paperweight.paperDevBundle(project.paper_version)
 
     shadow "me.mrnavastar:r:${project.r_version}"
+    shadow "org.apache.fury:fury-core:${project.fory_version}"
+    shadow "org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}"
+    shadow "org.bouncycastle:bcprov-jdk18on:${project.bouncy_version}"
+    shadow "org.bouncycastle:bcutil-jdk18on:${project.bouncy_version}"
 }
 
 /*jar {
@@ -34,6 +38,10 @@ shadowJar {
     }
 
     relocate 'me.mrnavastar.r', 'me.mrnavastar.protoweaver.libs.me.mrnavastar.r'
+    relocate 'org.apache.fury:fury-core', 'me.mrnavastar.protoweaver.libs.org.apache.fury:fury-core'
+    relocate 'org.bouncycastle:bcpkix-jdk18on', 'me.mrnavastar.protoweaver.libs.org.bouncycastle:bcpkix-jdk18on'
+    relocate 'org.bouncycastle:bcprov-jdk18on', 'me.mrnavastar.protoweaver.libs.org.bouncycastle:bcprov-jdk18on'
+    relocate 'org.bouncycastle:bcutil-jdk18on', 'me.mrnavastar.protoweaver.libs.org.bouncycastle:bcutil-jdk18on'
 }
 
 jar.finalizedBy(shadowJar)

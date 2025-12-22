@@ -50,10 +50,6 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
         }
 
         // Not a player - clear the pipeline
-        /*if (!sslEnabled) {
-            int size = pipeline.names().size() - 1;
-            for (int i = 0; i < size; i++) pipeline.removeLast();
-        }*/
         if (!sslEnabled) {
             for (Map.Entry<String, ChannelHandler> handler : pipeline.toMap().entrySet()) {
                 if (handler.getKey().equals("protoDeterminer")) continue;

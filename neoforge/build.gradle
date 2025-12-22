@@ -26,12 +26,12 @@ dependencies {
     zip compileOnly(project(path: ':loader-common', configuration: 'default'))
 
     // Libs
-    jarJar implementation("org.apache.fury:fury-core:${project.fury_version}")
+    jarJar implementation("org.apache.fory:fory-core:${project.fory_version}")
     jarJar implementation("org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}")
     jarJar implementation("org.bouncycastle:bcprov-jdk18on:${project.bouncy_version}")
     jarJar implementation("org.bouncycastle:bcutil-jdk18on:${project.bouncy_version}")
-    jarJar implementation("io.netty:netty-codec-http:${project.netty_version}")
-    jarJar implementation("io.netty:netty-codec-http2:${project.netty_version}")
+    //jarJar implementation("io.netty:netty-codec-http:${project.netty_version}")
+    //jarJar implementation("io.netty:netty-codec-http2:${project.netty_version}")
     jarJar implementation("me.mrnavastar:r:${project.r_version}")
 
     // Mod Compat
