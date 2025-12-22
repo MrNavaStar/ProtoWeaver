@@ -35,12 +35,7 @@ public class ProtoClient {
     }
 
     @FunctionalInterface
-    public interface ConnectionEstablishedHandler {
-        void handle(ProtoConnection connection) throws Exception;
-    }
-
-    @FunctionalInterface
-    public interface ConnectionLostHandler {
+    public interface ConnectionEventHandler {
         void handle(ProtoConnection connection) throws Exception;
     }
 
@@ -50,14 +45,15 @@ public class ProtoClient {
     @Getter
     private ProtoConnection connection = null;
     private final SslContext sslContext;
-    private final ArrayList<ConnectionEstablishedHandler> connectionEstablishedHandlers = new ArrayList<>();
-    private final ArrayList<ConnectionLostHandler> connectionLostHandlers = new ArrayList<>();
+    private final ProtoTrustManager trustManager;
+    private final ArrayList<ConnectionEventHandler> connectionEstablishedHandlers = new ArrayList<>();
+    private final ArrayList<ConnectionEventHandler> connectionLostHandlers = new ArrayList<>();
 
     public ProtoClient(@NonNull InetSocketAddress address, @NonNull String hostsFile) {
         try {
             this.address = address;
-            ProtoTrustManager trustManager = new ProtoTrustManager(address.getHostName(), address.getPort(), hostsFile);
-            this.sslContext = SslContextBuilder.forClient().trustManager(trustManager.getTm()).build();
+            trustManager = new ProtoTrustManager(address.getHostName(), address.getPort(), hostsFile);
+            this.sslContext = SslContextBuilder.forClient().trustManager(trustManager).build();
         } catch (SSLException e) {
             throw new RuntimeException(e);
         }
@@ -138,13 +134,18 @@ public class ProtoClient {
         if (workerGroup != null && !workerGroup.isShutdown()) workerGroup.shutdownGracefully();
     }
 
-    public ProtoClient onConnectionEstablished(@NonNull ConnectionEstablishedHandler handler) {
+    public ProtoClient onConnectionEstablished(@NonNull ConnectionEventHandler handler) {
         connectionEstablishedHandlers.add(handler);
         return this;
     }
 
-    public ProtoClient onConnectionLost(@NonNull ConnectionLostHandler handler) {
+    public ProtoClient onConnectionLost(@NonNull ConnectionEventHandler handler) {
         this.connectionLostHandlers.add(handler);
+        return this;
+    }
+
+    public ProtoClient onCertificateRejected(@NonNull ProtoTrustManager.CertificateEventHandler handler) {
+        this.trustManager.onCertificateRejected(handler);
         return this;
     }
 
