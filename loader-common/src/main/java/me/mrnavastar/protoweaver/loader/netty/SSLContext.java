@@ -36,6 +36,8 @@ public class SSLContext {
 
     @SneakyThrows
     public static void init(String dir) {
+
+
         Security.addProvider(new BouncyCastleProvider());
 
         Optional.ofNullable(System.getenv("PROTOWEAVER_PRIVATE_KEY")).ifPresent(value -> privateKey = new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8)));
@@ -49,8 +51,7 @@ public class SSLContext {
                         ApplicationProtocolConfig.Protocol.ALPN,
                         ApplicationProtocolConfig.SelectorFailureBehavior.NO_ADVERTISE,
                         ApplicationProtocolConfig.SelectedListenerFailureBehavior.ACCEPT,
-                        //ApplicationProtocolNames.HTTP_2,
-                        ApplicationProtocolNames.HTTP_1_1)
+                        ApplicationProtocolNames.HTTP_2)
                 ).build();
     }
 

@@ -30,8 +30,7 @@ dependencies {
     jarJar implementation("org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}")
     jarJar implementation("org.bouncycastle:bcprov-jdk18on:${project.bouncy_version}")
     jarJar implementation("org.bouncycastle:bcutil-jdk18on:${project.bouncy_version}")
-    //jarJar implementation("io.netty:netty-codec-http:${project.netty_version}")
-    //jarJar implementation("io.netty:netty-codec-http2:${project.netty_version}")
+    jarJar implementation("io.netty:netty-codec-http2:${project.netty_version}")
     jarJar implementation("me.mrnavastar:r:${project.r_version}")
 
     // Mod Compat

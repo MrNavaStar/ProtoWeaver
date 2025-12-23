@@ -2,6 +2,7 @@ package me.mrnavastar.protoweaver.loader;
 
 import io.netty.channel.Channel;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
+import me.mrnavastar.protoweaver.api.protocol.protomessage.ProtoMessage;
 import me.mrnavastar.protoweaver.api.protocol.velocity.VelocityAuth;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 import me.mrnavastar.protoweaver.loader.netty.ProtoDeterminer;
@@ -22,6 +23,8 @@ public class Paper extends JavaPlugin implements ProtoLogger.IProtoLogger {
     public void onEnable() {
         if (!ProtoWeaver.getLoadedProtocols().isEmpty()) setup();
         else ProtoWeaver.PROTOCOL_LOADED.register(protocol -> setup());
+
+        ProtoWeaver.load(ProtoMessage.getProtocol());
     }
 
     private void setup() {
@@ -29,11 +32,17 @@ public class Paper extends JavaPlugin implements ProtoLogger.IProtoLogger {
         ProtoLogger.setLogger(this);
 
         try {
-            Object listener = R.of(new Paper()).implement("io.papermc.paper.network.ChannelInitializeListener").interfaceable();
-            R.of(Class.forName("io.papermc.paper.network.ChannelInitializeListenerHolder")).call("addListener", new NamespacedKey("protoweaver", "internal"), listener);
+            Class<?> channelInitializeListener = Class.forName("io.papermc.paper.network.ChannelInitializeListener");
+            Object listener = channelInitializeListener.cast(R.of(this).implement(channelInitializeListener).interfaceable());
+            System.out.println(listener.getClass());
+            R.of(Class.forName("io.papermc.paper.network.ChannelInitializeListenerHolder"))
+                    .call("addListener", new NamespacedKey("protoweaver", "internal"), channelInitializeListener.cast(listener));
+
+/*            System.out.println(R.of(R.of(Class.forName("io.papermc.paper.configuration.GlobalConfiguration")).call("get", Object.class))
+                    .of("proxies").of("velocity").get("secret", String.class).getBytes(StandardCharsets.UTF_8));
 
             VelocityAuth.setSecret(R.of(R.of(Class.forName("io.papermc.paper.configuration.GlobalConfiguration")).call("get", Object.class))
-                    .of("proxies").of("velocity").get("secret", String.class).getBytes(StandardCharsets.UTF_8));
+                    .of("proxies").of("velocity").get("secret", String.class).getBytes(StandardCharsets.UTF_8));*/
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
