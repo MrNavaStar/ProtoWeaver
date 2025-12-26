@@ -8,6 +8,7 @@ import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 import me.mrnavastar.protoweaver.loader.netty.ProtoDeterminer;
 import me.mrnavastar.protoweaver.loader.netty.SSLContext;
 import me.mrnavastar.r.R;
+import net.kyori.adventure.key.Key;
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -32,17 +33,18 @@ public class Paper extends JavaPlugin implements ProtoLogger.IProtoLogger {
         ProtoLogger.setLogger(this);
 
         try {
-            Class<?> channelInitializeListener = Class.forName("io.papermc.paper.network.ChannelInitializeListener");
-            Object listener = channelInitializeListener.cast(R.of(this).implement(channelInitializeListener).interfaceable());
-            System.out.println(listener.getClass());
             R.of(Class.forName("io.papermc.paper.network.ChannelInitializeListenerHolder"))
-                    .call("addListener", new NamespacedKey("protoweaver", "internal"), channelInitializeListener.cast(listener));
+                .call("addListener",
+                        R.TypeBinding.of(Key.class, new NamespacedKey("protoweaver", "internal")),
+                        R.of(this).implement("io.papermc.paper.network.ChannelInitializeListener")
+                );
 
-/*            System.out.println(R.of(R.of(Class.forName("io.papermc.paper.configuration.GlobalConfiguration")).call("get", Object.class))
-                    .of("proxies").of("velocity").get("secret", String.class).getBytes(StandardCharsets.UTF_8));
-
-            VelocityAuth.setSecret(R.of(R.of(Class.forName("io.papermc.paper.configuration.GlobalConfiguration")).call("get", Object.class))
-                    .of("proxies").of("velocity").get("secret", String.class).getBytes(StandardCharsets.UTF_8));*/
+            VelocityAuth.setSecret(R.of(R.of(Class.forName("io.papermc.paper.configuration.GlobalConfiguration"))
+                    .call("get", Object.class))
+                    .of("proxies")
+                    .of("velocity")
+                    .get("secret", String.class).getBytes(StandardCharsets.UTF_8)
+            );
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
