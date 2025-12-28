@@ -4,21 +4,18 @@ import io.netty.util.concurrent.FastThreadLocal;
 import io.netty.util.internal.EmptyArrays;
 import io.netty.util.internal.StringUtil;
 import lombok.Cleanup;
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.SneakyThrows;
-import me.mrnavastar.protoweaver.api.netty.ProtoConnection;
-import me.mrnavastar.protoweaver.client.ProtoClient;
 
-import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * This trust manager is based off the {@link io.netty.handler.ssl.util.FingerprintTrustManagerFactory} but modified to
@@ -45,7 +42,7 @@ public class ProtoTrustManager implements X509TrustManager {
     private final File hostsFile;
     private final String hostId;
     private byte[] trusted = null;
-    private final ArrayList<CertificateEventHandler> certificateRejectionHandlers = new ArrayList<>();
+    private final List<CertificateEventHandler> certificateRejectionHandlers = new CopyOnWriteArrayList<>();
     private static final Object lock = new Object();
 
     public ProtoTrustManager(String host, int port, String file) {
@@ -79,24 +76,26 @@ public class ProtoTrustManager implements X509TrustManager {
     private void checkTrusted(X509Certificate[] chain) {
         MessageDigest md = localMessageDigest.get();
         md.reset();
-        byte[] fingerprint = md.digest(chain[0].getEncoded());
 
-        if (trusted == null) {
-            synchronized (lock) {
+        byte[] expected;
+        byte[] actual = md.digest(chain[0].getEncoded());
+        synchronized (lock) {
+            if (trusted == null) {
                 hostsFile.getParentFile().mkdirs();
                 hostsFile.createNewFile();
 
                 @Cleanup BufferedWriter writer = new BufferedWriter(new FileWriter(hostsFile, true));
-                writer.append(hostId).append("=").append(StringUtil.toHexString(fingerprint)).append("\n");
-                trusted = fingerprint;
+                writer.append(hostId).append("=").append(StringUtil.toHexString(actual)).append("\n");
+                trusted = Arrays.copyOf(actual, actual.length);
+                return;
             }
-            return;
+
+            if (Arrays.equals(trusted, actual)) return;
+            expected = Arrays.copyOf(trusted, trusted.length);
         }
 
-        if (Arrays.equals(trusted, fingerprint)) return;
-
-        certificateRejectionHandlers.forEach(handler -> handler.handle(trusted, fingerprint));
-        throw new CertificateException("protoweaver-client-cert-error:" + hostId + ":" + StringUtil.toHexString(trusted) + "!=" + StringUtil.toHexString(fingerprint));
+        certificateRejectionHandlers.forEach(handler -> handler.handle(expected, actual));
+        throw new CertificateException("protoweaver-client-cert-error:" + hostId + ":" + StringUtil.toHexString(trusted) + "!=" + StringUtil.toHexString(actual));
     }
 
     @Override
