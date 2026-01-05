@@ -1,7 +1,7 @@
 apply plugin: "dev.architectury.loom"
 
 architectury {
-    common("fabric", "forge")
+    common("fabric")
 }
 
 loom {

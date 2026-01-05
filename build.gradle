@@ -22,10 +22,12 @@ allprojects {
         maven { url "https://repo.papermc.io/repository/maven-public/" }    // Paper + Velocity
         maven { url "https://api.modrinth.com/maven/" }                     // Modrinth
     }
-    
-    tasks.withType(JavaCompile) {
-        options.encoding = "UTF-8"
-        options.release = project.javaVersion as Integer
+
+    tasks.withType(JavaCompile).tap {
+        configureEach {
+            options.encoding = "UTF-8"
+            options.release = project.javaVersion as Integer
+        }
     }
 }
 
@@ -39,8 +41,6 @@ subprojects {
         compileOnly "io.netty:netty-buffer:${project.netty_version}"
         compileOnly "io.netty:netty-transport:${project.netty_version}"
         compileOnly "io.netty:netty-handler:${project.netty_version}"
-        compileOnly "io.netty:netty-codec-http:${project.netty_version}"
-        compileOnly "io.netty:netty-codec-http2:${project.netty_version}"
         compileOnly "org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}"
         compileOnly "me.mrnavastar:r:${project.r_version}"
 
@@ -48,7 +48,7 @@ subprojects {
 	    annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"
     }
 
-    task jarSources(type:Jar){
+    tasks.register('jarSources', Jar) {
         archiveBaseName.set("protoweaver")
         archiveClassifier.set("sources")
         exclude {

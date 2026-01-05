@@ -2,7 +2,6 @@ package me.mrnavastar.protoweaver.loader;
 
 import io.netty.channel.Channel;
 import me.mrnavastar.protoweaver.api.ProtoWeaver;
-import me.mrnavastar.protoweaver.api.protocol.protomessage.ProtoMessage;
 import me.mrnavastar.protoweaver.api.protocol.velocity.VelocityAuth;
 import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 import me.mrnavastar.protoweaver.loader.netty.ProtoDeterminer;
@@ -24,8 +23,6 @@ public class Paper extends JavaPlugin implements ProtoLogger.IProtoLogger {
     public void onEnable() {
         if (!ProtoWeaver.getLoadedProtocols().isEmpty()) setup();
         else ProtoWeaver.PROTOCOL_LOADED.register(protocol -> setup());
-
-        ProtoWeaver.load(ProtoMessage.getProtocol());
     }
 
     private void setup() {

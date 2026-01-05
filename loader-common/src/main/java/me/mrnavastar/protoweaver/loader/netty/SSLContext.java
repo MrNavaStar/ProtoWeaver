@@ -1,6 +1,5 @@
 package me.mrnavastar.protoweaver.loader.netty;
 
-import io.netty.handler.codec.http2.Http2SecurityUtil;
 import io.netty.handler.ssl.*;
 import lombok.Cleanup;
 import lombok.Getter;
@@ -23,9 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 public class SSLContext {
 
@@ -33,12 +30,25 @@ public class SSLContext {
     private static io.netty.handler.ssl.SslContext context;
     private static InputStream privateKey;
     private static InputStream cert;
+    private static final Provider provider = new BouncyCastleProvider();
+
+    // These https://wiki.mozilla.org/Security/Server_Side_TLS#Intermediate_compatibility_.28recommended.29
+    // Minus These https://datatracker.ietf.org/doc/html/rfc7540#appendix-A
+    private static final List<String> CIPHERS = List.of(
+            "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+            "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+            "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+            "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+            "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256",
+            "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
+            "TLS_AES_128_GCM_SHA256",
+            "TLS_AES_256_GCM_SHA384",
+            "TLS_CHACHA20_POLY1305_SHA256"
+    );
 
     @SneakyThrows
     public static void init(String dir) {
-
-
-        Security.addProvider(new BouncyCastleProvider());
+        Security.addProvider(provider);
 
         Optional.ofNullable(System.getenv("PROTOWEAVER_PRIVATE_KEY")).ifPresent(value -> privateKey = new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8)));
         Optional.ofNullable(System.getenv("PROTOWEAVER_CERT")).ifPresent(value -> cert = new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8)));
@@ -46,7 +56,7 @@ public class SSLContext {
         genKeys(dir);
         context = SslContextBuilder.forServer(cert, privateKey)
                 .sslProvider(OpenSsl.isAvailable() ? SslProvider.OPENSSL : SslProvider.JDK)
-                .ciphers(Http2SecurityUtil.CIPHERS, SupportedCipherSuiteFilter.INSTANCE)
+                .ciphers(CIPHERS, SupportedCipherSuiteFilter.INSTANCE)
                 .applicationProtocolConfig(new ApplicationProtocolConfig(
                         ApplicationProtocolConfig.Protocol.ALPN,
                         ApplicationProtocolConfig.SelectorFailureBehavior.NO_ADVERTISE,
@@ -82,10 +92,6 @@ public class SSLContext {
 
     // From https://stackoverflow.com/questions/29852290/self-signed-x509-certificate-with-bouncy-castle-in-java
     private static X509Certificate genCert(KeyPair keyPair) throws OperatorCreationException, CertificateException, IOException {
-        Provider bcProvider = new BouncyCastleProvider();
-        Security.addProvider(bcProvider);
-        X500Name dnName = new X500Name("CN=PROTOWEAVER");
-
         long now = System.currentTimeMillis();
         Date startDate = new Date(now);
         Calendar calendar = Calendar.getInstance();
@@ -93,11 +99,11 @@ public class SSLContext {
         calendar.add(Calendar.YEAR, 999);
         Date endDate = calendar.getTime();
 
+        X500Name dnName = new X500Name("CN=PROTOWEAVER");
         ContentSigner contentSigner = new JcaContentSignerBuilder("SHA256WithRSA").build(keyPair.getPrivate());
         JcaX509v3CertificateBuilder certBuilder = new JcaX509v3CertificateBuilder(dnName, new BigInteger(Long.toString(now)), startDate, endDate, dnName, keyPair.getPublic());
-        BasicConstraints basicConstraints = new BasicConstraints(true);
-        certBuilder.addExtension(new ASN1ObjectIdentifier("2.5.29.19"), true, basicConstraints);
+        certBuilder.addExtension(new ASN1ObjectIdentifier("2.5.29.19"), true, new BasicConstraints(true));
 
-        return new JcaX509CertificateConverter().setProvider(bcProvider).getCertificate(certBuilder.build(contentSigner));
+        return new JcaX509CertificateConverter().setProvider(provider).getCertificate(certBuilder.build(contentSigner));
     }
 }

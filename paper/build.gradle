@@ -13,7 +13,6 @@ dependencies {
     shadow implementation("org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}")
     shadow implementation("org.bouncycastle:bcprov-jdk18on:${project.bouncy_version}")
     shadow implementation("org.bouncycastle:bcutil-jdk18on:${project.bouncy_version}")
-    shadow implementation("io.netty:netty-codec-http2:${project.netty_version}")
 }
 
 shadowJar {
@@ -27,7 +26,6 @@ shadowJar {
     relocate 'me.mrnavastar.r', 'me.mrnavastar.protoweaver.libs.me.mrnavastar.r'
     relocate 'org.apache.fory', 'me.mrnavastar.protoweaver.libs.org.apache.fory'
     relocate 'org.bouncycastle', 'me.mrnavastar.protoweaver.libs.org.bouncycastle'
-    relocate 'io.netty', "me.mrnavastar.protoweaver.libs.io.netty"
 }
 
 jar.finalizedBy(shadowJar)
