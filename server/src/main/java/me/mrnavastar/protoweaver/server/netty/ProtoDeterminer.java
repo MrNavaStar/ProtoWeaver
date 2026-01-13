@@ -1,4 +1,4 @@
-package me.mrnavastar.protoweaver.loader.netty;
+package me.mrnavastar.protoweaver.server.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -17,7 +17,7 @@ import me.mrnavastar.protoweaver.core.util.ProtoLogger;
 import java.util.List;
 import java.util.Map;
 
-public class ProtoDeterminer extends ByteToMessageDecoder {
+public class  ProtoDeterminer extends ByteToMessageDecoder {
 
     private final boolean sslEnabled;
 
@@ -79,19 +79,6 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
             return;
         }
 
-        // Downstream protocol
-        /*if (isHttp(magic1, magic2)) {
-            pipeline.addLast("http", Http2Util.getAPNHandler());
-            pipeline.remove(this);
-        }*/
-        /*if (isHttp(magic1, magic2)) {
-            pipeline.addLast("httpDecoder", new HttpRequestDecoder());
-            pipeline.addLast("httpEncoder", new HttpResponseEncoder());
-            pipeline.addLast("compressor", new HttpContentCompressor());
-            pipeline.addLast("httpHandler", new HttpHandler());
-            pipeline.remove(this);
-        }*/
-
         ctx.close();
     }
 
@@ -107,19 +94,6 @@ public class ProtoDeterminer extends ByteToMessageDecoder {
 
     private boolean isProtoWeaver(int magic1, int magic2) {
         return magic1 == 0 && magic2 == ProtoConstants.PROTOWEAVER_MAGIC_BYTE;
-    }
-
-    private boolean isHttp(int magic1, int magic2) {
-        return
-            magic1 == 'G' && magic2 == 'E' || // GET
-            magic1 == 'P' && magic2 == 'O' || // POST
-            magic1 == 'P' && magic2 == 'U' || // PUT
-            magic1 == 'H' && magic2 == 'E' || // HEAD
-            magic1 == 'O' && magic2 == 'P' || // OPTIONS
-            magic1 == 'P' && magic2 == 'A' || // PATCH
-            magic1 == 'D' && magic2 == 'E' || // DELETE
-            magic1 == 'T' && magic2 == 'R' || // TRACE
-            magic1 == 'C' && magic2 == 'O';   // CONNECT
     }
 
     @Override

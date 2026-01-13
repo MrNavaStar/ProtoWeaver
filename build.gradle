@@ -26,12 +26,12 @@ subprojects {
     apply plugin: "io.freefair.lombok"
 
     dependencies {
-        compileOnly "org.apache.fory:fory-core:${project.fory_version}"
-        compileOnly "io.netty:netty-buffer:${project.netty_version}"
-        compileOnly "io.netty:netty-transport:${project.netty_version}"
-        compileOnly "io.netty:netty-handler:${project.netty_version}"
-        compileOnly "org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}"
-        compileOnly "me.mrnavastar:r:${project.r_version}"
+        implementation "org.apache.fory:fory-core:${project.fory_version}"
+        implementation "io.netty:netty-buffer:${project.netty_version}"
+        implementation "io.netty:netty-transport:${project.netty_version}"
+        implementation "io.netty:netty-handler:${project.netty_version}"
+        implementation "org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}"
+        implementation "me.mrnavastar:r:${project.r_version}"
 
         compileOnly "org.projectlombok:lombok:${project.lombok_version}"
 	    annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"

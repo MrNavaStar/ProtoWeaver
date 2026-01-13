@@ -1,4 +1,4 @@
-package me.mrnavastar.protoweaver.loader.netty;
+package me.mrnavastar.protoweaver.server.netty;
 
 import io.netty.handler.ssl.*;
 import lombok.Cleanup;

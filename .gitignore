@@ -7,9 +7,9 @@
 /common/build/
 protoweaver_hosts
 
-/loader-common/build/
-/loader-common/.architectury-transformer/
-/loader-common/.gradle/
+/server/build/
+/server/.architectury-transformer/
+/server/.gradle/
 
 /fabric/build/
 /fabric/.architectury-transformer/
