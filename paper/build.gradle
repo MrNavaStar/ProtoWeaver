@@ -2,7 +2,7 @@ plugins {
     id "xyz.jpenilla.run-paper" version "3.0.2"
 }
 
-apply plugin: "io.github.goooler.shadow"
+apply plugin: "com.gradleup.shadow"
 
 dependencies {
     shadow compileOnly(project(path: ':loader-common', configuration: 'default'))
