@@ -1,26 +1,15 @@
 plugins {
     id "io.github.goooler.shadow" version "8.1.8"
     id "io.freefair.lombok" version "9.1.0"
-    id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.13-SNAPSHOT" apply false
     id "maven-publish"
 }
 
 allprojects {
-    apply plugin: "architectury-plugin"
-
     version = project.project_version
     group = project.maven_group
 
-    architectury {
-        compileOnly()
-    }
-
     repositories {
         mavenCentral()
-        maven { url "https://maven.minecraftforge.net/" }                   // Forge
-        maven { url "https://repo.papermc.io/repository/maven-public/" }    // Paper + Velocity
-        maven { url "https://api.modrinth.com/maven/" }                     // Modrinth
     }
 
     tasks.withType(JavaCompile).tap {
