@@ -73,8 +73,8 @@ public class SSLContext {
         KeyPair kp = kpg.generateKeyPair();
         X509Certificate certificate = genCert(kp);
 
-        File privateKeyFile = new File(dir + "/keys/private.pem");
-        File certFile = new File(dir + "/keys/cert.pem");
+        File privateKeyFile = new File(dir + "/private.pem");
+        File certFile = new File(dir + "/cert.pem");
 
         if (!privateKeyFile.exists() || !certFile.exists()) {
             ProtoLogger.info("Generating SSL Keys");

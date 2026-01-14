@@ -1,6 +1,6 @@
 plugins {
     id "com.gradleup.shadow" version "9.3.1"
-    id "io.freefair.lombok" version "9.1.0"
+    id "io.freefair.lombok" version "9.2.0"
     id "maven-publish"
 }
 
@@ -26,12 +26,12 @@ subprojects {
     apply plugin: "io.freefair.lombok"
 
     dependencies {
-        implementation "org.apache.fory:fory-core:${project.fory_version}"
-        implementation "io.netty:netty-buffer:${project.netty_version}"
-        implementation "io.netty:netty-transport:${project.netty_version}"
-        implementation "io.netty:netty-handler:${project.netty_version}"
-        implementation "org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}"
-        implementation "me.mrnavastar:r:${project.r_version}"
+        compileOnly "org.apache.fory:fory-core:${project.fory_version}"
+        compileOnly "io.netty:netty-buffer:${project.netty_version}"
+        compileOnly "io.netty:netty-transport:${project.netty_version}"
+        compileOnly "io.netty:netty-handler:${project.netty_version}"
+        compileOnly "org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}"
+        compileOnly "me.mrnavastar:r:${project.r_version}"
 
         compileOnly "org.projectlombok:lombok:${project.lombok_version}"
 	    annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"
@@ -48,24 +48,22 @@ subprojects {
 
     jar.finalizedBy(jarSources)
 
-    if (project.path != ':loader-common') {
-        publishing {
-            repositories {
-                maven {
-                    url "https://maven.mrnavastar.me/releases"
-                    credentials {
-                        username = System.getenv("MAVEN_NAME")
-                        password = System.getenv("MAVEN_SECRET")
-                    }
+    publishing {
+        repositories {
+            maven {
+                url "https://maven.mrnavastar.me/releases"
+                credentials {
+                    username = System.getenv("MAVEN_NAME")
+                    password = System.getenv("MAVEN_SECRET")
                 }
             }
-            publications {
-                mavenJava(MavenPublication) {
-                    groupId = "me.mrnavastar.protoweaver"
-                    artifactId = project.name
-                    from components.java
-                    artifact tasks.jarSources
-                }
+        }
+        publications {
+            mavenJava(MavenPublication) {
+                groupId = "me.mrnavastar.protoweaver"
+                artifactId = project.name
+                from components.java
+                artifact tasks.jarSources
             }
         }
     }

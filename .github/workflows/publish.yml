@@ -17,11 +17,6 @@ jobs:
         run: |
           sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' gradle.properties
           sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' common/src/main/java/me/mrnavastar/protoweaver/core/util/ProtoConstants.java
-          sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' fabric/src/main/resources/fabric.mod.json
-          sed -i 's/0.debug-build/${{ github.event.release.tag_name }}/g' forge/src/main/resources/META-INF/mods.toml
-          sed -i 's/0.debug-build/${{ github.event.release.tag_name }}/g' neoforge/src/main/resources/META-INF/neoforge.mods.toml
-          sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' paper/src/main/resources/plugin.yml
-          sed -i 's/debug-build/${{ github.event.release.tag_name }}/g' proxy/src/main/resources/bungee.yml
       
       - name: Build
         run: ./gradlew build
@@ -31,70 +26,3 @@ jobs:
         env:
           MAVEN_NAME: ${{ secrets.MAVEN_NAME }}
           MAVEN_SECRET: ${{ secrets.MAVEN_SECRET }}
-      
-      - name: Upload Fabric
-        uses: Kir-Antipov/mc-publish@v3.3.0
-        with:
-          modrinth-id: 6nKmUVc7
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          modrinth-featured: true
-          files: ${{ github.workspace }}/fabric/build/libs/protoweaver-${{ github.event.release.tag_name }}-fabric.jar
-          java: 21
-          loaders: |
-            fabric
-            quilt
-          game-versions: |
-            >=1.14
-
-      - name: Upload Forge
-        uses: Kir-Antipov/mc-publish@v3.3.0
-        with:
-          modrinth-id: 6nKmUVc7
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          modrinth-featured: true
-          files: ${{ github.workspace }}/forge/build/libs/protoweaver-${{ github.event.release.tag_name }}-forge.jar
-          java: 21
-          loaders: forge
-          game-versions: |
-            >=1.15
-
-      - name: Upload NeoForge
-        uses: Kir-Antipov/mc-publish@v3.3.0
-        with:
-          modrinth-id: 6nKmUVc7
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          modrinth-featured: true
-          files: ${{ github.workspace }}/neoforge/build/libs/protoweaver-${{ github.event.release.tag_name }}-neoforge.jar
-          java: 21
-          loaders: neoforge
-          game-versions: |
-            >=1.20.2
-
-      - name: Upload Paper
-        uses: Kir-Antipov/mc-publish@v3.3.0
-        with:
-          modrinth-id: 6nKmUVc7
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          modrinth-featured: true
-          files: ${{ github.workspace }}/paper/build/libs/protoweaver-${{ github.event.release.tag_name }}-paper.jar
-          java: 21
-          loaders: |
-            paper
-            folia
-            purpur
-          game-versions: |
-            >=1.14
-
-      - name: Upload Proxy
-        uses: Kir-Antipov/mc-publish@v3.3.0
-        with:
-          modrinth-id: 6nKmUVc7
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          modrinth-featured: true
-          files: ${{ github.workspace }}/proxy/build/libs/protoweaver-${{ github.event.release.tag_name }}-proxy.jar
-          java: 21
-          loaders: |
-            velocity
-            waterfall
-          game-versions: |
-            >=1.14

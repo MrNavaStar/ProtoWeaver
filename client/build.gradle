@@ -2,11 +2,12 @@ apply plugin: "com.gradleup.shadow"
 
 dependencies {
     shadow implementation(project(path: ':common', configuration: 'default'))
-    shadow implementation("org.apache.fory:fory-core:${project.fory_version}")
-    shadow implementation("io.netty:netty-buffer:${project.netty_version}")
-    shadow implementation("io.netty:netty-transport:${project.netty_version}")
-    shadow implementation("io.netty:netty-handler:${project.netty_version}")
-    shadow implementation("me.mrnavastar:r:${project.r_version}")
+
+    shadow "org.apache.fory:fory-core:${project.fory_version}"
+    shadow "io.netty:netty-buffer:${project.netty_version}"
+    shadow "io.netty:netty-transport:${project.netty_version}"
+    shadow "io.netty:netty-handler:${project.netty_version}"
+    shadow "me.mrnavastar:r:${project.r_version}"
 }
 
 shadowJar {
@@ -17,7 +18,7 @@ shadowJar {
         mergeServiceFiles()
     }
 
-    relocate "org.apache.fury", "me.mrnavastar.protoweaver.libs.org.apache.fury"
+    relocate "org.apache.fory", "me.mrnavastar.protoweaver.libs.org.apache.fory"
     relocate "com.google", "me.mrnavastar.protoweaver.libs.com.google"
     relocate 'io.netty', 'me.mrnavastar.protoweaver.libs.io.netty'
     relocate 'me.mrnavastar.r', 'me.mrnavastar.protoweaver.libs.me.mrnavastar.r'

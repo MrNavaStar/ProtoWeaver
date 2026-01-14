@@ -1,3 +1,29 @@
+apply plugin: "com.gradleup.shadow"
+
 dependencies {
-    implementation project(path: ':common', configuration: 'default')
+    shadow implementation(project(path: ':common', configuration: 'default'))
+
+    shadow "org.apache.fory:fory-core:${project.fory_version}"
+    shadow "org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}"
+    shadow "me.mrnavastar:r:${project.r_version}"
 }
+
+shadowJar {
+    archiveClassifier = ""
+    configurations = [project.configurations.shadow]
+
+    dependencies {
+        mergeServiceFiles()
+    }
+
+    relocate "org.apache.fory", "me.mrnavastar.protoweaver.libs.org.apache.fory"
+    relocate "org.bouncycastle", "me.mrnavastar.protoweaver.libs.org.bouncycastle"
+    relocate "com.google", "me.mrnavastar.protoweaver.libs.com.google"
+    relocate 'me.mrnavastar.r', 'me.mrnavastar.protoweaver.libs.me.mrnavastar.r'
+    relocate "org.checkerframework", "me.mrnavastar.protoweaver.libs.org.checkerframework"
+    relocate "javax.annotation", "me.mrnavastar.protoweaver.libs.javax.annotation"
+
+    minimize()
+}
+
+jar.finalizedBy(shadowJar)
