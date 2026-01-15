@@ -1,6 +1,0 @@
-name: ProtoWeaver
-author: MrNavaStar
-version: 'debug-build'
-main: me.mrnavastar.protoweaver.loader.Paper
-api-version: '1.13'
-load: STARTUP

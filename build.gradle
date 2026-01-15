@@ -1,26 +1,15 @@
 plugins {
-    id "io.github.goooler.shadow" version "8.1.8"
-    id "io.freefair.lombok" version "9.1.0"
-    id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.13-SNAPSHOT" apply false
+    id "com.gradleup.shadow" version "9.3.1"
+    id "io.freefair.lombok" version "9.2.0"
     id "maven-publish"
 }
 
 allprojects {
-    apply plugin: "architectury-plugin"
-
     version = project.project_version
     group = project.maven_group
 
-    architectury {
-        compileOnly()
-    }
-
     repositories {
         mavenCentral()
-        maven { url "https://maven.minecraftforge.net/" }                   // Forge
-        maven { url "https://repo.papermc.io/repository/maven-public/" }    // Paper + Velocity
-        maven { url "https://api.modrinth.com/maven/" }                     // Modrinth
     }
 
     tasks.withType(JavaCompile).tap {
@@ -49,7 +38,7 @@ subprojects {
     }
 
     tasks.register('jarSources', Jar) {
-        archiveBaseName.set("protoweaver")
+        archiveBaseName.set(project.name)
         archiveClassifier.set("sources")
         exclude {
             sourceSets.main.allSource.contains it.file
@@ -59,24 +48,22 @@ subprojects {
 
     jar.finalizedBy(jarSources)
 
-    if (project.path != ':loader-common') {
-        publishing {
-            repositories {
-                maven {
-                    url "https://maven.mrnavastar.me/releases"
-                    credentials {
-                        username = System.getenv("MAVEN_NAME")
-                        password = System.getenv("MAVEN_SECRET")
-                    }
+    publishing {
+        repositories {
+            maven {
+                url "https://maven.mrnavastar.me/releases"
+                credentials {
+                    username = System.getenv("MAVEN_NAME")
+                    password = System.getenv("MAVEN_SECRET")
                 }
             }
-            publications {
-                mavenJava(MavenPublication) {
-                    groupId = "me.mrnavastar.protoweaver"
-                    artifactId = project.name
-                    from components.java
-                    artifact tasks.jarSources
-                }
+        }
+        publications {
+            mavenJava(MavenPublication) {
+                groupId = "me.mrnavastar.protoweaver"
+                artifactId = project.name
+                from components.java
+                artifact tasks.jarSources
             }
         }
     }

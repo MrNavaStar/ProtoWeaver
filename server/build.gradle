@@ -4,9 +4,7 @@ dependencies {
     shadow implementation(project(path: ':common', configuration: 'default'))
 
     shadow "org.apache.fory:fory-core:${project.fory_version}"
-    shadow "io.netty:netty-buffer:${project.netty_version}"
-    shadow "io.netty:netty-transport:${project.netty_version}"
-    shadow "io.netty:netty-handler:${project.netty_version}"
+    shadow "org.bouncycastle:bcpkix-jdk18on:${project.bouncy_version}"
     shadow "me.mrnavastar:r:${project.r_version}"
 }
 
@@ -19,22 +17,12 @@ shadowJar {
     }
 
     relocate "org.apache.fory", "me.mrnavastar.protoweaver.libs.org.apache.fory"
+    relocate "org.bouncycastle", "me.mrnavastar.protoweaver.libs.org.bouncycastle"
     relocate "com.google", "me.mrnavastar.protoweaver.libs.com.google"
-    relocate 'io.netty', 'me.mrnavastar.protoweaver.libs.io.netty'
     relocate 'me.mrnavastar.r', 'me.mrnavastar.protoweaver.libs.me.mrnavastar.r'
+    relocate "org.checkerframework", "me.mrnavastar.protoweaver.libs.org.checkerframework"
+    relocate "javax.annotation", "me.mrnavastar.protoweaver.libs.javax.annotation"
 
-    exclude "org/checkerframework/**"
-    exclude "javax/**"
-
-    exclude "META-INF/licenses/**"
-    exclude "META-INF/maven/**"
-    exclude "META-INF/native-image/**"
-    exclude "META-INF/proguard/**"
-    exclude "META-INF/DEPENDENCIES"
-    exclude "META-INF/DISCLAIMER"
-    exclude "META-INF/LICENSE"
-    exclude "META-INF/LICENSE.txt"
-    exclude "META-INF/NOTICE"
     minimize()
 }
 
