@@ -38,7 +38,7 @@ subprojects {
     }
 
     tasks.register('jarSources', Jar) {
-        archiveBaseName.set("protoweaver")
+        archiveBaseName.set(project.name)
         archiveClassifier.set("sources")
         exclude {
             sourceSets.main.allSource.contains it.file
