@@ -22,8 +22,6 @@ shadowJar {
     relocate 'me.mrnavastar.r', 'me.mrnavastar.protoweaver.libs.me.mrnavastar.r'
     relocate "org.checkerframework", "me.mrnavastar.protoweaver.libs.org.checkerframework"
     relocate "javax.annotation", "me.mrnavastar.protoweaver.libs.javax.annotation"
-
-    minimize()
 }
 
 jar.finalizedBy(shadowJar)
